@@ -1,11 +1,18 @@
 {
+  "outputDirectory": ".",
+  "cleanUrls": false,
+  "trailingSlash": false,
   "headers": [
     {
-      "source": "/assets/(.*)",
+      "source": "/assets/cvs/(.*).pdf",
       "headers": [
         {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
+          "key": "Content-Type",
+          "value": "application/pdf"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "inline"
         }
       ]
     }
