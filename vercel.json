@@ -4,7 +4,7 @@
   "trailingSlash": false,
   "headers": [
     {
-      "source": "/assets/cvs/(.*).pdf",
+      "source": "/assets/cv/(.*).pdf",
       "headers": [
         {
           "key": "Content-Type",
