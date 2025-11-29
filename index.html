@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enzo Esmeraldo | Full Stack Developer</title>
+    <meta name="description" content="Portfolio of Enzo Esmeraldo, a Full Stack Developer based in Fortaleza, Brazil.">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neon: 'rgb(var(--accent-rgb) / <alpha-value>)',
+                        sakura: 'rgb(var(--accent-rgb) / <alpha-value>)',
+                        'sakura-dark': 'rgb(var(--secondary-rgb) / <alpha-value>)',
+                        dark: 'rgb(var(--bg-rgb) / <alpha-value>)',
+                        panel: 'rgb(var(--panel-rgb) / <alpha-value>)',
+                        gray: 'rgb(var(--gray-rgb) / <alpha-value>)'
+                    },
+                    fontFamily: {
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1a1a1a 1px, transparent 1px), linear-gradient(to bottom, #1a1a1a 1px, transparent 1px)",
+                    },
+                    animation: {
+                        'spin-slow': 'spin 12s linear infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="font-inter antialiased selection:bg-sakura selection:text-dark bg-dark">
+
+    <!-- Loader -->
+    <div id="loader">
+        <div class="font-rajdhani text-6xl font-bold text-white mb-4 tracking-widest glitch-hover">ENZO.DEV</div>
+        <div class="w-72 h-[6px] bg-gray/20 rounded-full overflow-hidden">
+            <div id="loader-bar" class="loader-bar"></div>
+        </div>
+        <div id="progress" class="font-mono text-neon mt-2 text-sm">0%</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-ring hidden md:block"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-40 bg-dark/70 backdrop-blur-md border-b border-white/5 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-rajdhani font-bold tracking-wider hover:text-sakura transition-colors group flex items-center gap-1">
+                <i class="fas fa-code text-neon group-hover:text-sakura text-sm transform rotate-12"></i>
+                ENZO<span class="text-neon group-hover:text-sakura transition-colors">.</span>DEV
+            </a>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8">
+                <div class="flex space-x-10 font-rajdhani font-bold uppercase tracking-wide text-sm">
+                    <a href="#projects" class="relative group hover-trigger py-2">
+                        <span class="group-hover:text-sakura transition-colors" data-lang="nav.projects">Projects</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-neon group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="#journey" class="relative group hover-trigger py-2">
+                        <span class="group-hover:text-sakura transition-colors" data-lang="nav.journey">Journey</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-neon group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="#about" class="relative group hover-trigger py-2">
+                        <span class="group-hover:text-sakura transition-colors" data-lang="nav.about">About</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-neon group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                    <a href="#contact" class="relative group hover-trigger py-2">
+                        <span class="group-hover:text-sakura transition-colors" data-lang="nav.contact">Contact</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-neon group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                </div>
+
+                <!-- Language Switcher (Desktop) -->
+                <button id="lang-toggle-desktop" class="flex items-center gap-2 font-rajdhani font-bold uppercase tracking-wide text-sm text-white hover:text-sakura transition-colors border border-white/20 px-3 py-1 rounded hover:border-sakura hover-trigger">
+                    <i class="fas fa-globe"></i>
+                    <span id="current-lang-desktop">EN</span>
+                </button>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <button id="menu-btn" class="md:hidden text-white hover:text-sakura focus:outline-none hover-trigger" aria-label="Toggle Menu">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu-backdrop" class="fixed inset-0 bg-black/60 z-[100] opacity-0 pointer-events-none transition-opacity duration-300 md:hidden" onclick="closeMobileMenu()"></div>
+        <div id="mobile-menu" class="fixed top-[64px] right-0 w-[180px] h-[calc(100vh-64px)] bg-[#0a0a0a] z-[100] transform translate-x-full transition-transform duration-300 ease-out flex flex-col py-8 px-8 md:hidden border-l border-white/10 shadow-2xl">
+            
+            <!-- Menu Links -->
+            <nav class="flex flex-col gap-6">
+                <a href="#projects" class="mobile-link text-xl font-rajdhani font-bold uppercase text-white hover:text-sakura transition-colors hover-trigger" data-lang="nav.projects">Projects</a>
+                <a href="#journey" class="mobile-link text-xl font-rajdhani font-bold uppercase text-white hover:text-sakura transition-colors hover-trigger" data-lang="nav.journey">Journey</a>
+                <a href="#about" class="mobile-link text-xl font-rajdhani font-bold uppercase text-white hover:text-sakura transition-colors hover-trigger" data-lang="nav.about">About</a>
+                <a href="#contact" class="mobile-link text-xl font-rajdhani font-bold uppercase text-white hover:text-sakura transition-colors hover-trigger" data-lang="nav.contact">Contact</a>
+            </nav>
+            
+            <!-- Divider -->
+            <div class="w-full h-px bg-white/10 my-8"></div>
+            
+            <!-- Language Switcher (Mobile) -->
+            <button id="lang-toggle-mobile" class="flex items-center gap-3 font-rajdhani font-bold uppercase tracking-wide text-base text-white hover:text-sakura transition-colors border border-white/20 px-4 py-2 rounded hover:border-sakura hover-trigger w-fit">
+                <i class="fas fa-globe"></i>
+                <span id="current-lang-mobile">EN</span>
+            </button>
+
+            <!-- Mobile Socials -->
+            <div class="flex gap-4 mt-8">
+                <a href="https://github.com/ensinho" target="_blank" class="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-lg text-white hover:bg-neon hover:text-dark transition-all duration-300">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" class="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-lg text-white hover:bg-[#0077b5] transition-all duration-300">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 z-50 w-12 h-12 bg-neon text-dark rounded-full flex items-center justify-center text-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgba(var(--accent-rgb),0.5)] focus:outline-none" aria-label="Back to Top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative h-screen flex flex-col justify-center items-center px-6 overflow-hidden">
+            <!-- Cinematic Background with Parallax -->
+            <div class="absolute inset-0 z-0">
+                <div id="hero-bg" class="absolute inset-0  bg-cover bg-center md:bg-top bg-no-repeat scale-110  transition-all duration-100 ease-out will-change-transform"></div>
+                <!-- Overlay for contrast and depth -->
+                <div class="absolute inset-0 bg-gradient-to-t from-dark via-dark/80 to-dark/50"></div>
+                <!-- Additional overlay for more opacity -->
+                <div class="absolute inset-0 bg-dark/10"></div>
+                <!-- Grid pattern overlay for tech feel -->
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdHRlcm4gaWQ9ImIiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTAgNDBMMDQwIDBoNDBMNDAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsIDI1NSwgMjU1LCAwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjxyZWN0IHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0idXJsKCNiKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+')] opacity-20"></div>
+            </div>
+            
+            <!-- Falling Sakura Petals Container -->
+            <div id="petals-container" class="petal-container z-0">
+            </div>
+            
+            <div class="max-w-7xl mx-auto w-full z-10 relative text-center md:text-left px-4">
+                <div class="flex flex-col items-center md:items-start gs-reveal">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="px-3 py-1 bg-neon/10 border border-neon/30 text-neon text-xs font-mono tracking-widest uppercase rounded-sm backdrop-blur-sm">
+                            <i class="fas fa-circle text-[8px] animate-pulse mr-2"></i><span data-lang="hero.available">Available for Work</span>
+                        </span>
+                        <span class="hidden md:inline-block h-[1px] w-12 bg-white/20"></span>
+                        <p class="text-sakura font-rajdhani font-semibold tracking-widest uppercase text-sm shadow-black drop-shadow-md" data-lang="hero.location">
+                            Brazil / Fortaleza, Ceará
+                        </p>
+                    </div>
+
+                    <h1 class="font-rajdhani font-bold text-6xl md:text-8xl lg:text-[11rem] leading-[0.85] tracking-tighter mb-8 uppercase text-shadow-lg">
+                        <div class="overflow-hidden relative group">
+                            <span class="block transform translate-y-full hero-text-anim group-hover:text-sakura transition-colors duration-300">ENZO</span>
+                            <span class="absolute top-0 left-1 text-neon opacity-0 group-hover:opacity-20 mix-blend-screen blur-[2px] transition-opacity duration-100" style="transform: translate(-2px, 2px);">ENZO</span>
+                        </div>
+                        <div class="overflow-hidden"><span class="block transform translate-y-full hero-text-anim text-stroke text-transparent hover:text-neon transition-colors duration-500 hover:text-stroke-0">ESMERALDO</span></div>
+                    </h1>
+                    
+                    <div class="max-w-2xl p-6 bg-dark/40 backdrop-blur-custom border-l-2 border-neon rounded-r-lg transform translate-y-10 opacity-0 gs-fade-in">
+                        <p class="text-gray-200 text-lg md:text-xl leading-relaxed font-light" data-lang="hero.description">
+                            Full Stack Developer mastering <span class="text-neon font-medium">Angular + Spring Boot</span>. 
+                            Crafting scalable systems and <span class="text-sakura font-medium">aesthetic interfaces</span> where code meets creativity.
+                        </p>
+                    </div>
+
+                    <div class="mt-12 flex gap-6 transform translate-y-10 opacity-0 gs-fade-in">
+                        <a href="#projects" class="hover-trigger px-8 py-4 bg-neon text-dark font-rajdhani font-bold text-xl tracking-wide hover:bg-white transition-all duration-300 flex items-center gap-3 clip-path-slant">
+                            <span data-lang="hero.viewProjects">PROJECTS</span> <i class="fas fa-arrow-down transform -rotate-45"></i>
+                        </a>
+                        <a href="assets/CVs/Enzo EsmeraldoCV_EN.pdf" target="_blank" id="cv-link-hero" class="hover-trigger px-8 py-4 border border-white/20 text-white font-rajdhani font-bold text-xl tracking-wide hover:border-sakura hover:text-sakura transition-all duration-300 backdrop-blur-sm" data-lang="hero.resume">
+                            RESUME
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center space-y-2 animate-bounce z-20 mix-blend-difference">
+                <span class="text-xs font-rajdhani uppercase tracking-widest text-gray" data-lang="hero.scroll">Scroll to Explore</span>
+                <i class="fas fa-chevron-down text-neon"></i>
+            </div>
+        </section>
+
+        <!-- Marquee Strip -->
+        <div class="w-full overflow-hidden">
+            <div class="w-full bg-neon py-4 overflow-hidden border-y border-dark transform -skew-y-1 origin-left z-20 relative shadow-[0_0_30px_rgba(204,255,0,0.3)]">
+                <div class="marquee-container flex whitespace-nowrap">
+                    <div class="marquee-content flex space-x-12 font-rajdhani font-black text-dark text-2xl md:text-4xl uppercase tracking-widest">
+                        <span class="flex items-center gap-2"><i class="fab fa-angular"></i> Angular</span><span>//</span>
+                        <span class="flex items-center gap-2"><i class="fas fa-leaf"></i> Spring Boot</span><span>//</span>
+                        <span class="flex items-center gap-2"><i class="fab fa-js"></i> TypeScript</span><span>//</span>
+                        <span class="flex items-center gap-2"><i class="fab fa-java"></i> Java</span><span>//</span>
+                        <span class="flex items-center gap-2 "><i class="fas fa-fish"></i> Shark Lover</span><span>//</span>
+                        <span class="flex items-center gap-2"><i class="fas fa-gamepad"></i> Pokémon Master</span><span>//</span>
+                        <span>UI/UX</span><span>//</span>
+                        <span>Accessibility</span><span>//</span>
+                    </div>
+                    <div class="marquee-content flex space-x-12 font-rajdhani font-black text-dark text-2xl md:text-4xl uppercase tracking-widest pl-12">
+                        <span class="flex items-center gap-2"><i class="fab fa-angular"></i> Angular</span><span>//</span>
+                        <span class="flex items-center gap-2"><i class="fas fa-leaf"></i> Spring Boot</span><span>//</span>
+                        <span class="flex items-center gap-2"><i class="fab fa-js"></i> TypeScript</span><span>//</span>
+                        <span class="flex items-center gap-2"><i class="fab fa-java"></i> Java</span><span>//</span>
+                        <span class="flex items-center gap-2 "><i class="fas fa-fish"></i> Shark Lover</span><span>//</span>
+                        <span class="flex items-center gap-2"><i class="fas fa-gamepad"></i> Pokémon Master</span><span>//</span>
+                        <span>UI/UX</span><span>//</span>
+                        <span>Accessibility</span><span>//</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Section (Horizontal Scroll) -->
+        <section id="projects" class="bg-dark relative z-10 min-h-[80vh] py-20 overflow-hidden flex flex-col justify-center">
+            <!-- Background Elements -->
+            <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-20 pointer-events-none"></div>
+            
+            <!-- Progress Indicator -->
+            <div class="absolute top-10 left-10 z-20 flex items-center gap-4 mix-blend-difference">
+                <span id="project-counter" class="font-rajdhani font-bold text-4xl text-white">01</span>
+                <div class="w-32 h-[2px] bg-white/20 overflow-hidden">
+                    <div id="project-progress" class="h-full bg-neon w-0 transition-all duration-300"></div>
+                </div>
+                <span class="font-rajdhani font-bold text-xl text-gray-500">04</span>
+            </div>
+
+            <div id="projects-wrapper" class="w-full h-full flex items-center overflow-x-auto overflow-y-hidden no-scrollbar cursor-grab active:cursor-grabbing pl-[5vw]">
+                
+                <!-- Horizontal Track -->
+                <div id="projects-track" class="flex gap-[5vw] md:gap-[5vw] items-center w-max pr-[10vw]">
+                    
+                    <!-- Intro Slide -->
+                    <div class="project-slide w-[70vw] md:w-[30vw] flex-shrink-0 flex flex-col justify-center z-10">
+                        <span class="text-neon font-mono text-sm tracking-widest mb-4 block">PORTFOLIO 2024-25</span>
+                        <h2 class="font-rajdhani font-bold text-6xl md:text-8xl uppercase tracking-tighter leading-[0.85]">
+                            <span data-lang="projects.title">Selected</span> <br>
+                            <span class="text-stroke hover:text-sakura transition-colors duration-500" data-lang="projects.works">Works</span>
+                        </h2>
+                        <div class="mt-12 w-24 h-1 bg-neon"></div>
+                        <p class="mt-8 text-gray text-lg max-w-md font-light" data-lang="projects.description">
+                            A collection of digital experiences, applications, and experiments crafted with precision and passion.
+                        </p>
+                    </div>
+
+                    <!-- Project 1: Dino Library -->
+                    <div class="project-slide w-[75vw] md:w-[40vw] rounded-4x1 flex-shrink-0 relative group h-[60vh] flex flex-col select-none perspective-1000">
+                        <div class="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-panel transform transition-transform duration-500 hover:scale-[1.02] shadow-2xl">
+                            <div class="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="assets/projetBackgrounds/DinoLibrary1.webp" alt="Dino Library" class="w-full h-full object-cover transform  transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0 parallax-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=800&auto=format&fit=crop'">
+                            
+                            <!-- Floating Info Card -->
+                            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-dark via-dark/90 to-transparent z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <div class="flex gap-2 mb-3">
+                                            <span class="px-3 py-1 bg-neon/20 text-neon text-xs font-mono uppercase rounded border border-neon/30 backdrop-blur-sm">React</span>
+                                            <span class="px-3 py-1 bg-white/10 text-white text-xs font-mono uppercase rounded border border-white/10 backdrop-blur-sm">TypeScript</span>
+                                        </div>
+                                        <h3 class="font-rajdhani font-bold text-4xl md:text-5xl text-white mb-2">Dino Library</h3>
+                                        <p class="text-gray-300 text-sm max-w-xs hidden md:block font-light">Interactive educational platform exploring prehistoric life.</p>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <a href="https://github.com/ensinho/dino-library" target="_blank" class="w-12 h-12 rounded-full bg-dark/50 border border-white/10 text-white flex items-center justify-center text-xl hover:bg-white hover:text-dark transition-all duration-300 backdrop-blur-sm" title="View Code">
+                                            <i class="fab fa-github"></i>
+                                        </a>
+                                        <a href="https://dino-library.vercel.app/" target="_blank" class="w-12 h-12 rounded-full bg-neon text-dark flex items-center justify-center text-xl hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(204,255,0,0.4)]" title="Live Demo">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 2: Pokémon Team Builder -->
+                    <div class="project-slide w-[75vw] md:w-[40vw] rounded-4x1 flex-shrink-0 relative group h-[60vh] flex flex-col select-none perspective-1000">
+                        <div class="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-panel transform transition-transform duration-500 hover:scale-[1.02] shadow-2xl">
+                            <div class="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="assets/projetBackgrounds/TeamBuilder1.webp" alt="Pokémon Team Builder" class="w-full h-full object-cover transform transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0 parallax-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1613771404721-1f92d799e49f?q=80&w=800&auto=format&fit=crop'">
+                            
+                            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-dark via-dark/90 to-transparent z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <div class="flex gap-2 mb-3">
+                                            <span class="px-3 py-1 bg-sakura/20 text-sakura text-xs font-mono uppercase rounded border border-sakura/30 backdrop-blur-sm">React</span>
+                                            <span class="px-3 py-1 bg-white/10 text-white text-xs font-mono uppercase rounded border border-white/10 backdrop-blur-sm">Firebase</span>
+                                        </div>
+                                        <h3 class="font-rajdhani font-bold text-4xl md:text-5xl text-white mb-2">Team Builder</h3>
+                                        <p class="text-gray-300 text-sm max-w-xs hidden md:block font-light">Strategic synergy calculator for competitive Pokémon.</p>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <a href="https://github.com/ensinho/pokemonTeamBuilder" target="_blank" class="w-12 h-12 rounded-full bg-dark/50 border border-white/10 text-white flex items-center justify-center text-xl hover:bg-white hover:text-dark transition-all duration-300 backdrop-blur-sm" title="View Code">
+                                            <i class="fab fa-github"></i>
+                                        </a>
+                                        <a href="https://ensinho.github.io/pokemonTeamBuilder/" target="_blank" class="w-12 h-12 rounded-full bg-sakura text-dark flex items-center justify-center text-xl hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,183,178,0.4)]" title="Live Demo">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 3: Unifor Gym -->
+                    <div class="project-slide w-[75vw] md:w-[40vw] rounded-4x1 flex-shrink-0 relative group h-[60vh] flex flex-col select-none perspective-1000">
+                        <div class="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-panel transform transition-transform duration-500 hover:scale-[1.02] shadow-2xl">
+                            <div class="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="assets/projetBackgrounds/UniforGym1.webp" alt="Unifor Gym App" class="w-full h-full object-cover transform transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0 parallax-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop'">
+                            
+                            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-dark via-dark/90 to-transparent z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <div class="flex gap-2 mb-3">
+                                            <span class="px-3 py-1 bg-neon/20 text-neon text-xs font-mono uppercase rounded border border-neon/30 backdrop-blur-sm">Kotlin</span>
+                                            <span class="px-3 py-1 bg-white/10 text-white text-xs font-mono uppercase rounded border border-white/10 backdrop-blur-sm">Android</span>
+                                        </div>
+                                        <h3 class="font-rajdhani font-bold text-4xl md:text-5xl text-white mb-2">Unifor Gym</h3>
+                                        <p class="text-gray-300 text-sm max-w-xs hidden md:block font-light">Mobile scheduling and workout tracking system.</p>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <a href="https://github.com/ensinho/devMobile-gym" target="_blank" class="w-12 h-12 rounded-full bg-neon text-dark flex items-center justify-center text-xl hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(204,255,0,0.4)]" title="View Code">
+                                            <i class="fab fa-github"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 4: AquaCensus -->
+                    <div class="project-slide w-[75vw] md:w-[40vw] rounded-4x1 flex-shrink-0 relative group h-[60vh] flex flex-col select-none perspective-1000">
+                        <div class="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-panel transform transition-transform duration-500 hover:scale-[1.02] shadow-2xl">
+                            <div class="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="assets/projetBackgrounds/AquaCensus1.webp" alt="AquaCensus" class="w-full h-full object-cover transform  transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0 parallax-img">
+                            
+                            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-dark via-dark/90 to-transparent z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <div class="flex gap-2 mb-3">
+                                            <span class="px-3 py-1 bg-sakura/20 text-sakura text-xs font-mono uppercase rounded border border-sakura/30 backdrop-blur-sm">SQL</span>
+                                            <span class="px-3 py-1 bg-white/10 text-white text-xs font-mono uppercase rounded border border-white/10 backdrop-blur-sm">Database</span>
+                                        </div>
+                                        <h3 class="font-rajdhani font-bold text-4xl md:text-5xl text-white mb-2">AquaCensus</h3>
+                                        <p class="text-gray-300 text-sm max-w-xs hidden md:block font-light">Marine biology research and specimen cataloging.</p>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <a href="https://github.com/ensinho/pesquisaMaritima" target="_blank" class="w-12 h-12 rounded-full bg-dark/50 border border-white/10 text-white flex items-center justify-center text-xl hover:bg-white hover:text-dark transition-all duration-300 backdrop-blur-sm" title="View Code">
+                                            <i class="fab fa-github"></i>
+                                        </a>
+                                        <a href="https://pesquisa-maritima.vercel.app/" target="_blank" class="w-12 h-12 rounded-full bg-sakura text-dark flex items-center justify-center text-xl hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,183,178,0.4)]" title="Live Demo">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Outro Slide -->
+                    <div class="project-slide w-[30vw] flex-shrink-0 flex flex-col justify-center items-center text-center">
+                        <h2 class="font-rajdhani font-bold text-5xl md:text-7xl uppercase tracking-tighter mb-8">
+                            <span data-lang="projects.wantToSee">Want to see</span> <br> <span class="text-neon" data-lang="projects.more">More?</span>
+                        </h2>
+                        <a href="https://github.com/ensinho" target="_blank" class="px-8 py-4 border border-white/20 hover:border-neon hover:bg-neon hover:text-dark transition-all duration-300 font-rajdhani font-bold text-xl tracking-wide" data-lang="projects.visitGithub">
+                            VISIT MY GITHUB :3
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section (Timeline) -->
+        <section id="journey" class="py-40 px-6 bg-[#0d0d0d] relative">
+            <div class="absolute left-0 top-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-20"></div>
+            
+            <div class="max-w-5xl mx-auto relative z-10">
+                <div class="text-center mb-24 gs-reveal">
+                    <span class="text-sakura font-mono text-xs tracking-widest uppercase mb-4 block" data-lang="journey.subtitle">Career Path</span>
+                    <h2 class="font-rajdhani font-bold text-4xl md:text-8xl uppercase tracking-tighter">
+                        The <span class="text-neon" data-lang="journey.title">Journey</span>
+                    </h2>
+                </div>
+
+                <div class="relative border-l-2 border-white/5 ml-4 md:ml-0 space-y-24">
+                    <!-- Item 1 -->
+                    <div class="relative pl-12 md:pl-32 gs-reveal group">
+                        <!-- Timeline Node -->
+                        <div class="absolute -left-[9px] top-0 w-4 h-4 bg-dark border-2 border-neon rounded-full group-hover:scale-150 group-hover:bg-neon transition-all duration-300 shadow-[0_0_20px_rgba(204,255,0,0.5)]"></div>
+                        
+                        <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-4">
+                            <h3 class="font-rajdhani font-bold text-2xl md:text-4xl text-white group-hover:text-neon transition-colors" data-lang="journey.role1">FullStack Developer</h3>
+                            <span class="font-mono text-neon bg-neon/10 px-3 py-1 rounded-sm text-xs md:text-sm border border-neon/20 mt-2 md:mt-0 w-fit" data-lang="journey.date1">Jan. 2025 - Present</span>
+                        </div>
+                        <h4 class="text-gray font-medium mb-2 text-lg md:text-xl flex items-center gap-2">
+                            <i class="fas fa-building text-sm"></i> @ Colégio Christus
+                        </h4>
+                        <p class="text-neon/80 font-mono text-sm mb-6" data-lang="journey.status1">Current Position | Angular + Spring</p>
+
+                        <div class="bg-panel p-6 md:p-8 rounded-lg border border-white/5 group-hover:border-neon/30 transition-colors relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-20 h-20 bg-neon/5 rounded-bl-full"></div>
+                            <p class="text-gray-200 font-normal leading-relaxed mb-6 text-base md:text-lg relative z-10" data-lang="journey.desc1">
+                                Advanced to full developer role, taking on greater responsibilities in system architecture and leadership.
+                            </p>
+                            
+                            <button onclick="toggleJourney('journey-1', this)" class="group flex items-center gap-3 text-neon hover:text-white transition-colors focus:outline-none py-2 mb-2 relative z-10">
+                                <span class="font-rajdhani font-bold uppercase tracking-widest text-sm" data-lang="journey.readMore">Read More</span>
+                                <i class="fas fa-chevron-down text-xs transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"></i>
+                            </button>
+
+                            <div id="journey-1" class="grid grid-rows-[0fr] opacity-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] relative z-10">
+                                <div class="overflow-hidden">
+                                    <div class="pt-6 mb-2 border-t border-white/5 mt-4">
+                                        <h5 class="text-white font-rajdhani font-bold text-lg md:text-xl mb-6 flex items-center gap-3">
+                                            <span class="w-8 h-[1px] bg-neon"></span> <span data-lang="journey.achievements">Key Achievements</span>
+                                        </h5>
+                                        <ul class="space-y-4">
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-neon mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role1.item1">Developed the Exitus system end-to-end, working on front-end, back-end, and databases, focusing on scalability and performance</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-neon mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role1.item2">Designed the system's visual identity and created user interfaces, ensuring consistency in the user experience (UI/UX)</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-neon mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role1.item3">Architected and implemented the front-end using Angular and TypeScript, applying best practices for componentization and responsiveness</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-neon mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role1.item4">Assisted in defining and building the back-end architecture with Spring Boot, including database integrations and external services</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-neon mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role1.item5">Implemented integrations with AI services, automating question validation and improving the educational experience</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-neon mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role1.item6">Integrated webhooks and deployed cloud-based solutions (Source Cloud) for continuous system deployment and maintenance</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-neon mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role1.item7">Worked under Agile Scrum methodology, actively participating in planning, reviews, and retrospectives</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3 relative z-10 mt-6">
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-neon font-mono">Angular</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-neon font-mono">TypeScript</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-neon font-mono">Java</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-neon font-mono">Spring Boot</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-neon font-mono">AI Services</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-neon font-mono">Cloud Deployment</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-neon font-mono">Scrum</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="relative pl-12 md:pl-32 gs-reveal group">
+                        <!-- Timeline Node -->
+                        <div class="absolute -left-[9px] top-0 w-4 h-4 bg-dark border-2 border-gray rounded-full group-hover:scale-150 group-hover:border-sakura group-hover:bg-sakura transition-all duration-300"></div>
+                        
+                        <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-4">
+                            <h3 class="font-rajdhani font-bold text-2xl md:text-4xl text-white group-hover:text-sakura transition-colors" data-lang="journey.role2">FullStack Intern</h3>
+                            <span class="font-mono text-gray bg-white/5 px-3 py-1 rounded-sm text-xs md:text-sm mt-2 md:mt-0 w-fit" data-lang="journey.date2">Apr. 2024 - Dec. 2024</span>
+                        </div>
+                        <h4 class="text-gray font-medium mb-2 text-lg md:text-xl flex items-center gap-2">
+                             <i class="fas fa-building text-sm"></i> @ Colégio Christus
+                        </h4>
+                        <p class="text-sakura/80 font-mono text-sm mb-6" data-lang="journey.status2">Completed | Angular + Spring</p>
+
+                        <div class="bg-panel p-6 md:p-8 rounded-lg border border-white/5 group-hover:border-sakura/30 transition-colors relative overflow-hidden">
+                             <div class="absolute top-0 right-0 w-20 h-20 bg-sakura/5 rounded-bl-full"></div>
+                            <p class="text-gray-200 font-normal leading-relaxed mb-6 text-base md:text-lg relative z-10" data-lang="journey.desc2">
+                                Started my professional journey as an intern, contributing to system development and learning industry best practices.
+                            </p>
+
+                            <button onclick="toggleJourney('journey-2', this)" class="group flex items-center gap-3 text-sakura hover:text-white transition-colors focus:outline-none py-2 mb-2 relative z-10">
+                                <span class="font-rajdhani font-bold uppercase tracking-widest text-sm" data-lang="journey.readMore">Read More</span>
+                                <i class="fas fa-chevron-down text-xs transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"></i>
+                            </button>
+
+                            <div id="journey-2" class="grid grid-rows-[0fr] opacity-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] relative z-10">
+                                <div class="overflow-hidden">
+                                    <div class="pt-6 mb-2 border-t border-white/5 mt-4">
+                                        <h5 class="text-white font-rajdhani font-bold text-lg md:text-xl mb-6 flex items-center gap-3">
+                                            <span class="w-8 h-[1px] bg-sakura"></span> <span data-lang="journey.achievements">Key Achievements</span>
+                                        </h5>
+                                        <ul class="space-y-4">
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-sakura mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role2.item1">Contributed to the development and improvement of Exitus system interfaces, focusing on usability and accessibility</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-sakura mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role2.item2">Assisted in creating user flows and interface design, collaborating closely with the UI/UX team</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-sakura mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role2.item3">Participated in front-end development using Angular, TypeScript, and CSS, and supported the back-end with Spring Boot</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-sakura mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role2.item4">Gained hands-on experience with full-stack development in a professional environment</span>
+                                            </li>
+                                            <li class="flex gap-3 md:gap-4 text-gray-300 font-medium text-sm md:text-base leading-relaxed group/item hover:text-white transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-sakura mt-2 md:mt-2.5 flex-shrink-0 group-hover/item:scale-150 transition-transform"></span>
+                                                <span data-lang="journey.role2.item5">Learned Agile development methodologies and team collaboration practices</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3 relative z-10 mt-6">
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-sakura font-mono">Angular</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-sakura font-mono">TypeScript</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-sakura font-mono">CSS</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-sakura font-mono">Spring Boot</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-sakura font-mono">UI/UX Design</span>
+                                <span class="px-4 py-2 bg-dark border border-white/10 rounded-full text-xs text-sakura font-mono">Figma</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mantra Break -->
+        <section class="py-24 px-6 relative overflow-hidden group cursor-crosshair flex items-center justify-center min-h-[60vh]">
+            <!-- Gradient background instead of image -->
+            <div class="absolute inset-0 bg-gradient-to-br from-dark via-panel to-dark"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-dark via-transparent to-dark"></div>
+            <div class="absolute inset-0 bg-dark/40 backdrop-blur-[2px] group-hover:backdrop-blur-none transition-all duration-700"></div>
+            
+            <div class="relative z-10 text-center gs-reveal">
+                <h2 class="font-rajdhani font-bold text-6xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter leading-none mix-blend-overlay opacity-90">
+                    Always <br> Trying To <br>
+                    <span class="text-neon text-shadow-lg group-hover:text-sakura transition-colors duration-500">be creative.</span>
+                </h2>
+                <div class="mt-8 w-24 h-1 bg-white mx-auto group-hover:w-48 group-hover:bg-neon transition-all duration-500"></div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-40 px-6 bg-panel bg-grid-pattern bg-[length:40px_40px] relative">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                <!-- Image -->
+                <div class="lg:col-span-5 order-1 lg:order-1 gs-reveal relative group">
+                    <div class="absolute -inset-4 border-2 border-neon/30 rounded-full rotate-6 group-hover:rotate-12 transition-transform duration-700"></div>
+                    <div class="absolute -inset-4 border-2 border-sakura/30 rounded-full -rotate-6 group-hover:-rotate-12 transition-transform duration-700 animation-delay-200"></div>
+                    <div class="w-full aspect-square rounded-full overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 relative z-10 border-4 border-dark shadow-2xl">
+                        <img src="assets/enzo_glasses.jpg" alt="Enzo Esmeraldo" class="w-full h-full object-cover hover-trigger transform hover:scale-110 transition-transform duration-700" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800&auto=format&fit=crop'">
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="lg:col-span-7 order-2 lg:order-2 gs-reveal">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 border border-sakura rounded-full text-sakura font-mono text-xs mb-8 hover:bg-sakura hover:text-dark transition-colors cursor-default">
+                        <i class="fas fa-user-astronaut"></i> <span data-lang="about.offCode">OFF CODE</span>
+                    </div>
+                    <h2 class="font-rajdhani font-bold text-6xl md:text-7xl uppercase tracking-tighter mb-8">
+                        <span data-lang="about.title1">Just Keep</span> <span class="text-stroke text-dark hover:text-neon transition-colors duration-300" data-lang="about.title2">Swimming</span>.
+                    </h2>
+                    <p class="text-gray text-xl font-light leading-relaxed mb-12 max-w-2xl border-l-4 border-neon pl-6" data-lang="about.description">
+                        Beyond the code, I have a deep fascination with <span class="text-white font-medium">Sharks</span> & <span class="text-white font-medium">Pokémon</span>. Just like in development, I believe in constant evolution and adapting to the environment to survive and thrive.
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-12 mb-12 border-t border-white/10 pt-8">
+                        <div class="group">
+                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-neon transition-colors" data-lang="about.stat1.label">Favorite Era</h4>
+                            <p class="text-gray font-mono text-sm" data-lang="about.stat1.value">Gen 4 - Sinnoh</p>
+                        </div>
+                        <div class="group">
+                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-sakura transition-colors" data-lang="about.stat2.label">Spirit Animal</h4>
+                            <p class="text-gray font-mono text-sm" data-lang="about.stat2.value">Hammerhead Shark</p>
+                        </div>
+                        <div class="group">
+                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-neon transition-colors" data-lang="about.stat3.label">Main Framework</h4>
+                            <p class="text-gray font-mono text-sm" data-lang="about.stat3.value">Angular and React</p>
+                        </div>
+                        <div class="group">
+                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-sakura transition-colors" data-lang="about.stat4.label">Graduation</h4>
+                            <p class="text-gray font-mono text-sm" data-lang="about.stat4.value">2026.2</p>
+                        </div>
+                    </div>
+
+                    <a href="assets/Cvs/Enzo EsmeraldoCV_EN.pdf" download onclick="checkCV(event)" id="cv-link-about" class="hover-trigger inline-flex items-center gap-4 px-10 py-5 bg-white text-dark font-rajdhani font-bold text-xl tracking-wide hover:bg-neon hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.2)] transition-all transform hover:-translate-y-1">
+                        <span data-lang="about.downloadCV">DOWNLOAD CV</span> <i class="fas fa-download animate-bounce"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="contact" class="bg-dark pt-40 pb-12 px-6 border-t border-white/10 relative overflow-hidden">
+            <!-- Background Glitch Elements -->
+             <div class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+             <div class="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
+
+            <div class="max-w-7xl mx-auto text-center relative z-10">
+                <h2 class="font-rajdhani font-bold text-6xl md:text-9xl uppercase tracking-tighter mb-16 text-white hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-neon hover:to-sakura transition-all duration-500 cursor-default select-none">
+                    <span data-lang="footer.title1">Did you like it?</span> <br> <span data-lang="footer.title2">Let's</span> <span class="text-stroke hover:text-neon transition-colors duration-500" data-lang="footer.connect">Connect</span>.
+                </h2>
+
+                <div class="flex justify-center space-x-6 mb-16">
+                    <a href="https://github.com/ensinho" target="_blank" class="w-16 h-16 rounded-full bg-panel flex items-center justify-center text-3xl text-white hover:bg-neon hover:text-dark hover:-translate-y-2 transition-all duration-300 hover-trigger shadow-lg group" aria-label="GitHub">
+                        <i class="fab fa-github group-hover:rotate-12 transition-transform"></i>
+                    </a>
+                    <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" class="w-16 h-16 rounded-full bg-panel flex items-center justify-center text-3xl text-white hover:bg-[#0077b5] hover:text-white hover:-translate-y-2 transition-all duration-300 hover-trigger shadow-lg group" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in group-hover:rotate-12 transition-transform"></i>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" class="w-16 h-16 rounded-full bg-panel flex items-center justify-center text-3xl text-white hover:bg-gradient-to-tr hover:from-[#f09433] hover:to-[#bc1888] hover:text-white hover:-translate-y-2 transition-all duration-300 hover-trigger shadow-lg group" aria-label="Instagram">
+                        <i class="fab fa-instagram group-hover:rotate-12 transition-transform"></i>
+                    </a>
+                </div>
+
+                <a href="mailto:enzopo625@gmail.com" class="text-2xl md:text-4xl font-rajdhani font-medium text-gray hover:text-white transition-colors hover-trigger border-b-2 border-transparent hover:border-sakura pb-1">
+                    enzopo625@gmail.com
+                </a>
+
+                <div class="mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-gray/50 text-xs font-mono uppercase tracking-widest">
+                    <p data-lang="footer.copyright">&copy; 2025 Enzo Esmeraldo. All rights reserved.</p>
+                    <p class="mt-2 md:mt-0 flex items-center gap-2" data-lang="footer.credits">
+                        Designed & Built with <i class="fas fa-heart text-sakura animate-pulse"></i> in Brazil
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Music Card -->
+    <div id="music-card" class="music-card">
+        <div class="music-card-content">
+            <div class="album-art" id="album-art"></div>
+            <div class="music-info">
+                <div class="song-title" id="song-title">City Walls</div>
+                <div class="artist-name" id="artist-name">Twenty One Pilots</div>
+            </div>
+            <div class="music-controls">
+                <button class="control-btn" id="prev-btn"><i class="fas fa-step-backward"></i></button>
+                <button class="control-btn" id="play-btn"><i class="fas fa-play"></i></button>
+                <button class="control-btn" id="next-btn"><i class="fas fa-step-forward"></i></button>
+            </div>
+            <div class="equalizer" id="equalizer">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="music-hint">
+            <i class="fas fa-info-circle mr-1"></i> <span data-lang="music.hint">Change song to switch theme</span>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
