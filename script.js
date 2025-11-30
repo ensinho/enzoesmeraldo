@@ -198,24 +198,25 @@ function initScrollAnimations() {
             startX = e.touches[0].pageX - slider.offsetLeft;
             scrollLeft = slider.scrollLeft;
             cancelAnimationFrame(momentumID);
-        });
+            velX = 0;
+        }, { passive: true });
 
         slider.addEventListener('touchend', () => {
             isDown = false;
             beginMomentumTracking();
-        });
+        }, { passive: true });
 
         slider.addEventListener('touchmove', (e) => {
             if (!isDown) return;
             const x = e.touches[0].pageX - slider.offsetLeft;
-            const walk = (x - startX) * 2;
+            const walk = (x - startX) * 1; 
             
             const prevScrollLeft = slider.scrollLeft;
             slider.scrollLeft = scrollLeft - walk;
             velX = slider.scrollLeft - prevScrollLeft;
             
             updateProjectUI();
-        });
+        }, { passive: true });
 
         // Momentum Loop
         function beginMomentumTracking() {

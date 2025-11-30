@@ -191,9 +191,9 @@ body:hover .cursor-ring {
     opacity: 1;
 
     @media screen and (max-width: 768px) {
-        width: 90%;
+        width: 91%;
         border-radius: 12px;
-        padding: 12px;
+        padding: 10px;
         gap: 6px;
     }
 }
@@ -216,7 +216,7 @@ body:hover .cursor-ring {
     text-transform: uppercase;
 
      @media screen and (max-width: 768px) {
-        font-size: 10px;
+        font-size: 8px;
     }
 }
 
@@ -265,6 +265,11 @@ body:hover .cursor-ring {
     position: relative;
     overflow: hidden;
     flex-shrink: 0;
+
+    @media screen and (max-width: 768px) {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 .album-art::after {
@@ -293,6 +298,15 @@ body:hover .cursor-ring {
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.2;
+
+    @media screen and (max-width: 768px) {
+        font-size: 16px;
+    }
+
+    @media screen and (max-width: 480px) {
+        font-size: 14px;
+        line-height: 1.1;
+    }
 }
 
 .artist-name {
@@ -302,6 +316,10 @@ body:hover .cursor-ring {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    @media screen and (max-width: 480px) {
+        font-size: 10px;
+    }
 }
 
 .music-controls {
