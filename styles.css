@@ -173,7 +173,7 @@ body:hover .cursor-ring {
 .music-card {
     position: fixed;
     bottom: 20px;
-    left: 20px;
+    right: 20px;
     background: var(--card-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
