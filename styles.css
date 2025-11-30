@@ -189,6 +189,13 @@ body:hover .cursor-ring {
     width: 340px;
     transform: translateY(0) scale(1);
     opacity: 1;
+
+    @media screen and (max-width: 768px) {
+        width: 90%;
+        border-radius: 12px;
+        padding: 12px;
+        gap: 6px;
+    }
 }
 
 .music-card-content {
@@ -207,6 +214,10 @@ body:hover .cursor-ring {
     font-family: 'Rajdhani', sans-serif;
     letter-spacing: 1px;
     text-transform: uppercase;
+
+     @media screen and (max-width: 768px) {
+        font-size: 10px;
+    }
 }
 
 .progress-container {
