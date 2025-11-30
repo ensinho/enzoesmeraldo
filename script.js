@@ -155,7 +155,6 @@ function initScrollAnimations() {
     const track = document.getElementById('projects-track');
     const progressBar = document.getElementById('project-progress');
     const counter = document.getElementById('project-counter');
-    const projectImages = document.querySelectorAll('.parallax-img');
 
     let isDown = false;
     let startX;
@@ -242,7 +241,7 @@ function initScrollAnimations() {
             }
         }
 
-        // Update UI (Progress, Counter, Parallax)
+        // Update UI (Progress, Counter)
         function updateProjectUI() {
             const maxScroll = slider.scrollWidth - slider.clientWidth;
             const progress = slider.scrollLeft / maxScroll;
@@ -256,18 +255,6 @@ function initScrollAnimations() {
                 const current = Math.min(Math.ceil(progress * totalProjects), totalProjects);
                 counter.innerText = `0${current <= 0 ? 1 : current}`;
             }
-
-            // Parallax Effect
-            projectImages.forEach(img => {
-                const rect = img.parentElement.getBoundingClientRect();
-                const viewWidth = window.innerWidth;
-                
-                if (rect.left < viewWidth && rect.right > 0) {
-                    const percentage = (rect.left + rect.width) / (viewWidth + rect.width);
-                    const move = (1 - percentage) * 100; 
-                    img.style.objectPosition = `${move}% 50%`;
-                }
-            });
         }
         
         // Initial call
@@ -593,10 +580,15 @@ const translations = {
         "projects.title": "Selected",
         "projects.works": "Works",
         "projects.description": "A collection of digital experiences, applications, and experiments crafted with precision and passion.",
+        "projects.dino.description": "An interactive educational platform exploring prehistoric life through an immersive digital experience with dynamic content and animations.",
+        "projects.teambuilder.description": "Strategic synergy calculator for competitive Pokémon players. Analyze type coverage, identify weaknesses, and build balanced teams.",
+        "projects.uniforgym.description": "Native Android application for gym scheduling and workout tracking with user authentication and Material Design.",
+        "projects.aquacensus.description": "Marine biology research and specimen cataloging system. Comprehensive database solution for researchers to track marine life.",
         "projects.wantToSee": "Want to see",
         "projects.more": "More?",
         "projects.visitGithub": "VISIT MY GITHUB :3",
         "journey.subtitle": "Career Path",
+        "journey.the": "The",
         "journey.title": "Journey",
         "journey.role1": "FullStack Developer",
         "journey.date1": "Jan. 2025 - Present",
@@ -620,18 +612,22 @@ const translations = {
         "journey.role2.item3": "Participated in front-end development using Angular, TypeScript, and CSS, and supported the back-end with Spring Boot",
         "journey.role2.item4": "Gained hands-on experience with full-stack development in a professional environment",
         "journey.role2.item5": "Learned Agile development methodologies and team collaboration practices",
-        "about.offCode": "OFF CODE",
-        "about.title1": "Just Keep",
-        "about.title2": "Swimming",
-        "about.description": "Beyond the code, I have a deep fascination with <span class=\"text-white font-medium\">Sharks</span> & <span class=\"text-white font-medium\">Pokémon</span>. Just like in development, I believe in constant evolution and adapting to the environment to survive and thrive.",
-        "about.stat1.label": "Favorite Era",
-        "about.stat1.value": "Gen 4 - Sinnoh",
-        "about.stat2.label": "Spirit Animal",
-        "about.stat2.value": "Hammerhead Shark",
-        "about.stat3.label": "Main Framework",
-        "about.stat3.value": "Angular and React",
+        "skills.subtitle": "What I Work With",
+        "skills.title": "Tech Stack",
+        "about.offCode": "ABOUT ME",
+        "about.title1": "Building",
+        "about.title2": "Experiences",
+        "about.description": "Front-End specialized developer who loves thinking outside the box. I thrive on creative challenges, turning complex ideas into intuitive and visually stunning interfaces. Passionate about UI/UX, design systems, and crafting pixel-perfect experiences.",
+        "about.stat1.label": "Years Exp.",
+        "about.stat1.value": "2+",
+        "about.stat2.label": "Projects",
+        "about.stat2.value": "10+",
+        "about.stat3.label": "Specialization",
+        "about.stat3.value": "Front-End",
         "about.stat4.label": "Graduation",
-        "about.stat4.value": "2026.2",
+        "about.stat4.value": "2026",
+        "about.stat5.label": "Fav. Pokémon",
+        "about.stat5.value": "Lugia",
         "about.downloadCV": "DOWNLOAD CV",
         "footer.title1": "Did you like it?",
         "footer.title2": "Let's",
@@ -654,10 +650,15 @@ const translations = {
         "projects.title": "Trabalhos",
         "projects.works": "Selecionados",
         "projects.description": "Uma coleção de experiências digitais, aplicações e experimentos criados com precisão e paixão.",
+        "projects.dino.description": "Uma plataforma educacional interativa explorando a vida pré-histórica através de uma experiência digital imersiva com conteúdo dinâmico e animações.",
+        "projects.teambuilder.description": "Calculadora estratégica de sinergia para jogadores competitivos de Pokémon. Analise cobertura de tipos, identifique fraquezas e monte times balanceados.",
+        "projects.uniforgym.description": "Aplicativo Android nativo para agendamento de academia e acompanhamento de treinos com autenticação de usuário e Material Design.",
+        "projects.aquacensus.description": "Sistema de pesquisa em biologia marinha e catalogação de espécimes. Solução completa de banco de dados para pesquisadores rastrearem vida marinha.",
         "projects.wantToSee": "Quer ver",
         "projects.more": "Mais?",
         "projects.visitGithub": "VISITE O GITHUB",
         "journey.subtitle": "Trajetória Profissional",
+        "journey.the": "A",
         "journey.title": "Jornada",
         "journey.role1": "Desenvolvedor FullStack",
         "journey.date1": "Jan. 2025 - Presente",
@@ -681,18 +682,22 @@ const translations = {
         "journey.role2.item3": "Participei do desenvolvimento front-end usando Angular, TypeScript e CSS, e apoiei o back-end com Spring Boot",
         "journey.role2.item4": "Ganhei experiência prática com desenvolvimento full-stack em um ambiente profissional",
         "journey.role2.item5": "Aprendi metodologias de desenvolvimento Ágil e práticas de colaboração em equipe",
-        "about.offCode": "OFF CODE",
-        "about.title1": "Continue a",
-        "about.title2": "Nadar",
-        "about.description": "Além do código, tenho um fascínio profundo por <span class=\"text-white font-medium\">Tubarões</span> & <span class=\"text-white font-medium\">Pokémon</span>. Assim como no desenvolvimento, acredito na evolução constante e adaptação ao ambiente para sobreviver e prosperar.",
-        "about.stat1.label": "Era Favorita",
-        "about.stat1.value": "Gen 4 - Sinnoh",
-        "about.stat2.label": "Espírito Animal",
-        "about.stat2.value": "Tubarão Martelo",
-        "about.stat3.label": "Framework Principal",
-        "about.stat3.value": "Angular e React",
+        "skills.subtitle": "Com o que trabalho",
+        "skills.title": "Tecnologias",
+        "about.offCode": "SOBRE MIM",
+        "about.title1": "Construindo",
+        "about.title2": "Experiências",
+        "about.description": "Desenvolvedor especializado em Front-End que adora pensar fora da caixa. Prospero em desafios criativos, transformando ideias complexas em interfaces intuitivas e visualmente impressionantes. Apaixonado por UI/UX, design systems e experiências pixel-perfect.",
+        "about.stat1.label": "Anos Exp.",
+        "about.stat1.value": "2+",
+        "about.stat2.label": "Projetos",
+        "about.stat2.value": "10+",
+        "about.stat3.label": "Especialização",
+        "about.stat3.value": "Front-End",
         "about.stat4.label": "Graduação",
-        "about.stat4.value": "2026.2",
+        "about.stat4.value": "2026",
+        "about.stat5.label": "Pokémon Fav.",
+        "about.stat5.value": "Lugia",
         "about.downloadCV": "BAIXAR CV",
         "footer.title1": "Gostou?",
         "footer.title2": "Vamos nos",

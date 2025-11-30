@@ -205,187 +205,236 @@
             </div>
         </section>
 
-        <!-- Marquee Strip -->
-        <div class="w-full overflow-hidden">
-            <div class="w-full bg-neon py-4 overflow-hidden border-y border-dark transform -skew-y-1 origin-left z-20 relative shadow-[0_0_30px_rgba(204,255,0,0.3)]">
-                <div class="marquee-container flex whitespace-nowrap">
-                    <div class="marquee-content flex space-x-12 font-rajdhani font-black text-dark text-2xl md:text-4xl uppercase tracking-widest">
-                        <span class="flex items-center gap-2"><i class="fab fa-angular"></i> Angular</span><span>//</span>
-                        <span class="flex items-center gap-2"><i class="fas fa-leaf"></i> Spring Boot</span><span>//</span>
-                        <span class="flex items-center gap-2"><i class="fab fa-js"></i> TypeScript</span><span>//</span>
-                        <span class="flex items-center gap-2"><i class="fab fa-java"></i> Java</span><span>//</span>
-                        <span class="flex items-center gap-2 "><i class="fas fa-fish"></i> Shark Lover</span><span>//</span>
-                        <span class="flex items-center gap-2"><i class="fas fa-gamepad"></i> Pokémon Master</span><span>//</span>
-                        <span>UI/UX</span><span>//</span>
-                        <span>Accessibility</span><span>//</span>
-                    </div>
-                    <div class="marquee-content flex space-x-12 font-rajdhani font-black text-dark text-2xl md:text-4xl uppercase tracking-widest pl-12">
-                        <span class="flex items-center gap-2"><i class="fab fa-angular"></i> Angular</span><span>//</span>
-                        <span class="flex items-center gap-2"><i class="fas fa-leaf"></i> Spring Boot</span><span>//</span>
-                        <span class="flex items-center gap-2"><i class="fab fa-js"></i> TypeScript</span><span>//</span>
-                        <span class="flex items-center gap-2"><i class="fab fa-java"></i> Java</span><span>//</span>
-                        <span class="flex items-center gap-2 "><i class="fas fa-fish"></i> Shark Lover</span><span>//</span>
-                        <span class="flex items-center gap-2"><i class="fas fa-gamepad"></i> Pokémon Master</span><span>//</span>
-                        <span>UI/UX</span><span>//</span>
-                        <span>Accessibility</span><span>//</span>
+        <!-- About Section -->
+        <section id="about" class="py-20 px-6 bg-panel bg-grid-pattern bg-[length:40px_40px] relative">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+                <!-- Image -->
+                <div class="lg:col-span-5 order-1 lg:order-1 gs-reveal relative group">
+                    <div class="absolute -inset-4 border-2 border-neon/30 rounded-full rotate-6 group-hover:rotate-12 transition-transform duration-700"></div>
+                    <div class="absolute -inset-4 border-2 border-white/10 rounded-full -rotate-6 group-hover:-rotate-12 transition-transform duration-700"></div>
+                    <div class="w-full aspect-square rounded-full overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 relative z-10 border-4 border-dark shadow-2xl">
+                        <img src="assets/enzo_glasses.jpg" alt="Enzo Esmeraldo" class="w-full h-full object-cover hover-trigger transform hover:scale-105 transition-transform duration-500" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800&auto=format&fit=crop'">
                     </div>
                 </div>
+
+                <!-- Content -->
+                <div class="lg:col-span-7 order-2 lg:order-2 gs-reveal">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 border border-neon/30 rounded text-neon font-mono text-xs mb-8">
+                        <i class="fas fa-code"></i> <span data-lang="about.offCode">ABOUT ME</span>
+                    </div>
+                    <h2 class="font-rajdhani font-bold text-5xl md:text-6xl uppercase tracking-tighter mb-8">
+                        <span data-lang="about.title1">Building</span> <span class="text-neon" data-lang="about.title2">Experiences</span>
+                    </h2>
+                    <p class="text-gray text-lg font-light leading-relaxed mb-10 max-w-2xl" data-lang="about.description">
+                        Front-End specialized developer who loves thinking outside the box. I thrive on creative challenges, turning complex ideas into intuitive and visually stunning interfaces. Passionate about UI/UX, design systems, and crafting pixel-perfect experiences.
+                    </p>
+
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12 border-t border-white/10 pt-8">
+                        <div class="group">
+                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-1 group-hover:text-neon transition-colors" data-lang="about.stat1.value">2+</h4>
+                            <p class="text-gray font-mono text-xs uppercase tracking-wider" data-lang="about.stat1.label">Years Exp.</p>
+                        </div>
+                        <div class="group">
+                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-1 group-hover:text-neon transition-colors" data-lang="about.stat2.value">10+</h4>
+                            <p class="text-gray font-mono text-xs uppercase tracking-wider" data-lang="about.stat2.label">Projects</p>
+                        </div>
+                        <div class="group">
+                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-1 group-hover:text-neon transition-colors" data-lang="about.stat3.value">Front-End</h4>
+                            <p class="text-gray font-mono text-xs uppercase tracking-wider" data-lang="about.stat3.label">Specialization</p>
+                        </div>
+                        <div class="group">
+                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-1 group-hover:text-neon transition-colors" data-lang="about.stat4.value">2026</h4>
+                            <p class="text-gray font-mono text-xs uppercase tracking-wider" data-lang="about.stat4.label">Graduation</p>
+                        </div>
+                        <div class="group">
+                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-1 group-hover:text-sakura transition-colors" data-lang="about.stat5.value">Lugia</h4>
+                            <p class="text-gray font-mono text-xs uppercase tracking-wider" data-lang="about.stat5.label">Fav. Pokémon</p>
+                        </div>
+                    </div>
+
+                    <a href="assets/cv/EnzoEsmeraldo_CV_EN.pdf" download onclick="checkCV(event)" id="cv-link-about" class="hover-trigger inline-flex items-center gap-3 px-8 py-4 bg-neon text-dark font-rajdhani font-bold text-lg tracking-wide hover:bg-white transition-all">
+                        <span data-lang="about.downloadCV">DOWNLOAD CV</span> <i class="fas fa-download"></i>
+                    </a>
+                </div>
             </div>
-        </div>
+        </section>
 
         <!-- Projects Section (Horizontal Scroll) -->
-        <section id="projects" class="bg-dark relative z-10 min-h-[80vh] py-20 overflow-hidden flex flex-col justify-center">
+        <section id="projects" class="bg-dark relative z-10 min-h-[45vh] py-20 overflow-hidden flex flex-col justify-center">
             <!-- Background Elements -->
             <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-20 pointer-events-none"></div>
             
-            <!-- Progress Indicator -->
-            <div class="absolute top-10 left-10 z-20 flex items-center gap-4 mix-blend-difference">
-                <span id="project-counter" class="font-rajdhani font-bold text-4xl text-white">01</span>
-                <div class="w-32 h-[2px] bg-white/20 overflow-hidden">
-                    <div id="project-progress" class="h-full bg-neon w-0 transition-all duration-300"></div>
-                </div>
-                <span class="font-rajdhani font-bold text-xl text-gray-500">04</span>
-            </div>
-
             <div id="projects-wrapper" class="w-full h-full flex items-center overflow-x-auto overflow-y-hidden no-scrollbar cursor-grab active:cursor-grabbing pl-[5vw]">
                 
                 <!-- Horizontal Track -->
-                <div id="projects-track" class="flex gap-[5vw] md:gap-[5vw] items-center w-max pr-[10vw]">
+                <div id="projects-track" class="flex gap-8 items-start w-max pr-[10vw] py-6">
                     
                     <!-- Intro Slide -->
-                    <div class="project-slide w-[70vw] md:w-[30vw] flex-shrink-0 flex flex-col justify-center z-10">
+                    <div class="project-slide w-[80vw] md:w-[30vw] flex-shrink-0 flex flex-col justify-center z-10">
                         <span class="text-neon font-mono text-sm tracking-widest mb-4 block">PORTFOLIO 2024-25</span>
-                        <h2 class="font-rajdhani font-bold text-6xl md:text-8xl uppercase tracking-tighter leading-[0.85]">
+                        <h2 class="font-rajdhani font-bold text-5xl md:text-8xl uppercase tracking-tighter leading-[0.85]">
                             <span data-lang="projects.title">Selected</span> <br>
                             <span class="text-stroke hover:text-sakura transition-colors duration-500" data-lang="projects.works">Works</span>
                         </h2>
                         <div class="mt-12 w-24 h-1 bg-neon"></div>
                         <p class="mt-8 text-gray text-lg max-w-md font-light" data-lang="projects.description">
-                            A collection of digital experiences, applications, and experiments crafted with precision and passion.
+                            A collection of my current main projects showcasing my skills in development.
                         </p>
                     </div>
 
                     <!-- Project 1: Dino Library -->
-                    <div class="project-slide w-[75vw] md:w-[40vw] rounded-4x1 flex-shrink-0 relative group h-[60vh] flex flex-col select-none perspective-1000">
-                        <div class="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-panel transform transition-transform duration-500 hover:scale-[1.02] shadow-2xl">
-                            <div class="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-                            <img src="assets/projetBackgrounds/DinoLibrary1.webp" alt="Dino Library" class="w-full h-full object-cover transform  transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0 parallax-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=800&auto=format&fit=crop'">
+                    <div class="project-slide project-card w-[85vw] md:w-[400px] flex-shrink-0 group select-none">
+                        <!-- Header Image -->
+                        <div class="relative h-52 overflow-hidden rounded-t-xl">
+                            <div class="absolute inset-0 bg-dark/30 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="assets/projetBackgrounds/DinoLibrary1.webp" alt="Dino Library" class="w-full h-full object-cover transform transition-transform duration-700 ease-out grayscale group-hover:grayscale-0" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=800&auto=format&fit=crop'">
+                            <div class="absolute top-4 right-4 z-20">
+                                <span class="px-3 py-1 bg-neon/90 text-dark text-xs font-mono font-bold uppercase rounded">Featured</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Content Body -->
+                        <div class="p-5 bg-panel border border-white/10 border-t-0 rounded-b-xl group-hover:border-neon/30 transition-colors duration-300">
+                            <h3 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-neon transition-colors">Dino Library</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3" data-lang="projects.dino.description">
+                                An interactive educational platform exploring prehistoric life through an immersive digital experience with dynamic content and animations.
+                            </p>
                             
-                            <!-- Floating Info Card -->
-                            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-dark via-dark/90 to-transparent z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                <div class="flex justify-between items-end">
-                                    <div>
-                                        <div class="flex gap-2 mb-3">
-                                            <span class="px-3 py-1 bg-neon/20 text-neon text-xs font-mono uppercase rounded border border-neon/30 backdrop-blur-sm">React</span>
-                                            <span class="px-3 py-1 bg-white/10 text-white text-xs font-mono uppercase rounded border border-white/10 backdrop-blur-sm">TypeScript</span>
-                                        </div>
-                                        <h3 class="font-rajdhani font-bold text-4xl md:text-5xl text-white mb-2">Dino Library</h3>
-                                        <p class="text-gray-300 text-sm max-w-xs hidden md:block font-light">Interactive educational platform exploring prehistoric life.</p>
-                                    </div>
-                                    <div class="flex gap-3">
-                                        <a href="https://github.com/ensinho/dino-library" target="_blank" class="w-12 h-12 rounded-full bg-dark/50 border border-white/10 text-white flex items-center justify-center text-xl hover:bg-white hover:text-dark transition-all duration-300 backdrop-blur-sm" title="View Code">
-                                            <i class="fab fa-github"></i>
-                                        </a>
-                                        <a href="https://dino-library.vercel.app/" target="_blank" class="w-12 h-12 rounded-full bg-neon text-dark flex items-center justify-center text-xl hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(204,255,0,0.4)]" title="Live Demo">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
-                                    </div>
-                                </div>
+                            <!-- Tech Stack Chips -->
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="px-2.5 py-1 bg-neon/10 text-neon text-xs font-mono uppercase rounded-full border border-neon/20">React</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">TypeScript</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">Tailwind</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">Vite</span>
+                            </div>
+                            
+                            <!-- Action Links -->
+                            <div class="flex gap-2">
+                                <a href="https://github.com/ensinho/dino-library" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-white/5 border border-white/10 text-white rounded-lg hover:bg-white hover:text-dark transition-all duration-300 font-rajdhani font-bold text-xs uppercase tracking-wide">
+                                    <i class="fab fa-github"></i> Repo
+                                </a>
+                                <a href="https://dino-library.vercel.app/" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-neon text-dark rounded-lg hover:bg-white transition-all duration-300 font-rajdhani font-bold text-xs uppercase tracking-wide shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)]">
+                                    <i class="fas fa-external-link-alt"></i> Demo
+                                </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Project 2: Pokémon Team Builder -->
-                    <div class="project-slide w-[75vw] md:w-[40vw] rounded-4x1 flex-shrink-0 relative group h-[60vh] flex flex-col select-none perspective-1000">
-                        <div class="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-panel transform transition-transform duration-500 hover:scale-[1.02] shadow-2xl">
-                            <div class="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-                            <img src="assets/projetBackgrounds/TeamBuilder1.webp" alt="Pokémon Team Builder" class="w-full h-full object-cover transform transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0 parallax-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1613771404721-1f92d799e49f?q=80&w=800&auto=format&fit=crop'">
+                    <div class="project-slide project-card w-[85vw] md:w-[400px] flex-shrink-0 group select-none">
+                        <!-- Header Image -->
+                        <div class="relative h-52 overflow-hidden rounded-t-xl">
+                            <div class="absolute inset-0 bg-dark/30 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="assets/projetBackgrounds/TeamBuilder1.webp" alt="Pokémon Team Builder" class="w-full h-full object-cover transform transition-transform duration-700 ease-out grayscale group-hover:grayscale-0" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1613771404721-1f92d799e49f?q=80&w=800&auto=format&fit=crop'">
+                        </div>
+                        
+                        <!-- Content Body -->
+                        <div class="p-5 bg-panel border border-white/10 border-t-0 rounded-b-xl group-hover:border-sakura/30 transition-colors duration-300">
+                            <h3 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-sakura transition-colors">Team Builder</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3" data-lang="projects.teambuilder.description">
+                                Strategic synergy calculator for competitive Pokémon players. Analyze type coverage, identify weaknesses, and build balanced teams.
+                            </p>
                             
-                            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-dark via-dark/90 to-transparent z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                <div class="flex justify-between items-end">
-                                    <div>
-                                        <div class="flex gap-2 mb-3">
-                                            <span class="px-3 py-1 bg-sakura/20 text-sakura text-xs font-mono uppercase rounded border border-sakura/30 backdrop-blur-sm">React</span>
-                                            <span class="px-3 py-1 bg-white/10 text-white text-xs font-mono uppercase rounded border border-white/10 backdrop-blur-sm">Firebase</span>
-                                        </div>
-                                        <h3 class="font-rajdhani font-bold text-4xl md:text-5xl text-white mb-2">Team Builder</h3>
-                                        <p class="text-gray-300 text-sm max-w-xs hidden md:block font-light">Strategic synergy calculator for competitive Pokémon.</p>
-                                    </div>
-                                    <div class="flex gap-3">
-                                        <a href="https://github.com/ensinho/pokemonTeamBuilder" target="_blank" class="w-12 h-12 rounded-full bg-dark/50 border border-white/10 text-white flex items-center justify-center text-xl hover:bg-white hover:text-dark transition-all duration-300 backdrop-blur-sm" title="View Code">
-                                            <i class="fab fa-github"></i>
-                                        </a>
-                                        <a href="https://ensinho.github.io/pokemonTeamBuilder/" target="_blank" class="w-12 h-12 rounded-full bg-sakura text-dark flex items-center justify-center text-xl hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,183,178,0.4)]" title="Live Demo">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
-                                    </div>
-                                </div>
+                            <!-- Tech Stack Chips -->
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="px-2.5 py-1 bg-sakura/10 text-sakura text-xs font-mono uppercase rounded-full border border-sakura/20">React</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">Firebase</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">PokéAPI</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">CSS3</span>
+                            </div>
+                            
+                            <!-- Action Links -->
+                            <div class="flex gap-2">
+                                <a href="https://github.com/ensinho/pokemonTeamBuilder" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-white/5 border border-white/10 text-white rounded-lg hover:bg-white hover:text-dark transition-all duration-300 font-rajdhani font-bold text-xs uppercase tracking-wide">
+                                    <i class="fab fa-github"></i> Repo
+                                </a>
+                                <a href="https://ensinho.github.io/pokemonTeamBuilder/" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-sakura text-dark rounded-lg hover:bg-white transition-all duration-300 font-rajdhani font-bold text-xs uppercase tracking-wide shadow-[0_0_15px_rgba(255,183,178,0.3)]">
+                                    <i class="fas fa-external-link-alt"></i> Demo
+                                </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Project 3: Unifor Gym -->
-                    <div class="project-slide w-[75vw] md:w-[40vw] rounded-4x1 flex-shrink-0 relative group h-[60vh] flex flex-col select-none perspective-1000">
-                        <div class="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-panel transform transition-transform duration-500 hover:scale-[1.02] shadow-2xl">
-                            <div class="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-                            <img src="assets/projetBackgrounds/UniforGym1.webp" alt="Unifor Gym App" class="w-full h-full object-cover transform transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0 parallax-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop'">
+                    <div class="project-slide project-card w-[85vw] md:w-[400px] flex-shrink-0 group select-none">
+                        <!-- Header Image -->
+                        <div class="relative h-52 overflow-hidden rounded-t-xl">
+                            <div class="absolute inset-0 bg-dark/30 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="assets/projetBackgrounds/UniforGym1.webp" alt="Unifor Gym App" class="w-full h-full object-cover transform transition-transform duration-700 ease-out grayscale group-hover:grayscale-0" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop'">
+                            <div class="absolute top-4 right-4 z-20">
+                                <span class="px-3 py-1 bg-white/90 text-dark text-xs font-mono font-bold uppercase rounded flex items-center gap-1">
+                                    <i class="fab fa-android text-[#3DDC84]"></i> Mobile
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Content Body -->
+                        <div class="p-5 bg-panel border border-white/10 border-t-0 rounded-b-xl group-hover:border-neon/30 transition-colors duration-300">
+                            <h3 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-neon transition-colors">Unifor Gym</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3" data-lang="projects.uniforgym.description">
+                                Native Android application for gym scheduling and workout tracking with user authentication and Material Design.
+                            </p>
                             
-                            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-dark via-dark/90 to-transparent z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                <div class="flex justify-between items-end">
-                                    <div>
-                                        <div class="flex gap-2 mb-3">
-                                            <span class="px-3 py-1 bg-neon/20 text-neon text-xs font-mono uppercase rounded border border-neon/30 backdrop-blur-sm">Kotlin</span>
-                                            <span class="px-3 py-1 bg-white/10 text-white text-xs font-mono uppercase rounded border border-white/10 backdrop-blur-sm">Android</span>
-                                        </div>
-                                        <h3 class="font-rajdhani font-bold text-4xl md:text-5xl text-white mb-2">Unifor Gym</h3>
-                                        <p class="text-gray-300 text-sm max-w-xs hidden md:block font-light">Mobile scheduling and workout tracking system.</p>
-                                    </div>
-                                    <div class="flex gap-3">
-                                        <a href="https://github.com/ensinho/devMobile-gym" target="_blank" class="w-12 h-12 rounded-full bg-neon text-dark flex items-center justify-center text-xl hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(204,255,0,0.4)]" title="View Code">
-                                            <i class="fab fa-github"></i>
-                                        </a>
-                                    </div>
-                                </div>
+                            <!-- Tech Stack Chips -->
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="px-2.5 py-1 bg-neon/10 text-neon text-xs font-mono uppercase rounded-full border border-neon/20">Kotlin</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">Android</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">Room DB</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">Material 3</span>
+                            </div>
+                            
+                            <!-- Action Links -->
+                            <div class="flex gap-2">
+                                <a href="https://github.com/ensinho/devMobile-gym" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-neon text-dark rounded-lg hover:bg-white transition-all duration-300 font-rajdhani font-bold text-xs uppercase tracking-wide shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)]">
+                                    <i class="fab fa-github"></i> View Repository
+                                </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Project 4: AquaCensus -->
-                    <div class="project-slide w-[75vw] md:w-[40vw] rounded-4x1 flex-shrink-0 relative group h-[60vh] flex flex-col select-none perspective-1000">
-                        <div class="relative w-full h-full overflow-hidden rounded-lg border border-white/10 bg-panel transform transition-transform duration-500 hover:scale-[1.02] shadow-2xl">
-                            <div class="absolute inset-0 bg-dark/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-                            <img src="assets/projetBackgrounds/AquaCensus1.webp" alt="AquaCensus" class="w-full h-full object-cover transform  transition-transform duration-1000 ease-out grayscale group-hover:grayscale-0 parallax-img">
+                    <div class="project-slide project-card w-[85vw] md:w-[400px] flex-shrink-0 group select-none">
+                        <!-- Header Image -->
+                        <div class="relative h-52 overflow-hidden rounded-t-xl">
+                            <div class="absolute inset-0 bg-dark/30 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                            <img src="assets/projetBackgrounds/AquaCensus1.webp" alt="AquaCensus" class="w-full h-full object-cover transform transition-transform duration-700 ease-out grayscale group-hover:grayscale-0">
+                        </div>
+                        
+                        <!-- Content Body -->
+                        <div class="p-5 bg-panel border border-white/10 border-t-0 rounded-b-xl group-hover:border-sakura/30 transition-colors duration-300">
+                            <h3 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-sakura transition-colors">AquaCensus</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3" data-lang="projects.aquacensus.description">
+                                Marine biology research and specimen cataloging system. Comprehensive database solution for researchers to track marine life.
+                            </p>
                             
-                            <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-dark via-dark/90 to-transparent z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                <div class="flex justify-between items-end">
-                                    <div>
-                                        <div class="flex gap-2 mb-3">
-                                            <span class="px-3 py-1 bg-sakura/20 text-sakura text-xs font-mono uppercase rounded border border-sakura/30 backdrop-blur-sm">SQL</span>
-                                            <span class="px-3 py-1 bg-white/10 text-white text-xs font-mono uppercase rounded border border-white/10 backdrop-blur-sm">Database</span>
-                                        </div>
-                                        <h3 class="font-rajdhani font-bold text-4xl md:text-5xl text-white mb-2">AquaCensus</h3>
-                                        <p class="text-gray-300 text-sm max-w-xs hidden md:block font-light">Marine biology research and specimen cataloging.</p>
-                                    </div>
-                                    <div class="flex gap-3">
-                                        <a href="https://github.com/ensinho/pesquisaMaritima" target="_blank" class="w-12 h-12 rounded-full bg-dark/50 border border-white/10 text-white flex items-center justify-center text-xl hover:bg-white hover:text-dark transition-all duration-300 backdrop-blur-sm" title="View Code">
-                                            <i class="fab fa-github"></i>
-                                        </a>
-                                        <a href="https://pesquisa-maritima.vercel.app/" target="_blank" class="w-12 h-12 rounded-full bg-sakura text-dark flex items-center justify-center text-xl hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(255,183,178,0.4)]" title="Live Demo">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
-                                    </div>
-                                </div>
+                            <!-- Tech Stack Chips -->
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="px-2.5 py-1 bg-sakura/10 text-sakura text-xs font-mono uppercase rounded-full border border-sakura/20">SQL</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">PostgreSQL</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">DB Design</span>
+                                <span class="px-2.5 py-1 bg-white/5 text-white text-xs font-mono uppercase rounded-full border border-white/10">Modeling</span>
+                            </div>
+                            
+                            <!-- Action Links -->
+                            <div class="flex gap-2">
+                                <a href="https://github.com/ensinho/pesquisaMaritima" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-white/5 border border-white/10 text-white rounded-lg hover:bg-white hover:text-dark transition-all duration-300 font-rajdhani font-bold text-xs uppercase tracking-wide">
+                                    <i class="fab fa-github"></i> Repo
+                                </a>
+                                <a href="https://pesquisa-maritima.vercel.app/" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 bg-sakura text-dark rounded-lg hover:bg-white transition-all duration-300 font-rajdhani font-bold text-xs uppercase tracking-wide shadow-[0_0_15px_rgba(255,183,178,0.3)]">
+                                    <i class="fas fa-external-link-alt"></i> Demo
+                                </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Outro Slide -->
-                    <div class="project-slide w-[30vw] flex-shrink-0 flex flex-col justify-center items-center text-center">
-                        <h2 class="font-rajdhani font-bold text-5xl md:text-7xl uppercase tracking-tighter mb-8">
+                    <div class="project-slide w-[80vw] h-[40vh] md:w-[30vw] flex-shrink-0 flex flex-col justify-center items-center text-center">
+                        <h2 class="font-rajdhani font-bold text-4xl md:text-7xl uppercase tracking-tighter mb-8">
                             <span data-lang="projects.wantToSee">Want to see</span> <br> <span class="text-neon" data-lang="projects.more">More?</span>
                         </h2>
-                        <a href="https://github.com/ensinho" target="_blank" class="px-8 py-4 border border-white/20 hover:border-neon hover:bg-neon hover:text-dark transition-all duration-300 font-rajdhani font-bold text-xl tracking-wide" data-lang="projects.visitGithub">
+                        <a href="https://github.com/ensinho" target="_blank" class="inline-flex items-center gap-3 px-8 py-4 border-2 border-white/20 hover:border-neon hover:bg-neon hover:text-dark transition-all duration-300 font-rajdhani font-bold text-xl tracking-wide rounded-lg group" data-lang="projects.visitGithub">
                             VISIT MY GITHUB :3
+                            <i class="fab fa-github text-xl group-hover:rotate-12 transition-transform"></i>
                         </a>
                     </div>
 
@@ -394,24 +443,24 @@
         </section>
 
         <!-- Experience Section (Timeline) -->
-        <section id="journey" class="py-40 px-6 bg-[#0d0d0d] relative">
+        <section id="journey" class="py-20 px-6 bg-[#0d0d0d] relative">
             <div class="absolute left-0 top-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-20"></div>
             
             <div class="max-w-5xl mx-auto relative z-10">
-                <div class="text-center mb-24 gs-reveal">
+                <div class="text-center mb-12 gs-reveal">
                     <span class="text-sakura font-mono text-xs tracking-widest uppercase mb-4 block" data-lang="journey.subtitle">Career Path</span>
                     <h2 class="font-rajdhani font-bold text-4xl md:text-8xl uppercase tracking-tighter">
-                        The <span class="text-neon" data-lang="journey.title">Journey</span>
+                        <span data-lang="journey.the">The</span> <span class="text-neon" data-lang="journey.title">Journey</span>
                     </h2>
                 </div>
 
-                <div class="relative border-l-2 border-white/5 ml-4 md:ml-0 space-y-24">
+                <div class="relative border-l-2 border-white/5 ml-4 md:ml-0 space-y-10">
                     <!-- Item 1 -->
                     <div class="relative pl-12 md:pl-32 gs-reveal group">
                         <!-- Timeline Node -->
                         <div class="absolute -left-[9px] top-0 w-4 h-4 bg-dark border-2 border-neon rounded-full group-hover:scale-150 group-hover:bg-neon transition-all duration-300 shadow-[0_0_20px_rgba(204,255,0,0.5)]"></div>
                         
-                        <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-4">
+                        <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2">
                             <h3 class="font-rajdhani font-bold text-2xl md:text-4xl text-white group-hover:text-neon transition-colors" data-lang="journey.role1">FullStack Developer</h3>
                             <span class="font-mono text-neon bg-neon/10 px-3 py-1 rounded-sm text-xs md:text-sm border border-neon/20 mt-2 md:mt-0 w-fit" data-lang="journey.date1">Jan. 2025 - Present</span>
                         </div>
@@ -426,15 +475,15 @@
                                 Advanced to full developer role, taking on greater responsibilities in system architecture and leadership.
                             </p>
                             
-                            <button onclick="toggleJourney('journey-1', this)" class="group flex items-center gap-3 text-neon hover:text-white transition-colors focus:outline-none py-2 mb-2 relative z-10">
+                            <button onclick="toggleJourney('journey-1', this)" class="group flex items-center gap-3 text-neon hover:text-white transition-colors focus:outline-none  relative z-10">
                                 <span class="font-rajdhani font-bold uppercase tracking-widest text-sm" data-lang="journey.readMore">Read More</span>
                                 <i class="fas fa-chevron-down text-xs transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"></i>
                             </button>
 
                             <div id="journey-1" class="grid grid-rows-[0fr] opacity-0 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] relative z-10">
                                 <div class="overflow-hidden">
-                                    <div class="pt-6 mb-2 border-t border-white/5 mt-4">
-                                        <h5 class="text-white font-rajdhani font-bold text-lg md:text-xl mb-6 flex items-center gap-3">
+                                    <div class="pt-6 mb-2 border-t border-white/5 mt-2">
+                                        <h5 class="text-white font-rajdhani font-bold text-lg md:text-xl mb-4 flex items-center gap-3">
                                             <span class="w-8 h-[1px] bg-neon"></span> <span data-lang="journey.achievements">Key Achievements</span>
                                         </h5>
                                         <ul class="space-y-4">
@@ -488,7 +537,7 @@
                         <!-- Timeline Node -->
                         <div class="absolute -left-[9px] top-0 w-4 h-4 bg-dark border-2 border-gray rounded-full group-hover:scale-150 group-hover:border-sakura group-hover:bg-sakura transition-all duration-300"></div>
                         
-                        <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-4">
+                        <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2">
                             <h3 class="font-rajdhani font-bold text-2xl md:text-4xl text-white group-hover:text-sakura transition-colors" data-lang="journey.role2">FullStack Intern</h3>
                             <span class="font-mono text-gray bg-white/5 px-3 py-1 rounded-sm text-xs md:text-sm mt-2 md:mt-0 w-fit" data-lang="journey.date2">Apr. 2024 - Dec. 2024</span>
                         </div>
@@ -503,7 +552,7 @@
                                 Started my professional journey as an intern, contributing to system development and learning industry best practices.
                             </p>
 
-                            <button onclick="toggleJourney('journey-2', this)" class="group flex items-center gap-3 text-sakura hover:text-white transition-colors focus:outline-none py-2 mb-2 relative z-10">
+                            <button onclick="toggleJourney('journey-2', this)" class="group flex items-center gap-3 text-sakura hover:text-white transition-colors focus:outline-none relative z-10">
                                 <span class="font-rajdhani font-bold uppercase tracking-widest text-sm" data-lang="journey.readMore">Read More</span>
                                 <i class="fas fa-chevron-down text-xs transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"></i>
                             </button>
@@ -554,81 +603,87 @@
             </div>
         </section>
 
-        <!-- Mantra Break -->
-        <section class="py-24 px-6 relative overflow-hidden group cursor-crosshair flex items-center justify-center min-h-[60vh]">
-            <!-- Gradient background instead of image -->
-            <div class="absolute inset-0 bg-gradient-to-br from-dark via-panel to-dark"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-dark via-transparent to-dark"></div>
-            <div class="absolute inset-0 bg-dark/40 backdrop-blur-[2px] group-hover:backdrop-blur-none transition-all duration-700"></div>
+        <!-- Skills Section -->
+        <section class="py-20 px-6 bg-dark relative overflow-hidden">
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')] opacity-50"></div>
             
-            <div class="relative z-10 text-center gs-reveal">
-                <h2 class="font-rajdhani font-bold text-6xl md:text-8xl lg:text-9xl text-white uppercase tracking-tighter leading-none mix-blend-overlay opacity-90">
-                    Always <br> Trying To <br>
-                    <span class="text-neon text-shadow-lg group-hover:text-sakura transition-colors duration-500">be creative.</span>
-                </h2>
-                <div class="mt-8 w-24 h-1 bg-white mx-auto group-hover:w-48 group-hover:bg-neon transition-all duration-500"></div>
-            </div>
-        </section>
-
-        <!-- About Section -->
-        <section id="about" class="py-40 px-6 bg-panel bg-grid-pattern bg-[length:40px_40px] relative">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-                <!-- Image -->
-                <div class="lg:col-span-5 order-1 lg:order-1 gs-reveal relative group">
-                    <div class="absolute -inset-4 border-2 border-neon/30 rounded-full rotate-6 group-hover:rotate-12 transition-transform duration-700"></div>
-                    <div class="absolute -inset-4 border-2 border-sakura/30 rounded-full -rotate-6 group-hover:-rotate-12 transition-transform duration-700 animation-delay-200"></div>
-                    <div class="w-full aspect-square rounded-full overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 relative z-10 border-4 border-dark shadow-2xl">
-                        <img src="assets/enzo_glasses.jpg" alt="Enzo Esmeraldo" class="w-full h-full object-cover hover-trigger transform hover:scale-110 transition-transform duration-700" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800&auto=format&fit=crop'">
-                    </div>
+            <div class="max-w-6xl mx-auto relative z-10">
+                <div class="text-center mb-16 gs-reveal">
+                    <span class="text-neon font-mono text-xs tracking-widest uppercase mb-4 block" data-lang="skills.subtitle">What I Work With</span>
+                    <h2 class="font-rajdhani font-bold text-4xl md:text-6xl uppercase tracking-tighter">
+                        <span data-lang="skills.title">Tech Stack</span>
+                    </h2>
                 </div>
 
-                <!-- Content -->
-                <div class="lg:col-span-7 order-2 lg:order-2 gs-reveal">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 border border-sakura rounded-full text-sakura font-mono text-xs mb-8 hover:bg-sakura hover:text-dark transition-colors cursor-default">
-                        <i class="fas fa-user-astronaut"></i> <span data-lang="about.offCode">OFF CODE</span>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 gs-reveal">
+                    <!-- Angular -->
+                    <div class="group p-6 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fab fa-angular text-4xl md:text-5xl text-white/60 group-hover:text-[#DD0031] transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">Angular</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Frontend</p>
                     </div>
-                    <h2 class="font-rajdhani font-bold text-6xl md:text-7xl uppercase tracking-tighter mb-8">
-                        <span data-lang="about.title1">Just Keep</span> <span class="text-stroke text-dark hover:text-neon transition-colors duration-300" data-lang="about.title2">Swimming</span>.
-                    </h2>
-                    <p class="text-gray text-xl font-light leading-relaxed mb-12 max-w-2xl border-l-4 border-neon pl-6" data-lang="about.description">
-                        Beyond the code, I have a deep fascination with <span class="text-white font-medium">Sharks</span> & <span class="text-white font-medium">Pokémon</span>. Just like in development, I believe in constant evolution and adapting to the environment to survive and thrive.
-                    </p>
-
-                    <div class="grid grid-cols-2 gap-12 mb-12 border-t border-white/10 pt-8">
-                        <div class="group">
-                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-neon transition-colors" data-lang="about.stat1.label">Favorite Era</h4>
-                            <p class="text-gray font-mono text-sm" data-lang="about.stat1.value">Gen 4 - Sinnoh</p>
-                        </div>
-                        <div class="group">
-                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-sakura transition-colors" data-lang="about.stat2.label">Spirit Animal</h4>
-                            <p class="text-gray font-mono text-sm" data-lang="about.stat2.value">Hammerhead Shark</p>
-                        </div>
-                        <div class="group">
-                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-neon transition-colors" data-lang="about.stat3.label">Main Framework</h4>
-                            <p class="text-gray font-mono text-sm" data-lang="about.stat3.value">Angular and React</p>
-                        </div>
-                        <div class="group">
-                            <h4 class="font-rajdhani font-bold text-2xl text-white mb-2 group-hover:text-sakura transition-colors" data-lang="about.stat4.label">Graduation</h4>
-                            <p class="text-gray font-mono text-sm" data-lang="about.stat4.value">2026.2</p>
-                        </div>
+                    
+                    <!-- React -->
+                    <div class="group p-6 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fab fa-react text-4xl md:text-5xl text-white/60 group-hover:text-[#61DAFB] transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">React</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Frontend</p>
                     </div>
-
-                    <a href="assets/cv/EnzoEsmeraldo_CV_EN.pdf" download onclick="checkCV(event)" id="cv-link-about" class="hover-trigger inline-flex items-center gap-4 px-10 py-5 bg-white text-dark font-rajdhani font-bold text-xl tracking-wide hover:bg-neon hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.2)] transition-all transform hover:-translate-y-1">
-                        <span data-lang="about.downloadCV">DOWNLOAD CV</span> <i class="fas fa-download animate-bounce"></i>
-                    </a>
+                    
+                    <!-- TypeScript -->
+                    <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fab fa-js text-4xl md:text-5xl text-white/60 group-hover:text-[#3178C6] transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">TypeScript</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Language</p>
+                    </div>
+                    
+                    <!-- Java -->
+                    <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fab fa-java text-4xl md:text-5xl text-white/60 group-hover:text-[#ED8B00] transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">Java</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Backend</p>
+                    </div>
+                    
+                    <!-- Spring Boot -->
+                    <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fas fa-leaf text-4xl md:text-5xl text-white/60 group-hover:text-[#6DB33F] transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">Spring Boot</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Backend</p>
+                    </div>
+                    
+                    <!-- SQL -->
+                    <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fas fa-database text-4xl md:text-5xl text-white/60 group-hover:text-neon transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">SQL</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Database</p>
+                    </div>
+                    
+                    <!-- Git -->
+                    <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fab fa-git-alt text-4xl md:text-5xl text-white/60 group-hover:text-[#F05032] transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">Git</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Version Control</p>
+                    </div>
+                    
+                    <!-- Figma -->
+                    <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fab fa-figma text-4xl md:text-5xl text-white/60 group-hover:text-[#F24E1E] transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">Figma</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Design</p>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Footer -->
-        <footer id="contact" class="bg-dark pt-40 pb-12 px-6 border-t border-white/10 relative overflow-hidden">
+        <footer id="contact" class="bg-panel bg-grid-pattern bg-[length:40px_40px] relative pt-20 pb-12 px-6 border-t border-white/10 relative overflow-hidden">
             <!-- Background Glitch Elements -->
              <div class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
              <div class="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
 
             <div class="max-w-7xl mx-auto text-center relative z-10">
                 <h2 class="font-rajdhani font-bold text-6xl md:text-9xl uppercase tracking-tighter mb-16 text-white hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-neon hover:to-sakura transition-all duration-500 cursor-default select-none">
-                    <span data-lang="footer.title1">Did you like it?</span> <br> <span data-lang="footer.title2">Let's</span> <span class="text-stroke hover:text-neon transition-colors duration-500" data-lang="footer.connect">Connect</span>.
+                    <span data-lang="footer.title1">Did you like it?</span> <br> 
                 </h2>
 
                 <div class="flex justify-center space-x-6 mb-16">
