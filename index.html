@@ -73,6 +73,10 @@
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center gap-8">
                 <div class="flex space-x-10 font-rajdhani font-bold uppercase tracking-wide text-sm">
+                    <a href="#about" class="relative group hover-trigger py-2">
+                        <span class="group-hover:text-sakura transition-colors" data-lang="nav.about">About</span>
+                        <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-neon group-hover:w-full transition-all duration-300"></span>
+                    </a>
                     <a href="#projects" class="relative group hover-trigger py-2">
                         <span class="group-hover:text-sakura transition-colors" data-lang="nav.projects">Projects</span>
                         <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-neon group-hover:w-full transition-all duration-300"></span>
@@ -80,15 +84,16 @@
                     <a href="#journey" class="relative group hover-trigger py-2">
                         <span class="group-hover:text-sakura transition-colors" data-lang="nav.journey">Journey</span>
                         <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-neon group-hover:w-full transition-all duration-300"></span>
-                    </a>
-                    <a href="#about" class="relative group hover-trigger py-2">
-                        <span class="group-hover:text-sakura transition-colors" data-lang="nav.about">About</span>
+                    </a>              
+                    <a href="#skills" class="relative group hover-trigger py-2">
+                        <span class="group-hover:text-sakura transition-colors" data-lang="nav.skills">Skills</span>
                         <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-neon group-hover:w-full transition-all duration-300"></span>
-                    </a>
+                    </a>      
                     <a href="#contact" class="relative group hover-trigger py-2">
                         <span class="group-hover:text-sakura transition-colors" data-lang="nav.contact">Contact</span>
                         <span class="absolute bottom-0 left-0 w-0 h-[2px] bg-neon group-hover:w-full transition-all duration-300"></span>
                     </a>
+                    
                 </div>
 
                 <!-- Language Switcher (Desktop) -->
@@ -206,7 +211,7 @@
         </section>
 
         <!-- About Section -->
-        <section id="about" class="py-20 px-6 bg-panel bg-grid-pattern bg-[length:40px_40px] relative">
+        <section id="about" class="py-20 px-6 bg-panel bg-grid-pattern bg-[length:40px_40px] relative scroll-mt-36">
             <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                 <!-- Image -->
                 <div class="lg:col-span-5 order-1 lg:order-1 gs-reveal relative group">
@@ -260,7 +265,7 @@
         </section>
 
         <!-- Projects Section (Horizontal Scroll) -->
-        <section id="projects" class="bg-dark relative z-10 min-h-[45vh] py-20 overflow-hidden flex flex-col justify-center">
+        <section id="projects" class="bg-dark relative z-10 min-h-[45vh] py-20 overflow-hidden flex flex-col justify-center scroll-mt-36">
             <!-- Background Elements -->
             <div class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-20 pointer-events-none"></div>
             
@@ -443,7 +448,7 @@
         </section>
 
         <!-- Experience Section (Timeline) -->
-        <section id="journey" class="py-20 px-6 bg-[#0d0d0d] relative">
+        <section id="journey" class="py-20 px-6 bg-[#0d0d0d] relative scroll-mt-20">
             <div class="absolute left-0 top-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-20"></div>
             
             <div class="max-w-5xl mx-auto relative z-10">
@@ -604,7 +609,7 @@
         </section>
 
         <!-- Skills Section -->
-        <section class="py-20 px-6 bg-dark relative overflow-hidden">
+        <section id="skills" class="py-20 px-6 bg-dark relative overflow-hidden scroll-mt-32">
             <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')] opacity-50"></div>
             
             <div class="max-w-6xl mx-auto relative z-10">
@@ -622,14 +627,7 @@
                         <h4 class="font-rajdhani font-bold text-lg text-white">Angular</h4>
                         <p class="text-gray text-xs font-mono mt-1">Frontend</p>
                     </div>
-                    
-                    <!-- React -->
-                    <div class="group p-6 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
-                        <i class="fab fa-react text-4xl md:text-5xl text-white/60 group-hover:text-[#61DAFB] transition-colors mb-4"></i>
-                        <h4 class="font-rajdhani font-bold text-lg text-white">React</h4>
-                        <p class="text-gray text-xs font-mono mt-1">Frontend</p>
-                    </div>
-                    
+
                     <!-- TypeScript -->
                     <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
                         <i class="fab fa-js text-4xl md:text-5xl text-white/60 group-hover:text-[#3178C6] transition-colors mb-4"></i>
@@ -637,6 +635,20 @@
                         <p class="text-gray text-xs font-mono mt-1">Language</p>
                     </div>
                     
+                    <!-- React -->
+                    <div class="group p-6 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fab fa-react text-4xl md:text-5xl text-white/60 group-hover:text-[#61DAFB] transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">React</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Frontend</p>
+                    </div>
+                                    
+                    <!-- Javascript -->
+                    <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
+                        <i class="fab fa-js text-4xl md:text-5xl text-white/60 group-hover:text-[#F7DF1E] transition-colors mb-4"></i>
+                        <h4 class="font-rajdhani font-bold text-lg text-white">Javascript</h4>
+                        <p class="text-gray text-xs font-mono mt-1">Language</p>
+                    </div>
+                                                            
                     <!-- Java -->
                     <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
                         <i class="fab fa-java text-4xl md:text-5xl text-white/60 group-hover:text-[#ED8B00] transition-colors mb-4"></i>
@@ -664,19 +676,12 @@
                         <h4 class="font-rajdhani font-bold text-lg text-white">Git</h4>
                         <p class="text-gray text-xs font-mono mt-1">Version Control</p>
                     </div>
-                    
-                    <!-- Figma -->
-                    <div class="group p-4 bg-panel/50 border border-white/5 rounded-lg hover:border-neon/30 transition-all duration-300 text-center">
-                        <i class="fab fa-figma text-4xl md:text-5xl text-white/60 group-hover:text-[#F24E1E] transition-colors mb-4"></i>
-                        <h4 class="font-rajdhani font-bold text-lg text-white">Figma</h4>
-                        <p class="text-gray text-xs font-mono mt-1">Design</p>
-                    </div>
                 </div>
             </div>
         </section>
 
         <!-- Footer -->
-        <footer id="contact" class="bg-panel bg-grid-pattern bg-[length:40px_40px] relative pt-20 pb-12 px-6 border-t border-white/10 relative overflow-hidden">
+        <footer id="contact" class="bg-panel bg-grid-pattern bg-[length:40px_40px] relative pt-20 pb-12 px-6 border-t border-white/10 relative overflow-hidden scroll-mt-32">
             <!-- Background Glitch Elements -->
              <div class="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
              <div class="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>

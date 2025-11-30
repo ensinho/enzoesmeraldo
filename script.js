@@ -31,7 +31,7 @@ const initLoader = () => {
                 });
              }, 500);
         }
-    }, 150);
+    }, 100);
 };
 
 // Safety Fallback for loader
@@ -131,7 +131,7 @@ function initScrollAnimations() {
             {
                 y: 0,
                 opacity: 1,
-                duration: 1.2,
+                duration: 1,
                 ease: "power3.out",
                 scrollTrigger: {
                     trigger: element,
@@ -140,14 +140,6 @@ function initScrollAnimations() {
                 }
             }
         );
-    });
-
-    // Marquee Animation
-    gsap.to(".marquee-content", {
-        xPercent: -100,
-        repeat: -1,
-        duration: 25, // Slower for readability
-        ease: "linear"
     });
 
     // --- Horizontal Scroll for Projects (Momentum Drag) ---
@@ -570,6 +562,7 @@ const translations = {
         "nav.projects": "Projects",
         "nav.journey": "Journey",
         "nav.about": "About",
+        "nav.skills": "Skills",
         "nav.contact": "Contact",
         "hero.available": "Available for Work",
         "hero.location": "Brazil / Fortaleza, Ceará",
@@ -640,6 +633,7 @@ const translations = {
         "nav.projects": "Projetos",
         "nav.journey": "Jornada",
         "nav.about": "Sobre",
+        "nav.skills": "Habilidades",
         "nav.contact": "Contato",
         "hero.available": "Disponível para Trabalho",
         "hero.location": "Brasil / Fortaleza, Ceará",
