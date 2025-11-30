@@ -179,14 +179,14 @@ body:hover .cursor-ring {
     -webkit-backdrop-filter: blur(10px);
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
-    padding: 20px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     z-index: 9998;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    width: 340px;
+    width: 320px;
     transform: translateY(0) scale(1);
     opacity: 1;
 
