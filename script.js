@@ -1,100 +1,92 @@
-// Register GSAP Plugin
+// ═══════════════════════════════════════════════════
+// ENZO.DEV — Script v2.0
+// ═══════════════════════════════════════════════════
+
 gsap.registerPlugin(ScrollTrigger);
 
-// --- Loader Animation ---
+// ── Loader ──
 const initLoader = () => {
     const tl = gsap.timeline();
-    
-    // Simulate loading progress
     let progress = 0;
     const progressEl = document.getElementById('progress');
     const loaderBar = document.getElementById('loader-bar');
     
     const interval = setInterval(() => {
-        progress += Math.floor(Math.random() * 15) + 5;
-        if(progress > 100) progress = 100;
-        progressEl.innerText = progress + '%';
+        progress += Math.floor(Math.random() * 12) + 5;
+        if (progress > 100) progress = 100;
+        progressEl.innerText = String(progress).padStart(3, '0');
         loaderBar.style.width = progress + '%';
         
-        if(progress === 100) {
+        if (progress === 100) {
             clearInterval(interval);
-            // Trigger exit animation
-             setTimeout(() => {
+            setTimeout(() => {
                 tl.to("#loader", {
                     yPercent: -100,
-                    duration: 1,
+                    duration: 0.8,
                     ease: "power4.inOut",
                     onComplete: () => {
                         document.getElementById('loader').style.display = 'none';
-                        initScrollAnimations(); // Start page animations
+                        initScrollAnimations();
                     }
                 });
-             }, 500);
+            }, 400);
         }
-    }, 100);
+    }, 80);
 };
 
-// Safety Fallback for loader
 window.addEventListener('load', initLoader);
 setTimeout(() => {
-    if(document.getElementById('loader').offsetHeight > 0) {
+    if (document.getElementById('loader') && document.getElementById('loader').offsetHeight > 0) {
         initLoader();
     }
 }, 4000);
 
-
-// --- Custom Cursor Logic ---
+// ── Custom Cursor ──
 const cursorDot = document.querySelector('.cursor-dot');
 const cursorRing = document.querySelector('.cursor-ring');
 
-// Use gsap quickTo for performance
-const xToDot = gsap.quickTo(cursorDot, "x", {duration: 0.1, ease: "power3"});
-const yToDot = gsap.quickTo(cursorDot, "y", {duration: 0.1, ease: "power3"});
-const xToRing = gsap.quickTo(cursorRing, "x", {duration: 0.3, ease: "power3"});
-const yToRing = gsap.quickTo(cursorRing, "y", {duration: 0.3, ease: "power3"});
+if (cursorDot && cursorRing) {
+    const xToDot = gsap.quickTo(cursorDot, "x", { duration: 0.1, ease: "power3" });
+    const yToDot = gsap.quickTo(cursorDot, "y", { duration: 0.1, ease: "power3" });
+    const xToRing = gsap.quickTo(cursorRing, "x", { duration: 0.3, ease: "power3" });
+    const yToRing = gsap.quickTo(cursorRing, "y", { duration: 0.3, ease: "power3" });
 
-window.addEventListener('mousemove', (e) => {
-    xToDot(e.clientX);
-    yToDot(e.clientY);
-    xToRing(e.clientX);
-    yToRing(e.clientY);
-});
-
-// Hover Effects for Cursor
-const hoverTriggers = document.querySelectorAll('.hover-trigger, a, button, .project-img');
-hoverTriggers.forEach(trigger => {
-    trigger.addEventListener('mouseenter', () => {
-        document.body.classList.add('cursor-hover');
+    window.addEventListener('mousemove', (e) => {
+        xToDot(e.clientX);
+        yToDot(e.clientY);
+        xToRing(e.clientX);
+        yToRing(e.clientY);
     });
-    trigger.addEventListener('mouseleave', () => {
-        document.body.classList.remove('cursor-hover');
+
+    const hoverTriggers = document.querySelectorAll('.hover-trigger, a, button');
+    hoverTriggers.forEach(trigger => {
+        trigger.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+        trigger.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
     });
-});
+}
 
-
-// --- Falling Petals Generation ---
+// ── Falling Petals ──
 function createPetals() {
     const container = document.getElementById('petals-container');
-    const petalCount = 30; // Number of petals
+    if (!container) return;
+    const petalCount = 20;
     
-    for(let i = 0; i < petalCount; i++) {
+    for (let i = 0; i < petalCount; i++) {
         const petal = document.createElement('span');
         petal.classList.add('petal');
-        // Randomize positions
         petal.style.left = Math.random() * 100 + '%';
-        petal.style.animationDelay = Math.random() * 5 + 's';
-        petal.style.animationDuration = (Math.random() * 10 + 5) + 's';
+        petal.style.animationDelay = Math.random() * 8 + 's';
+        petal.style.animationDuration = (Math.random() * 10 + 8) + 's';
         container.appendChild(petal);
     }
 }
 createPetals();
 
-// --- Scroll Animations ---
+// ── Scroll Animations ──
 function initScrollAnimations() {
-    
-    // Parallax Hero Background
+    // Parallax Hero
     gsap.to("#hero-bg", {
-        yPercent: 30,
+        yPercent: 25,
         ease: "none",
         scrollTrigger: {
             trigger: "body",
@@ -107,10 +99,10 @@ function initScrollAnimations() {
     // Hero Text Stagger
     gsap.to(".hero-text-anim", {
         y: 0,
-        duration: 1.2,
-        stagger: 0.15,
+        duration: 1.4,
+        stagger: 0.2,
         ease: "power4.out",
-        delay: 0.2
+        delay: 0.1
     });
 
     // Fade In Elements
@@ -118,16 +110,16 @@ function initScrollAnimations() {
         gsap.to(element, {
             y: 0,
             opacity: 1,
-            duration: 1,
+            duration: 1.2,
             ease: "power3.out",
-            delay: 0.8
+            delay: 0.6
         });
     });
 
     // Reveal Sections
     gsap.utils.toArray('.gs-reveal').forEach(element => {
-        gsap.fromTo(element, 
-            { y: 80, opacity: 0 },
+        gsap.fromTo(element,
+            { y: 60, opacity: 0 },
             {
                 y: 0,
                 opacity: 1,
@@ -135,156 +127,38 @@ function initScrollAnimations() {
                 ease: "power3.out",
                 scrollTrigger: {
                     trigger: element,
-                    start: "top 85%",
+                    start: "top 88%",
                     toggleActions: "play none none reverse"
                 }
             }
         );
     });
 
-    // --- Horizontal Scroll for Projects (Momentum Drag) ---
-    const slider = document.getElementById('projects-wrapper');
-    const track = document.getElementById('projects-track');
-    const progressBar = document.getElementById('project-progress');
-    const counter = document.getElementById('project-counter');
-
-    let isDown = false;
-    let startX;
-    let scrollLeft;
-    let velX = 0;
-    let momentumID;
-
-    if (slider && track) {
-        // Mouse Down
-        slider.addEventListener('mousedown', (e) => {
-            isDown = true;
-            slider.classList.add('active:cursor-grabbing');
-            startX = e.pageX - slider.offsetLeft;
-            scrollLeft = slider.scrollLeft;
-            cancelAnimationFrame(momentumID);
-        });
-
-        // Mouse Leave
-        slider.addEventListener('mouseleave', () => {
-            isDown = false;
-            slider.classList.remove('active:cursor-grabbing');
-            beginMomentumTracking();
-        });
-
-        // Mouse Up
-        slider.addEventListener('mouseup', () => {
-            isDown = false;
-            slider.classList.remove('active:cursor-grabbing');
-            beginMomentumTracking();
-        });
-
-        // Mouse Move
-        slider.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            e.preventDefault();
-            const x = e.pageX - slider.offsetLeft;
-            const walk = (x - startX) * 2; // Scroll speed multiplier
-            
-            const prevScrollLeft = slider.scrollLeft;
-            slider.scrollLeft = scrollLeft - walk;
-            velX = slider.scrollLeft - prevScrollLeft;
-            
-            updateProjectUI();
-        });
-
-        // Touch Events for Mobile
-        slider.addEventListener('touchstart', (e) => {
-            isDown = true;
-            startX = e.touches[0].pageX - slider.offsetLeft;
-            scrollLeft = slider.scrollLeft;
-            cancelAnimationFrame(momentumID);
-            velX = 0;
-        }, { passive: true });
-
-        slider.addEventListener('touchend', () => {
-            isDown = false;
-            beginMomentumTracking();
-        }, { passive: true });
-
-        slider.addEventListener('touchmove', (e) => {
-            if (!isDown) return;
-            const x = e.touches[0].pageX - slider.offsetLeft;
-            const walk = (x - startX) * 1; 
-            
-            const prevScrollLeft = slider.scrollLeft;
-            slider.scrollLeft = scrollLeft - walk;
-            velX = slider.scrollLeft - prevScrollLeft;
-            
-            updateProjectUI();
-        }, { passive: true });
-
-        // Momentum Loop
-        function beginMomentumTracking() {
-            cancelAnimationFrame(momentumID);
-            momentumID = requestAnimationFrame(momentumLoop);
-        }
-
-        function momentumLoop() {
-            slider.scrollLeft += velX;
-            velX *= 0.95; // Friction
-
-            if (Math.abs(velX) > 0.5) {
-                updateProjectUI();
-                momentumID = requestAnimationFrame(momentumLoop);
-            }
-        }
-
-        // Update UI (Progress, Counter)
-        function updateProjectUI() {
-            const maxScroll = slider.scrollWidth - slider.clientWidth;
-            const progress = slider.scrollLeft / maxScroll;
-            
-            // Update Progress Bar
-            if(progressBar) progressBar.style.width = `${Math.min(Math.max(progress, 0), 1) * 100}%`;
-            
-            // Update Counter
-            if(counter) {
-                const totalProjects = 4;
-                const current = Math.min(Math.ceil(progress * totalProjects), totalProjects);
-                counter.innerText = `0${current <= 0 ? 1 : current}`;
-            }
-        }
-        
-        // Initial call
-        updateProjectUI();
-        
-        // Listen to native scroll (e.g. trackpad)
-        slider.addEventListener('scroll', updateProjectUI);
-    }
-    
-     // Navbar Glass effect on scroll
+    // Navbar scroll state
     ScrollTrigger.create({
-        start: 'top -80',
+        start: 'top -60',
         end: 99999,
-        toggleClass: {className: 'shadow-lg', targets: '#navbar'}
+        onEnter: () => document.getElementById('navbar').classList.add('scrolled'),
+        onLeaveBack: () => document.getElementById('navbar').classList.remove('scrolled'),
     });
 }
 
-
-// --- Back to Top Button Logic ---
+// ── Back to Top ──
 const backToTopBtn = document.getElementById('back-to-top');
-
-window.addEventListener('scroll', () => {
-    if (window.scrollY > window.innerHeight * 0.5) {
-        backToTopBtn.classList.remove('translate-y-20', 'opacity-0');
-    } else {
-        backToTopBtn.classList.add('translate-y-20', 'opacity-0');
-    }
-});
-
-backToTopBtn.addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
+if (backToTopBtn) {
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > window.innerHeight * 0.5) {
+            backToTopBtn.classList.remove('translate-y-20', 'opacity-0');
+        } else {
+            backToTopBtn.classList.add('translate-y-20', 'opacity-0');
+        }
     });
-});
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
 
-// --- Mobile Menu Logic ---
+// ── Mobile Menu ──
 const menuBtn = document.getElementById('menu-btn');
 const mobileMenu = document.getElementById('mobile-menu');
 const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
@@ -299,56 +173,65 @@ function toggleMobileMenu() {
         mobileMenuBackdrop.classList.remove('opacity-0', 'pointer-events-none');
         mobileMenuBackdrop.classList.add('opacity-100', 'pointer-events-auto');
         document.body.style.overflow = 'hidden';
-        // Change hamburger to X
-        menuBtn.innerHTML = '<i class="fas fa-times text-2xl"></i>';
+        menuBtn.innerHTML = '<i class="fas fa-times text-xl"></i>';
     } else {
         mobileMenu.classList.remove('translate-x-0');
         mobileMenu.classList.add('translate-x-full');
         mobileMenuBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
         mobileMenuBackdrop.classList.add('opacity-0', 'pointer-events-none');
         document.body.style.overflow = '';
-        // Change X back to hamburger
-        menuBtn.innerHTML = '<i class="fas fa-bars text-2xl"></i>';
+        menuBtn.innerHTML = '<i class="fas fa-bars text-xl"></i>';
     }
 }
 
-window.closeMobileMenu = function() {
-    if (mobileMenuOpen) {
-        toggleMobileMenu();
-    }
-}
+window.closeMobileMenu = function () {
+    if (mobileMenuOpen) toggleMobileMenu();
+};
 
-menuBtn.addEventListener('click', toggleMobileMenu);
+if (menuBtn) menuBtn.addEventListener('click', toggleMobileMenu);
 mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
 
-
-// --- CV Download Fallback ---
+// ── CV Download Feedback ──
 function checkCV(e) {
-    // Visual feedback
     const btn = e.currentTarget;
     const originalText = btn.innerHTML;
-    btn.innerHTML = 'DOWNLOADING... <i class="fas fa-spinner fa-spin"></i>';
+    btn.innerHTML = '<span>DOWNLOADING...</span> <i class="fas fa-spinner fa-spin text-xs"></i>';
     setTimeout(() => {
-         btn.innerHTML = 'THANKS! <i class="fas fa-check"></i>';
-         setTimeout(() => btn.innerHTML = originalText, 2000);
+        btn.innerHTML = '<span>DOWNLOADED ✓</span>';
+        setTimeout(() => btn.innerHTML = originalText, 2000);
     }, 1000);
 }
 
-// --- Music Card Logic ---
+// ── Music Card ──
 const songs = [
         {
+        title: "505",
+        artist: "Arctic Monkeys",
+        file: "assets/songs/Arctic Monkeys- 505.mp3",
+        cover: "url('assets/albumCovers/arcticCover.jpg')",
+        heroBg: "assets/backgrounds/yellow.jpg",
+        theme: {
+            bg: "8 8 8",
+            text: "255 255 255",
+            accent: "200 255 0",
+            secondary: "255 215 0",
+            panel: "17 17 17",
+            gray: "148 163 184"
+        }
+    },
+    {
         title: "The Emptiness Machine",
         artist: "Linkin Park",
         file: "assets/songs/Linkin Park- The Emptiness Machine (2013venjix Edit).mp3",
         cover: "url('assets/albumCovers/linkinCover.jpg')",
         heroBg: "assets/backgrounds/pink.jpg",
         theme: {
-            bg: "0 0 0",          // Black
-            text: "255 255 255",  // White
-            accent: "255 0 255",  // Pink
-            secondary: "255 105 180", // Hot Pink
-            panel: "20 20 20",    // Dark Grey
-            gray: "128 128 128"
+            bg: "8 8 8",
+            text: "255 255 255",
+            accent: "255 0 255",
+            secondary: "255 105 180",
+            panel: "17 17 17",
+            gray: "148 163 184"
         }
     },
     {
@@ -358,28 +241,12 @@ const songs = [
         cover: "url('assets/albumCovers/twentyCover.png')",
         heroBg: "assets/backgrounds/red.jpg",
         theme: {
-            bg: "0 0 0",          // Black
-            text: "255 255 255",  // White
-            accent: "255 0 0",    // Red
-            secondary: "139 0 0", // Dark Red
-            panel: "20 20 20",    // Dark Grey
-            gray: "128 128 128"
-        }
-    },
-
-    {
-        title: "505",
-        artist: "Arctic Monkeys",
-        file: "assets/songs/Arctic Monkeys- 505.mp3",
-        cover: "url('assets/albumCovers/arcticCover.jpg')",
-        heroBg: "assets/backgrounds/yellow.jpg",
-        theme: {
-            bg: "0 0 0",          // Black
-            text: "255 255 255",  // White
-            accent: "255 255 0",  // Yellow
-            secondary: "255 215 0", // Gold
-            panel: "20 20 20",    // Dark Grey
-            gray: "128 128 128"
+            bg: "8 8 8",
+            text: "255 255 255",
+            accent: "255 50 50",
+            secondary: "180 0 0",
+            panel: "17 17 17",
+            gray: "148 163 184"
         }
     }
 ];
@@ -406,15 +273,12 @@ function loadSong(index) {
     artistName.innerText = song.artist;
     albumArt.style.backgroundImage = song.cover;
     albumArt.style.backgroundSize = "cover";
-    
     audioPlayer.src = song.file;
 
-    // Update Hero Background
     if (heroBg) {
         heroBg.style.backgroundImage = `url('${song.heroBg}')`;
     }
-    
-    // Update Theme
+
     const root = document.documentElement;
     root.style.setProperty('--bg-rgb', song.theme.bg);
     root.style.setProperty('--text-rgb', song.theme.text);
@@ -423,7 +287,6 @@ function loadSong(index) {
     root.style.setProperty('--panel-rgb', song.theme.panel);
     root.style.setProperty('--gray-rgb', song.theme.gray);
 
-    // Update Favicon
     updateFavicon(`rgb(${song.theme.accent})`);
 }
 
@@ -491,14 +354,12 @@ function setProgress(e) {
     audioPlayer.currentTime = (clickX / width) * duration;
 }
 
-// Auto-play next song when ended
 audioPlayer.addEventListener('ended', nextSong);
 audioPlayer.addEventListener('timeupdate', updateProgress);
 progressContainer.addEventListener('click', setProgress);
 
-// Error handling for audio
 audioPlayer.addEventListener('error', (e) => {
-    console.error("Error loading audio file:", audioPlayer.src);
+    console.error("Error loading audio:", audioPlayer.src);
     const icon = playBtn.querySelector('i');
     icon.className = 'fas fa-exclamation-triangle text-red-500';
 });
@@ -507,25 +368,19 @@ playBtn.addEventListener('click', togglePlay);
 nextBtn.addEventListener('click', nextSong);
 prevBtn.addEventListener('click', prevSong);
 
-// Initialize and Autoplay Logic
 loadSong(currentSongIndex);
 
-// Attempt to play immediately (Autoplay)
 const tryAutoplay = () => {
-    audioPlayer.volume = 0.5; // Start at 50% volume
+    audioPlayer.volume = 0.4;
     const playPromise = audioPlayer.play();
-
     if (playPromise !== undefined) {
-        playPromise.then(_ => {
-            // Autoplay started successfully
+        playPromise.then(() => {
             isPlaying = true;
             const icon = playBtn.querySelector('i');
             icon.classList.remove('fa-play');
             icon.classList.add('fa-pause');
             musicCard.classList.remove('paused');
-        })
-        .catch(error => {
-            console.log("Autoplay prevented. Waiting for user interaction.");
+        }).catch(() => {
             isPlaying = false;
             const icon = playBtn.querySelector('i');
             icon.classList.remove('fa-pause');
@@ -537,13 +392,13 @@ const tryAutoplay = () => {
 
 tryAutoplay();
 
-// --- Journey Expand/Collapse ---
+// ── Journey Expand/Collapse ──
 function toggleJourney(id, btn) {
     const content = document.getElementById(id);
     const icon = btn.querySelector('i');
     const text = btn.querySelector('span');
     const isClosed = content.classList.contains('grid-rows-[0fr]');
-    
+
     if (isClosed) {
         content.classList.remove('grid-rows-[0fr]', 'opacity-0');
         content.classList.add('grid-rows-[1fr]', 'opacity-100');
@@ -557,37 +412,77 @@ function toggleJourney(id, btn) {
     }
 }
 
-// --- Translation Logic ---
+// ── Translation System ──
 const translations = {
     en: {
-        "nav.projects": "Projects",
-        "nav.journey": "Journey",
+        // Nav
         "nav.about": "About",
-        "nav.skills": "Skills",
+        "nav.projects": "Work",
+        "nav.journey": "Trajectory",
+        "nav.skills": "Toolkit",
         "nav.contact": "Contact",
+        // Hero
         "hero.available": "Available for Work",
-        "hero.location": "Brazil / Fortaleza, Ceará",
-        "hero.description": "Full Stack Developer mastering <span class=\"text-neon font-medium\">Angular + Spring Boot</span>. Crafting scalable systems and <span class=\"text-sakura font-medium\">aesthetic interfaces</span> where code meets creativity.",
-        "hero.viewProjects": "PROJECTS",
-        "hero.resume": "RESUME",
-        "hero.scroll": "Scroll to Explore",
-        "projects.title": "Selected",
-        "projects.works": "Works",
-        "projects.description": "A collection of digital experiences, applications, and experiments crafted with precision and passion.",
-        "projects.dino.description": "An interactive educational platform exploring prehistoric life through an immersive digital experience with dynamic content and animations.",
+        "hero.location": "Fortaleza, Brazil",
+        "hero.description": "I architect <span class=\"text-accent font-medium\">scalable interfaces</span> and design systems that bridge engineering precision with creative expression. Specialized in <span class=\"text-accent font-medium\">Angular, React & Spring Boot</span>.",
+        "hero.viewProjects": "VIEW SELECTED WORK",
+        "hero.resume": "DOWNLOAD CV",
+        "hero.scroll": "Scroll",
+        "hero.role": "Frontend Architect & Creative Developer",
+        // About
+        "about.label": "About Me",
+        "about.title1": "Who I",
+        "about.title2": "am.",
+        "about.offCode": "About the Developer",
+        "about.title": "Enzo Esmeraldo",
+        "about.description": "Frontend-specialized developer who thrives on creative challenges. I transform complex ideas into intuitive, visually striking interfaces. Passionate about UI/UX, design systems, and crafting pixel-perfect experiences.",
+        "about.bio2": "When I'm not writing code, I'm probably overthinking a design, grinding at the gym, or blasting some killer rock — always with an eye for detail.",
+        "about.funfact.label": "Fun Fact",
+        "about.funfact.title": "Fav. Pokémon is Lugia",
+        "about.funfact.desc": "Psychic-type elegance, legendary rarity — basically my design philosophy wrapped in a Pokémon.",
+        "about.numbers.label": "By the Numbers",
+        "about.current.label": "Currently Building",
+        "about.current.desc": "An AI-powered medical platform that helps doctors make better clinical decisions — leading the team, owning the architecture, and designing every pixel of the experience.",
+        "about.current.status": "In active development",
+        "about.stat1.label": "Years",
+        "about.stat1.value": "2+",
+        "about.stat2.label": "Projects",
+        "about.stat2.value": "10+",
+        "about.stat3.label": "Focus",
+        "about.stat3.value": "Front-End",
+        "about.stat4.label": "Graduation",
+        "about.stat4.value": "2026",
+        "about.stat5.label": "Fav. Pokémon",
+        "about.stat5.value": "Lugia",
+        "about.downloadCV": "DOWNLOAD CV",
+        // Work
+        "work.label": "Portfolio",
+        "work.title1": "Selected",
+        "work.title2": "Work.",
+        "work.subtitle": "A curated selection of projects that showcase problem-solving through design and code.",
+        "projects.dino.description": "An interactive educational platform exploring prehistoric life through immersive digital storytelling, dynamic content loading, and orchestrated animations.",
         "projects.teambuilder.description": "Strategic synergy calculator for competitive Pokémon players. Analyze type coverage, identify weaknesses, and build balanced teams.",
-        "projects.uniforgym.description": "Native Android application for gym scheduling and workout tracking with user authentication and Material Design.",
-        "projects.aquacensus.description": "Marine biology research and specimen cataloging system. Comprehensive database solution for researchers to track marine life.",
-        "projects.wantToSee": "Want to see",
-        "projects.more": "More?",
-        "projects.visitGithub": "VISIT MY GITHUB :3",
+        "projects.uniforgym.description": "Native Android application for gym scheduling and workout tracking with user authentication and Material Design 3 components.",
+        "projects.aquacensus.description": "Marine biology research and specimen cataloging system. Comprehensive database solution for tracking marine life data.",
+        "projects.visitGithub": "Explore more on GitHub",
+        // Journey
         "journey.subtitle": "Career Path",
         "journey.the": "Professional",
-        "journey.title": "Journey",
+        "journey.title": "Journey.",
+        "journey.role0": "Project Leader",
+        "journey.date0": "Jan. 2026 — Present",
+        "journey.status0": "Current · React + Node.js + PostgreSQL",
+        "journey.desc0": "Promoted to Project Leader, spearheading the development of an AI-powered medical solution — leading the team, defining architecture, and owning the product from vision to deployment.",
+        "journey.role0.item1": "Leading the end-to-end development of an AI-assisted medical platform that powers clinical decision-making for doctors",
+        "journey.role0.item2": "Designing and owning the entire visual identity, component library, and UI/UX of the platform from scratch",
+        "journey.role0.item3": "Architecting the full-stack solution with React, Node.js, and PostgreSQL, ensuring scalability and maintainability",
+        "journey.role0.item4": "Managing version control strategy, Git workflows, and technical documentation across the team",
+        "journey.role0.item5": "Mentoring team members on best practices, code quality standards, and modern development patterns",
+        "journey.role0.item6": "Responsible for all project deliverables — from interface design to system architecture to deployment pipeline",
         "journey.role1": "FullStack Developer",
-        "journey.date1": "Jan. 2025 - Present",
-        "journey.status1": "Current Position | Angular + Spring",
-        "journey.desc1": "Advanced to full developer role, taking on greater responsibilities in system architecture and leadership.",
+        "journey.date1": "Jan. 2025 — Dec. 2025",
+        "journey.status1": "Completed · Angular + Spring",
+        "journey.desc1": "Advanced to full developer role, taking ownership of system architecture, UI/UX decisions, and cross-team technical leadership.",
         "journey.readMore": "Read More",
         "journey.achievements": "Key Achievements",
         "journey.role1.item1": "Developed the Exitus system end-to-end, working on front-end, back-end, and databases, focusing on scalability and performance",
@@ -598,67 +493,98 @@ const translations = {
         "journey.role1.item6": "Integrated webhooks and deployed cloud-based solutions (Source Cloud) for continuous system deployment and maintenance",
         "journey.role1.item7": "Worked under Agile Scrum methodology, actively participating in planning, reviews, and retrospectives",
         "journey.role2": "FullStack Intern",
-        "journey.date2": "Apr. 2024 - Dec. 2024",
-        "journey.status2": "Completed | Angular + Spring",
+        "journey.date2": "Apr. 2024 — Dec. 2024",
+        "journey.status2": "Completed · Angular + Spring",
         "journey.desc2": "Started my professional journey as an intern, contributing to system development and learning industry best practices.",
         "journey.role2.item1": "Contributed to the development and improvement of Exitus system interfaces, focusing on usability and accessibility",
         "journey.role2.item2": "Assisted in creating user flows and interface design, collaborating closely with the UI/UX team",
         "journey.role2.item3": "Participated in front-end development using Angular, TypeScript, and CSS, and supported the back-end with Spring Boot",
         "journey.role2.item4": "Gained hands-on experience with full-stack development in a professional environment",
         "journey.role2.item5": "Learned Agile development methodologies and team collaboration practices",
+        // Skills
         "skills.subtitle": "What I Work With",
-        "skills.title": "Tech Stack",
-        "about.offCode": "ABOUT ME",
-        "about.title1": "Building",
-        "about.title2": "Experiences",
-        "about.description": "Front-End specialized developer who loves thinking outside the box. I thrive on creative challenges, turning complex ideas into intuitive and visually stunning interfaces. Passionate about UI/UX, design systems, and crafting pixel-perfect experiences.",
-        "about.stat1.label": "Years Exp.",
-        "about.stat1.value": "2+",
-        "about.stat2.label": "Projects",
-        "about.stat2.value": "10+",
-        "about.stat3.label": "Specialization",
-        "about.stat3.value": "Front-End",
-        "about.stat4.label": "Graduation",
-        "about.stat4.value": "2026",
-        "about.stat5.label": "Fav. Pokémon",
-        "about.stat5.value": "Lugia",
-        "about.downloadCV": "DOWNLOAD CV",
-        "footer.title1": "Did you like it?",
-        "footer.title2": "Let's",
-        "footer.connect": "Connect",
-        "footer.copyright": "&copy; 2025 Enzo Esmeraldo. All rights reserved.",
-        "footer.credits": "Designed & Built with <i class=\"fas fa-heart text-sakura animate-pulse\"></i> in Brazil",
+        "skills.title1": "Tech",
+        "skills.title2": "Arsenal.",
+        "skills.frontend": "Frontend Architecture",
+        "skills.backend": "Backend & Data",
+        // Footer
+        "footer.label": "Get In Touch",
+        "footer.title1": "Let's build",
+        "footer.title2": "something awsome.",
+        "footer.copyright": "&copy; 2025 Enzo Esmeraldo",
+        "footer.credits": "Crafted with <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> in Brazil",
+        // Music
         "music.hint": "Change song to switch theme"
     },
     pt: {
-        "nav.projects": "Projetos",
-        "nav.journey": "Jornada",
+        // Nav
         "nav.about": "Sobre",
-        "nav.skills": "Habilidades",
+        "nav.projects": "Trabalhos",
+        "nav.journey": "Trajetória",
+        "nav.skills": "Ferramentas",
         "nav.contact": "Contato",
+        // Hero
         "hero.available": "Disponível para Trabalho",
-        "hero.location": "Brasil / Fortaleza, Ceará",
-        "hero.description": "Desenvolvedor Full Stack dominando <span class=\"text-neon font-medium\">Angular + Spring Boot</span>. Criando sistemas escaláveis e <span class=\"text-sakura font-medium\">interfaces estéticas</span> onde código encontra criatividade.",
-        "hero.viewProjects": "PROJETOS",
-        "hero.resume": "CURRÍCULO",
-        "hero.scroll": "Role para Explorar",
-        "projects.title": "Trabalhos",
-        "projects.works": "Selecionados",
-        "projects.description": "Uma coleção de experiências digitais, aplicações e experimentos criados com precisão e paixão.",
-        "projects.dino.description": "Uma plataforma educacional interativa explorando a vida pré-histórica através de uma experiência digital imersiva com conteúdo dinâmico e animações.",
+        "hero.location": "Fortaleza, Brasil",
+        "hero.description": "Eu projeto <span class=\"text-accent font-medium\">interfaces escaláveis</span> e design systems que unem precisão técnica com expressão criativa. Especializado em <span class=\"text-accent font-medium\">Angular, React & Spring Boot</span>.",
+        "hero.viewProjects": "VER TRABALHOS",
+        "hero.resume": "BAIXAR CV",
+        "hero.scroll": "Role",
+        "hero.role": "Arquiteto Frontend & Desenvolvedor Criativo",
+        // About
+        "about.label": "Sobre Mim",
+        "about.title1": "Quem eu",
+        "about.title2": "sou.",
+        "about.offCode": "Sobre o Desenvolvedor",
+        "about.title": "Enzo Esmeraldo",
+        "about.description": "Desenvolvedor especializado em Frontend que prospera em desafios criativos. Transformo ideias complexas em interfaces intuitivas e visualmente impactantes. Apaixonado por UI/UX, design systems e experiências pixel-perfect.",
+        "about.bio2": "Quando não estou escrevendo código, provavelmente estou repensando um design, na academia ou ouvindo um rock bem maneiro — sempre com atenção aos detalhes.",
+        "about.funfact.label": "Curiosidade",
+        "about.funfact.title": "Pokémon Fav. é Lugia",
+        "about.funfact.desc": "Elegância do tipo Psíquico, raridade lendária — basicamente minha filosofia de design em forma de Pokémon.",
+        "about.numbers.label": "Em Números",
+        "about.current.label": "Em Desenvolvimento",
+        "about.current.desc": "Uma plataforma médica com IA que ajuda médicos a tomar melhores decisões clínicas — liderando a equipe, definindo a arquitetura e projetando cada pixel da experiência.",
+        "about.current.status": "Em desenvolvimento ativo",
+        "about.stat1.label": "Anos",
+        "about.stat1.value": "2+",
+        "about.stat2.label": "Projetos",
+        "about.stat2.value": "10+",
+        "about.stat3.label": "Foco",
+        "about.stat3.value": "Front-End",
+        "about.stat4.label": "Graduação",
+        "about.stat4.value": "2026",
+        "about.stat5.label": "Pokémon Fav.",
+        "about.stat5.value": "Lugia",
+        "about.downloadCV": "BAIXAR CV",
+        // Work
+        "work.label": "Portfólio",
+        "work.title1": "Trabalhos",
+        "work.title2": "Selecionados.",
+        "work.subtitle": "Uma seleção curada de projetos que demonstram resolução de problemas através de design e código.",
+        "projects.dino.description": "Uma plataforma educacional interativa explorando a vida pré-histórica através de narrativa digital imersiva, carregamento dinâmico de conteúdo e animações orquestradas.",
         "projects.teambuilder.description": "Calculadora estratégica de sinergia para jogadores competitivos de Pokémon. Analise cobertura de tipos, identifique fraquezas e monte times balanceados.",
-        "projects.uniforgym.description": "Aplicativo Android nativo para agendamento de academia e acompanhamento de treinos com autenticação de usuário e Material Design.",
-        "projects.aquacensus.description": "Sistema de pesquisa em biologia marinha e catalogação de espécimes. Solução completa de banco de dados para pesquisadores rastrearem vida marinha.",
-        "projects.wantToSee": "Quer ver",
-        "projects.more": "Mais?",
-        "projects.visitGithub": "VISITE O GITHUB",
+        "projects.uniforgym.description": "Aplicativo Android nativo para agendamento de academia e acompanhamento de treinos com autenticação de usuário e Material Design 3.",
+        "projects.aquacensus.description": "Sistema de pesquisa em biologia marinha e catalogação de espécimes. Solução completa de banco de dados para rastrear dados de vida marinha.",
+        "projects.visitGithub": "Explore mais no GitHub",
+        // Journey
         "journey.subtitle": "Trajetória Profissional",
         "journey.the": "Jornada",
-        "journey.title": "Profissional",
+        "journey.title": "Profissional.",
+        "journey.role0": "Líder de Projeto",
+        "journey.date0": "Jan. 2026 — Presente",
+        "journey.status0": "Atual · React + Node.js + PostgreSQL",
+        "journey.desc0": "Promovido a Líder de Projeto, liderando o desenvolvimento de uma solução médica com IA — conduzindo a equipe, definindo a arquitetura e sendo responsável pelo produto da concepção à entrega.",
+        "journey.role0.item1": "Liderando o desenvolvimento completo de uma plataforma médica assistida por IA que apoia a tomada de decisões clínicas para médicos",
+        "journey.role0.item2": "Projetando e sendo responsável por toda a identidade visual, biblioteca de componentes e UI/UX da plataforma do zero",
+        "journey.role0.item3": "Arquitetando a solução full-stack com React, Node.js e PostgreSQL, garantindo escalabilidade e manutenibilidade",
+        "journey.role0.item4": "Gerenciando a estratégia de versionamento, fluxos Git e documentação técnica da equipe",
+        "journey.role0.item5": "Mentorando membros da equipe em boas práticas, padrões de qualidade de código e padrões modernos de desenvolvimento",
+        "journey.role0.item6": "Responsável por todas as entregas do projeto — do design de interface à arquitetura do sistema ao pipeline de deploy",
         "journey.role1": "Desenvolvedor FullStack",
-        "journey.date1": "Jan. 2025 - Presente",
-        "journey.status1": "Cargo Atual | Angular + Spring",
-        "journey.desc1": "Avancei para o cargo de desenvolvedor pleno, assumindo maiores responsabilidades na arquitetura do sistema e liderança.",
+        "journey.date1": "Jan. 2025 — Dez. 2025",
+        "journey.status1": "Concluído · Angular + Spring",
+        "journey.desc1": "Avancei para desenvolvedor pleno, assumindo responsabilidades na arquitetura do sistema, decisões de UI/UX e liderança técnica.",
         "journey.readMore": "Ler Mais",
         "journey.achievements": "Principais Conquistas",
         "journey.role1.item1": "Desenvolvi o sistema Exitus de ponta a ponta, trabalhando no front-end, back-end e bancos de dados, focando em escalabilidade e desempenho",
@@ -669,36 +595,27 @@ const translations = {
         "journey.role1.item6": "Integrei webhooks e implantei soluções baseadas em nuvem (Source Cloud) para implantação e manutenção contínua do sistema",
         "journey.role1.item7": "Trabalhei sob a metodologia Agile Scrum, participando ativamente de planejamentos, revisões e retrospectivas",
         "journey.role2": "Estagiário FullStack",
-        "journey.date2": "Abr. 2024 - Dez. 2024",
-        "journey.status2": "Concluído | Angular + Spring",
+        "journey.date2": "Abr. 2024 — Dez. 2024",
+        "journey.status2": "Concluído · Angular + Spring",
         "journey.desc2": "Iniciei minha jornada profissional como estagiário, contribuindo para o desenvolvimento de sistemas e aprendendo as melhores práticas da indústria.",
         "journey.role2.item1": "Contribuí para o desenvolvimento e melhoria das interfaces do sistema Exitus, focando em usabilidade e acessibilidade",
         "journey.role2.item2": "Auxiliei na criação de fluxos de usuário e design de interface, colaborando estreitamente com a equipe de UI/UX",
         "journey.role2.item3": "Participei do desenvolvimento front-end usando Angular, TypeScript e CSS, e apoiei o back-end com Spring Boot",
         "journey.role2.item4": "Ganhei experiência prática com desenvolvimento full-stack em um ambiente profissional",
         "journey.role2.item5": "Aprendi metodologias de desenvolvimento Ágil e práticas de colaboração em equipe",
+        // Skills
         "skills.subtitle": "Com o que trabalho",
-        "skills.title": "Tecnologias",
-        "about.offCode": "SOBRE MIM",
-        "about.title1": "Construindo",
-        "about.title2": "Experiências",
-        "about.description": "Desenvolvedor especializado em Front-End que adora pensar fora da caixa. Prospero em desafios criativos, transformando ideias complexas em interfaces intuitivas e visualmente impressionantes. Apaixonado por UI/UX, design systems e experiências pixel-perfect.",
-        "about.stat1.label": "Anos Exp.",
-        "about.stat1.value": "2+",
-        "about.stat2.label": "Projetos",
-        "about.stat2.value": "10+",
-        "about.stat3.label": "Especialização",
-        "about.stat3.value": "Front-End",
-        "about.stat4.label": "Graduação",
-        "about.stat4.value": "2026",
-        "about.stat5.label": "Pokémon Fav.",
-        "about.stat5.value": "Lugia",
-        "about.downloadCV": "BAIXAR CV",
-        "footer.title1": "Gostou?",
-        "footer.title2": "Vamos nos",
-        "footer.connect": "Conectar",
-        "footer.copyright": "&copy; 2025 Enzo Esmeraldo. Todos os direitos reservados.",
-        "footer.credits": "Projetado & Construído com <i class=\"fas fa-heart text-sakura animate-pulse\"></i> no Brasil",
+        "skills.title1": "Arsenal",
+        "skills.title2": "Tecnológico.",
+        "skills.frontend": "Arquitetura Frontend",
+        "skills.backend": "Backend & Dados",
+        // Footer
+        "footer.label": "Entre em Contato",
+        "footer.title1": "Vamos construir",
+        "footer.title2": "algo incrível.",
+        "footer.copyright": "&copy; 2025 Enzo Esmeraldo",
+        "footer.credits": "Criado com <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> no Brasil",
+        // Music
         "music.hint": "Mude a música para trocar o tema"
     }
 };
@@ -707,8 +624,7 @@ let currentLang = 'en';
 
 function setLanguage(lang) {
     currentLang = lang;
-    
-    // Update Text Content
+
     document.querySelectorAll('[data-lang]').forEach(element => {
         const key = element.getAttribute('data-lang');
         if (translations[lang][key]) {
@@ -716,21 +632,19 @@ function setLanguage(lang) {
         }
     });
 
-    // Update CV Links
+    // Update CV links
     const cvLinks = document.querySelectorAll('a[href*="cv"]');
     const cvFile = lang === 'pt' ? 'assets/cv/EnzoEsmeraldo_CV_PT.pdf' : 'assets/cv/EnzoEsmeraldo_CV_EN.pdf';
     cvLinks.forEach(link => {
         link.href = cvFile;
     });
 
-    // Update Toggle Buttons
+    // Update toggle buttons
     const desktopBtn = document.getElementById('current-lang-desktop');
     const mobileBtn = document.getElementById('current-lang-mobile');
-    
-    if(desktopBtn) desktopBtn.textContent = lang.toUpperCase();
-    if(mobileBtn) mobileBtn.textContent = lang.toUpperCase();
+    if (desktopBtn) desktopBtn.textContent = lang.toUpperCase();
+    if (mobileBtn) mobileBtn.textContent = lang.toUpperCase();
 
-    // Save preference
     localStorage.setItem('preferred-lang', lang);
 }
 
@@ -739,22 +653,16 @@ function toggleLanguage() {
     setLanguage(newLang);
 }
 
-// Initialize Language
 function initLanguage() {
     const savedLang = localStorage.getItem('preferred-lang');
     const browserLang = navigator.language.startsWith('pt') ? 'pt' : 'en';
     const initialLang = savedLang || browserLang;
-    
     setLanguage(initialLang);
 
-    // Event Listeners
     const desktopToggle = document.getElementById('lang-toggle-desktop');
     const mobileToggle = document.getElementById('lang-toggle-mobile');
-
-    if(desktopToggle) desktopToggle.addEventListener('click', toggleLanguage);
-    if(mobileToggle) mobileToggle.addEventListener('click', toggleLanguage);
+    if (desktopToggle) desktopToggle.addEventListener('click', toggleLanguage);
+    if (mobileToggle) mobileToggle.addEventListener('click', toggleLanguage);
 }
 
-// Call init
 document.addEventListener('DOMContentLoaded', initLanguage);
-
