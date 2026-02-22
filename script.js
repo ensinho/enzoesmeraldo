@@ -210,6 +210,11 @@ const songs = [
         file: "assets/songs/Arctic Monkeys- 505.mp3",
         cover: "url('assets/albumCovers/arcticCover.jpg')",
         heroBg: "assets/backgrounds/yellow.jpg",
+        easterEgg: {
+            en: "505 hits different at 5am, doesn't it?",
+            pt: "505 bate diferente às 5 da manhã, né?"
+        },
+        consoleMsg: ["color: #c8ff00; font-size: 13px; font-weight: bold;", "Arctic Monkeys detected. Certified taste."],
         theme: {
             bg: "8 8 8",
             text: "255 255 255",
@@ -225,6 +230,11 @@ const songs = [
         file: "assets/songs/Linkin Park- The Emptiness Machine (2013venjix Edit).mp3",
         cover: "url('assets/albumCovers/linkinCover.jpg')",
         heroBg: "assets/backgrounds/pink.jpg",
+        easterEgg: {
+            en: "Hmm, you're into Linkin Park too?",
+            pt: "Hmm, você curte Linkin Park também?"
+        },
+        consoleMsg: ["color: #ff00ff; font-size: 13px; font-weight: bold;", "Linkin Park mode activated. Raw energy unlocked."],
         theme: {
             bg: "8 8 8",
             text: "255 255 255",
@@ -240,6 +250,11 @@ const songs = [
         file: "assets/songs/twenty one pilots - City Walls.mp3",
         cover: "url('assets/albumCovers/twentyCover.png')",
         heroBg: "assets/backgrounds/red.jpg",
+        easterEgg: {
+            en: "Twenty One Pilots? We'd get along just fine.",
+            pt: "Twenty One Pilots? A gente ia se dar muito bem."
+        },
+        consoleMsg: ["color: #ff3232; font-size: 13px; font-weight: bold;", "City Walls. Good choice for late-night coding."],
         theme: {
             bg: "8 8 8",
             text: "255 255 255",
@@ -266,6 +281,51 @@ const equalizer = document.getElementById('equalizer');
 const heroBg = document.getElementById('hero-bg');
 const progressContainer = document.getElementById('progress-container');
 const progressBar = document.getElementById('progress-bar');
+const musicCollapsible = document.getElementById('music-collapsible');
+const collapseIcon = document.getElementById('collapse-icon');
+const musicEasterEgg = document.getElementById('music-easter-egg');
+
+let isMusicCollapsed = false;
+let easterEggTimeout = null;
+
+// ── Music Collapse ──
+function toggleMusicCollapse() {
+    isMusicCollapsed = !isMusicCollapsed;
+    if (isMusicCollapsed) {
+        musicCollapsible.style.maxHeight = '0px';
+        musicCollapsible.style.opacity = '0';
+        collapseIcon.style.transform = 'rotate(180deg)';
+    } else {
+        musicCollapsible.style.maxHeight = '80px';
+        musicCollapsible.style.opacity = '1';
+        collapseIcon.style.transform = 'rotate(0deg)';
+    }
+}
+
+// ── Easter Egg: in-card message ──
+function showEasterEgg(msgObj) {
+    if (!musicEasterEgg) return;
+    if (easterEggTimeout) clearTimeout(easterEggTimeout);
+
+    const msg = msgObj[currentLang] || msgObj['en'];
+
+    // Reset
+    musicEasterEgg.style.maxHeight = '0';
+    musicEasterEgg.style.color = 'rgba(var(--accent-rgb), 0)';
+    musicEasterEgg.textContent = msg;
+
+    // Fade in after tiny delay
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        musicEasterEgg.style.maxHeight = '30px';
+        musicEasterEgg.style.color = 'rgba(var(--accent-rgb), 0.5)';
+    }));
+
+    // Fade out after 4s
+    easterEggTimeout = setTimeout(() => {
+        musicEasterEgg.style.color = 'rgba(var(--accent-rgb), 0)';
+        setTimeout(() => { musicEasterEgg.style.maxHeight = '0'; }, 700);
+    }, 4000);
+}
 
 function loadSong(index) {
     const song = songs[index];
@@ -327,6 +387,11 @@ function nextSong() {
     icon.classList.remove('fa-play');
     icon.classList.add('fa-pause');
     musicCard.classList.remove('paused');
+
+    // Easter eggs
+    const song = songs[currentSongIndex];
+    showEasterEgg(song.easterEgg);
+    console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
 }
 
 function prevSong() {
@@ -338,6 +403,11 @@ function prevSong() {
     icon.classList.remove('fa-play');
     icon.classList.add('fa-pause');
     musicCard.classList.remove('paused');
+
+    // Easter eggs
+    const song = songs[currentSongIndex];
+    showEasterEgg(song.easterEgg);
+    console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
 }
 
 function updateProgress(e) {
