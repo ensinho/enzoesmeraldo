@@ -704,7 +704,7 @@ function setLanguage(lang) {
 
     // Update CV links
     const cvLinks = document.querySelectorAll('a[href*="cv"]');
-    const cvFile = lang === 'pt' ? 'assets/cv/EnzoEsmeraldo_CV_PT.pdf' : 'assets/cv/EnzoEsmeraldo_CV_EN.pdf';
+    const cvFile = lang === 'pt' ? 'assets/cv/CV_ENZO_ESMERALDO_LÍDER_FULLSTACK_PT.pdf' : 'assets/cv/CV_ENZO_ESMERALDO_LEAD_FULLSTACK_EN.pdf';
     cvLinks.forEach(link => {
         link.href = cvFile;
     });
