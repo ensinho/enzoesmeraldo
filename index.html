@@ -545,147 +545,26 @@
     <section id="work" class="relative py-32 md:py-40">
         <div class="max-w-[1400px] mx-auto px-6 md:px-10">
             <!-- Section Header -->
-            <div class="gs-reveal mb-16 md:mb-20">
-                <p class="font-mono text-[11px] tracking-[0.3em] uppercase text-accent mb-4" data-lang="work.label">Portfolio</p>
-                <h2 class="font-display text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1]">
-                    <span data-lang="work.title1">Selected</span><br>
-                    <span class="text-accent italic" data-lang="work.title2">Work.</span>
-                </h2>
-                <p class="font-body text-base text-gray mt-4 max-w-xl" data-lang="work.subtitle">A curated selection of projects that showcase problem-solving through design and code.</p>
+            <div class="gs-reveal featured-project-header mb-8 md:mb-10">
+                <div class="featured-project-header-copy">
+                    <p class="font-mono text-[11px] tracking-[0.3em] uppercase text-accent mb-4" data-lang="work.label">Portfolio</p>
+                    <h2 class="font-display featured-project-header-title text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1]">
+                        <span data-lang="work.title1">My</span>
+                        <span class="text-accent italic" data-lang="work.title2">Work.</span>
+                    </h2>
+                </div>
+                <div id="featured-project-switcher" class="featured-project-header-switcher" aria-label="Featured projects"></div>
             </div>
 
-            <!-- Project Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6">
-
-                <!-- Project 1 — Dino Library -->
-                <div class="gs-reveal project-card-v2 group">
-                    <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col justify-between min-h-[260px] rounded-xl">
-                        <div>
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-11 h-11 relative shrink-0 flex items-center justify-center rounded-xl bg-white/5 group-hover:scale-110 transition-all duration-500 overflow-hidden p-2">
-                                        <img src="assets/icons/dinoLibraryLogo.png" alt="Dino Library" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-500" />
-                                        <span class="absolute inset-0 bg-white/10 mix-blend-screen pointer-events-none rounded-xl"></span>
-                                    </div>
-                                    <h3 class="font-heading text-xl md:text-2xl text-text font-semibold group-hover:text-accent transition-colors duration-300">Dino Library</h3>
-                                </div>
-                                <a href="https://github.com/ensinho/dino-library" target="_blank" class="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-white/8 text-gray hover:text-accent hover:border-accent/30 transition-all">
-                                    <i class="fab fa-github text-[12px]"></i>
-                                </a>
-                            </div>
-                            <p class="font-body text-sm text-gray leading-relaxed mb-2" data-lang="projects.dino.description">An interactive educational platform exploring prehistoric life through immersive digital storytelling, dynamic content loading, and orchestrated animations.</p>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-wrap gap-2">
-                                <span class="project-tag">React</span>
-                                <span class="project-tag">Typescript</span>
-                                <span class="project-tag">Tailwind</span>
-                                <span class="project-tag">Firebase</span>
-                            </div>
-                            <a href="https://dino-library.vercel.app/" target="_blank" class="project-demo-btn group/btn">
-                                <span>Website</span>
-                                <i class="fas fa-arrow-up-right-from-square text-[10px] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project 2 — Team Builder -->
-                <div class="gs-reveal project-card-v2 group">
-                    <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col justify-between min-h-[260px] rounded-xl">
-                        <div>
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-11 h-11 shrink-0 flex items-center justify-center rounded-xl bg-white/5 group-hover:scale-110 transition-all duration-500 overflow-hidden p-2">
-                                        <img src="assets/icons/teamBuilderLogo.png" alt="Team Builder" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-500" />
-                                    </div>
-                                    <h3 class="font-heading text-xl md:text-2xl text-text font-semibold group-hover:text-accent transition-colors duration-300">Team Builder</h3>
-                                </div>
-                                <a href="https://github.com/ensinho/pokemonTeamBuilder" target="_blank" class="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-white/8 text-gray hover:text-accent hover:border-accent/30 transition-all">
-                                    <i class="fab fa-github text-[12px]"></i>
-                                </a>
-                            </div>
-                            <p class="font-body text-sm text-gray leading-relaxed mb-2" data-lang="projects.teambuilder.description">Strategic synergy calculator for competitive Pokémon players. Analyze type coverage, identify weaknesses, and build balanced teams.</p>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-wrap gap-2">
-                                <span class="project-tag">React</span>
-                                <span class="project-tag">JavaScript</span>
-                                <span class="project-tag">Tailwind</span>
-                                <span class="project-tag">Firebase</span>
-                                <span class="project-tag">PokéAPI</span>
-                            </div>
-                            <a href="https://ensinho.github.io/pokemonTeamBuilder/" target="_blank" class="project-demo-btn group/btn">
-                                <span>Website</span>
-                                <i class="fas fa-arrow-up-right-from-square text-[10px] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project 3 — AquaCensus -->
-                <div class="gs-reveal project-card-v2 group">
-                    <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col justify-between min-h-[260px] rounded-xl">
-                        <div>
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-11 h-11 shrink-0 flex items-center justify-center rounded-xl bg-white/5 group-hover:scale-110 transition-all duration-500 overflow-hidden p-2">
-                                        <img src="assets/icons/fish.svg" alt="AquaCensus" class="text-white w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
-                                    </div>
-                                    <h3 class="font-heading text-xl md:text-2xl text-text font-semibold group-hover:text-accent transition-colors duration-300">AquaCensus</h3>
-                                </div>
-                                <a href="https://github.com/ensinho/pesquisaMaritima" target="_blank" class="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-white/8 text-gray hover:text-accent hover:border-accent/30 transition-all">
-                                    <i class="fab fa-github text-[12px]"></i>
-                                </a>
-                            </div>
-                            <p class="font-body text-sm text-gray leading-relaxed mb-2" data-lang="projects.aquacensus.description">Marine biology research and specimen cataloging system. Comprehensive database solution for tracking marine life data.</p>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-wrap gap-2">
-                                <span class="project-tag">React</span>
-                                <span class="project-tag">NodeJs</span>
-                                <span class="project-tag">Tailwind</span>
-                            </div>
-                            <a href="https://pesquisa-maritima.vercel.app/" target="_blank" class="project-demo-btn group/btn">
-                                <span>Website</span>
-                                <i class="fas fa-arrow-up-right-from-square text-[10px] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Project 4 — Unifor Gym -->
-                <div class="gs-reveal project-card-v2 group">
-                    <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col justify-between min-h-[260px] rounded-xl">
-                        <div>
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-11 h-11 shrink-0 flex items-center justify-center rounded-xl bg-white/5 group-hover:scale-110 transition-all duration-500 overflow-hidden p-2">
-                                        <img src="assets/icons/gymLogoBranca.png" alt="Unifor Gym" class="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all duration-500" />
-                                    </div>
-                                    <h3 class="font-heading text-xl md:text-2xl text-text font-semibold group-hover:text-accent transition-colors duration-300">Unifor Gym</h3>
-                                </div>
-                            </div>
-                            <p class="font-body text-sm text-gray leading-relaxed mb-2" data-lang="projects.uniforgym.description">Native Android application for gym scheduling and workout tracking with user authentication and Material Design 3 components.</p>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-wrap gap-2">
-                                <span class="project-tag">Kotlin</span>
-                                <span class="project-tag">Android</span>
-                                <span class="project-tag">Material 3</span>
-                                <span class="project-tag">Firebase</span>
-                            </div>
-                            <a href="https://github.com/ensinho/devMobile-gym" target="_blank" class="project-demo-btn group/btn">
-                                <span>Code</span>
-                                <i class="fab fa-github text-[11px] group-hover/btn:scale-110 transition-transform"></i>
-                            </a>
-                        </div>
-                    </div>
+            <!-- Featured Project Spotlight -->
+            <div class="gs-reveal mb-10 md:mb-12">
+                <div class="bento-card-inner featured-project-spotlight rounded-[28px] p-4 sm:p-5 lg:p-6">
+                    <div id="featured-project-stage" class="featured-project-stage"></div>
                 </div>
             </div>
 
             <!-- GitHub CTA -->
-            <div class="gs-reveal mt-12 flex justify-center">
+            <div class="gs-reveal mt-10 md:mt-12 flex justify-center">
                 <a href="https://github.com/ensinho" target="_blank" class="group flex items-center gap-3 border border-white/10 hover:border-accent/30 px-8 py-4 transition-all">
                     <i class="fab fa-github text-sm text-gray group-hover:text-accent transition-colors"></i>
                     <span class="font-mono text-[11px] tracking-[0.15em] uppercase text-gray group-hover:text-text transition-colors" data-lang="projects.visitGithub">Explore more on GitHub</span>
@@ -701,18 +580,18 @@
         <!-- Always-visible row: album art + info + controls + collapse btn -->
         <div class="flex items-center gap-3">
             <div id="album-art" class="w-10 h-10 rounded-sm bg-cover bg-center shrink-0 shadow-lg"></div>
-            <div class="flex-1 min-w-0">
+            <div id="music-meta" class="flex-1 min-w-0">
                 <p id="song-title" class="font-heading text-xs text-text font-medium truncate">505</p>
                 <p id="artist-name" class="font-mono text-[10px] text-gray truncate">Arctic Monkeys</p>
             </div>
-            <div class="flex items-center gap-1">
-                <button id="prev-btn" class="w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
+            <div id="music-nav" class="flex items-center gap-1">
+                <button id="prev-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
                     <i class="fas fa-backward-step text-[10px]"></i>
                 </button>
                 <button id="play-btn" class="w-8 h-8 flex items-center justify-center text-text hover:text-accent transition-colors cursor-pointer">
                     <i class="fas fa-play text-xs"></i>
                 </button>
-                <button id="next-btn" class="w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
+                <button id="next-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
                     <i class="fas fa-forward-step text-[10px]"></i>
                 </button>
             </div>

@@ -295,10 +295,12 @@ function toggleMusicCollapse() {
         musicCollapsible.style.maxHeight = '0px';
         musicCollapsible.style.opacity = '0';
         collapseIcon.style.transform = 'rotate(180deg)';
+        musicCard.classList.add('collapsed');
     } else {
         musicCollapsible.style.maxHeight = '80px';
         musicCollapsible.style.opacity = '1';
         collapseIcon.style.transform = 'rotate(0deg)';
+        musicCard.classList.remove('collapsed');
     }
 }
 
@@ -482,6 +484,429 @@ function toggleJourney(id, btn) {
     }
 }
 
+// ── Featured Projects Spotlight ──
+const FEATURED_PROJECT_ROTATION_INTERVAL = 30 * 60 * 1000;
+
+// Replace single-image entries with dedicated screenshot arrays as more project captures land.
+const featuredProjects = [
+    {
+        id: 'pokemon-team-builder',
+        title: 'Pokémon Team Builder',
+        logo: {
+            src: 'assets/icons/teamBuilderLogo.png',
+            alt: 'Pokémon Team Builder logo'
+        },
+        description: {
+            en: 'A presentation-style team building experience for competitive Pokémon players, combining roster assembly, type coverage analysis, a searchable Pokédex, and quick round generators in one cohesive interface.',
+            pt: 'Uma experiência de construção de times para jogadores competitivos de Pokémon, unindo montagem de equipe, análise de cobertura de tipos, Pokédex pesquisável e geradores de rodada em uma interface coesa.'
+        },
+        technologies: ['React', 'JavaScript', 'Tailwind', 'Firebase', 'PokéAPI'],
+        images: [
+            {
+                src: 'assets/projectCovers/pokemon/home.png',
+                alt: 'Pokemon Team Builder home dashboard',
+                fit: 'cover',
+                position: 'center top'
+            },
+            {
+                src: 'assets/projectCovers/pokemon/team-builder.png',
+                alt: 'Pokemon Team Builder roster builder screen',
+                fit: 'cover',
+                position: 'center top'
+            },
+            {
+                src: 'assets/projectCovers/pokemon/pokedex.png',
+                alt: 'Pokemon Team Builder Pokedex screen',
+                fit: 'cover',
+                position: 'center top'
+            },
+            {
+                src: 'assets/projectCovers/pokemon/generator.png',
+                alt: 'Pokemon Team Builder round generator screen',
+                fit: 'cover',
+                position: 'center top'
+            },
+            {
+                src: 'assets/projectCovers/pokemon/detail-charizard.png',
+                alt: 'Pokemon Team Builder detail modal',
+                fit: 'contain',
+                position: 'center'
+            }
+        ],
+        links: {
+            demo: 'https://ensinho.github.io/pokemonTeamBuilder/',
+            github: 'https://github.com/ensinho/pokemonTeamBuilder'
+        }
+    },
+    {
+        id: 'dino-library',
+        title: 'Dino Library',
+        logo: {
+            src: 'assets/icons/dinoLibraryLogo.png',
+            alt: 'Dino Library logo'
+        },
+        description: {
+            en: 'An interactive learning platform that turns dinosaur research into guided digital storytelling, using motion, layered content, and playful interface details to keep exploration intuitive.',
+            pt: 'Uma plataforma educacional interativa que transforma pesquisa sobre dinossauros em storytelling digital guiado, usando movimento, camadas de conteúdo e detalhes lúdicos de interface para manter a exploração intuitiva.'
+        },
+        technologies: ['React', 'TypeScript', 'Tailwind', 'Firebase'],
+        images: [
+            {
+                src: 'assets/projectCovers/dino/Home1.png',
+                alt: 'Dino Library home screen',
+                fit: 'cover'
+            },
+            {
+                src: 'assets/projectCovers/dino/DinoCatalog.png',
+                alt: 'Dino Library catalog screen',
+                fit: 'cover'
+            },
+            {
+                src: 'assets/projectCovers/dino/DinoDetail1.png',
+                alt: 'Dino Library detail screen containing layered content and interactive elements',
+                fit: 'cover'
+            },
+            {
+                src: 'assets/projectCovers/dino/DinoDetail2.png',
+                alt: 'Dino Library detail screen containing layered content and interactive elements',
+                fit: 'cover'
+            },
+            {
+                src: 'assets/projectCovers/dino/DinoMap.png',
+                alt: 'Dino Library map screen with motion and layered content',
+                fit: 'cover'
+            },
+            {
+                src: 'assets/projectCovers/dino/Quiz.png',
+                alt: 'Dino Library quiz screen',
+                fit: 'cover'
+            }
+        ],
+        links: {
+            demo: 'https://dino-library.vercel.app/',
+            github: 'https://github.com/ensinho/dino-library'
+        }
+    },
+    {
+        id: 'aqua-census',
+        title: 'AquaCensus',
+        logo: {
+            src: 'assets/icons/fish.svg',
+            alt: 'AquaCensus logo'
+        },
+        description: {
+            en: 'A marine research catalog built to organize specimen data, surface trends quickly, and make environmental records easier to navigate across analysis and documentation workflows.',
+            pt: 'Um catálogo de pesquisa marinha criado para organizar dados de espécimes, destacar tendências rapidamente e tornar registros ambientais mais fáceis de navegar em fluxos de análise e documentação.'
+        },
+        technologies: ['React', 'Node.js', 'Tailwind'],
+        images: [
+            {
+                src: 'assets/icons/fish.svg',
+                alt: 'AquaCensus project identity'
+            }
+        ],
+        links: {
+            demo: 'https://pesquisa-maritima.vercel.app/',
+            github: 'https://github.com/ensinho/pesquisaMaritima'
+        }
+    },
+    {
+        id: 'unifor-gym',
+        title: 'Unifor Gym',
+        logo: {
+            src: 'assets/icons/gymLogoBranca.png',
+            alt: 'Unifor Gym logo'
+        },
+        description: {
+            en: 'A native Android scheduling and workout tracking app shaped around clear flows, authentication, and Material 3 patterns for daily gym routines.',
+            pt: 'Um aplicativo Android nativo de agendamento e acompanhamento de treinos, construído com foco em fluxos claros, autenticação e padrões Material 3 para a rotina da academia.'
+        },
+        technologies: ['Kotlin', 'Android', 'Material 3', 'Firebase'],
+        images: [
+            {
+                src: 'assets/icons/gymLogoBranca.png',
+                alt: 'Unifor Gym project identity'
+            }
+        ],
+        links: {
+            github: 'https://github.com/ensinho/devMobile-gym'
+        }
+    }
+];
+
+const featuredProjectLinks = {
+    demo: {
+        icon: 'fas fa-arrow-up-right-from-square',
+        className: 'is-primary',
+        labelKey: 'featuredWork.viewDemo'
+    },
+    github: {
+        icon: 'fab fa-github',
+        className: '',
+        labelKey: 'featuredWork.viewGithub'
+    },
+    caseStudy: {
+        icon: 'fas fa-file-lines',
+        className: '',
+        labelKey: 'featuredWork.viewCaseStudy'
+    }
+};
+
+const featuredProjectState = {
+    activeProjectIndex: 0,
+    activeImageIndex: 0,
+    rotationTimer: null
+};
+
+function getFeaturedProjectElements() {
+    return {
+        switcher: document.getElementById('featured-project-switcher'),
+        stage: document.getElementById('featured-project-stage')
+    };
+}
+
+function getFeaturedProjectCopy() {
+    const activeTranslations = translations[currentLang] || translations.en;
+    return {
+        stack: activeTranslations['featuredWork.stack'],
+        links: activeTranslations['featuredWork.links'],
+        preview: activeTranslations['featuredWork.preview'],
+        screens: activeTranslations['featuredWork.screens'],
+        singleView: activeTranslations['featuredWork.singleView'],
+        viewDemo: activeTranslations['featuredWork.viewDemo'],
+        viewGithub: activeTranslations['featuredWork.viewGithub'],
+        viewCaseStudy: activeTranslations['featuredWork.viewCaseStudy']
+    };
+}
+
+function getFeaturedProjectDescription(project) {
+    if (!project || !project.description) return '';
+    return project.description[currentLang] || project.description.en || '';
+}
+
+function getFeaturedProjectCountLabel(project) {
+    const copy = getFeaturedProjectCopy();
+    if (!project || !project.images || project.images.length <= 1) {
+        return copy.singleView;
+    }
+
+    return `${project.images.length} ${copy.screens}`;
+}
+
+function getFeaturedProjectLogoMarkup(project, variant) {
+    if (!project || !project.logo || !project.logo.src) return '';
+
+    const wrapperClass = variant === 'switcher' ? 'featured-project-switch-icon' : 'featured-project-logo-wrap';
+    const imageClass = variant === 'switcher' ? 'featured-project-switch-logo' : 'featured-project-logo';
+
+    return `
+        <span class="${wrapperClass}">
+            <img class="${imageClass}" src="${project.logo.src}" alt="${project.logo.alt}">
+        </span>
+    `;
+}
+
+function buildFeaturedProjectSwitcher() {
+    return `
+        <div class="featured-project-switcher" role="tablist" aria-label="Featured projects">
+            ${featuredProjects.map((project, index) => {
+        const isActive = index === featuredProjectState.activeProjectIndex;
+        const countLabel = getFeaturedProjectCountLabel(project);
+
+        return `
+            <button
+                type="button"
+                class="featured-project-switch-btn ${isActive ? 'is-active' : ''}"
+                data-featured-project-index="${index}"
+                aria-pressed="${isActive}"
+            >
+                ${getFeaturedProjectLogoMarkup(project, 'switcher')}
+                <span class="featured-project-switch-copy">
+                    <span class="featured-project-switch-title">${(project.title).slice(0, 14)}${project.title.length > 14 ? '...' : ''}</span>
+                    <span class="featured-project-switch-meta">${countLabel}</span>
+                </span>
+            </button>
+        `;
+    }).join('')}
+        </div>
+    `;
+}
+
+function renderFeaturedProjectSwitcher() {
+    const { switcher } = getFeaturedProjectElements();
+    if (!switcher) return;
+
+    switcher.innerHTML = buildFeaturedProjectSwitcher();
+
+    switcher.querySelectorAll('[data-featured-project-index]').forEach(button => {
+        button.addEventListener('click', () => {
+            selectFeaturedProject(Number(button.dataset.featuredProjectIndex));
+        });
+    });
+}
+
+function buildFeaturedProjectLinks(project) {
+    if (!project || !project.links) return '';
+
+    const copy = getFeaturedProjectCopy();
+    const orderedLinks = ['demo', 'github', 'caseStudy']
+        .filter(type => project.links[type])
+        .map(type => {
+            const linkMeta = featuredProjectLinks[type];
+            const label = copy[linkMeta.labelKey.replace('featuredWork.', '')] || translations[currentLang][linkMeta.labelKey];
+
+            return `
+                <a
+                    href="${project.links[type]}"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="featured-project-link ${linkMeta.className}" 
+                >
+                    <i class="${linkMeta.icon} text-[12px]"></i>
+                    <span>${label}</span>
+                </a>
+            `;
+        });
+
+    if (!orderedLinks.length) return '';
+
+    return `
+        <div class="featured-project-section">
+            <p class="featured-project-section-label">${copy.links}</p>
+            <div class="featured-project-link-list">${orderedLinks.join('')}</div>
+        </div>
+    `;
+}
+
+function renderFeaturedProjectStage() {
+    const { stage } = getFeaturedProjectElements();
+    if (!stage) return;
+
+    const project = featuredProjects[featuredProjectState.activeProjectIndex];
+    if (!project || !project.images || !project.images.length) {
+        stage.innerHTML = '';
+        return;
+    }
+
+    featuredProjectState.activeImageIndex = Math.min(featuredProjectState.activeImageIndex, project.images.length - 1);
+
+    const activeImage = project.images[featuredProjectState.activeImageIndex];
+    const hasMultipleImages = project.images.length > 1;
+    const copy = getFeaturedProjectCopy();
+    const linkMarkup = buildFeaturedProjectLinks(project);
+    const featuredFit = activeImage.fit || 'contain';
+    const featuredPosition = activeImage.position || 'center';
+
+    stage.innerHTML = `
+        <div class="featured-project-layout">
+            <div class="featured-project-media-shell ${hasMultipleImages ? '' : 'is-single-image'}">
+                <div class="featured-project-primary">
+                    <div class="featured-project-media-caption">
+                        <span class="featured-project-media-pill">${copy.preview}</span>
+                        <span class="featured-project-media-pill">${hasMultipleImages ? `${String(featuredProjectState.activeImageIndex + 1).padStart(2, '0')} / ${String(project.images.length).padStart(2, '0')}` : copy.singleView}</span>
+                    </div>
+                    <img class="featured-project-primary-image" src="${activeImage.src}" alt="${activeImage.alt}" style="--featured-fit: ${featuredFit}; --featured-position: ${featuredPosition};">
+                </div>
+
+                ${hasMultipleImages ? `
+                    <div class="featured-project-thumbs">
+                        ${project.images.map((image, index) => `
+                            <button
+                                type="button"
+                                class="featured-project-thumb ${index === featuredProjectState.activeImageIndex ? 'is-active' : ''}"
+                                data-featured-image-index="${index}"
+                                aria-pressed="${index === featuredProjectState.activeImageIndex}"
+                            >
+                                <img src="${image.src}" alt="${image.alt}">
+                                <span class="featured-project-thumb-index">${String(index + 1).padStart(2, '0')}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+
+            <div class="featured-project-panel">
+                <div class="featured-project-panel-top">
+                    <div class="featured-project-heading">
+                        ${getFeaturedProjectLogoMarkup(project, 'panel')}
+                        <div>
+                            <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-gray/65 mb-3">${String(featuredProjectState.activeProjectIndex + 1).padStart(2, '0')} / ${String(featuredProjects.length).padStart(2, '0')}</p>
+                            <h3 class="featured-project-title">${project.title}</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="featured-project-description">${getFeaturedProjectDescription(project)}</p>
+
+                <div class="featured-project-section">
+                    <p class="featured-project-section-label">${copy.stack}</p>
+                    <div class="featured-project-tech">
+                        ${project.technologies.map(technology => `<span class="project-tag">${technology}</span>`).join('')}
+                    </div>
+                </div>
+
+                ${linkMarkup}
+            </div>
+        </div>
+    `;
+
+    stage.querySelectorAll('[data-featured-image-index]').forEach(button => {
+        button.addEventListener('click', () => {
+            selectFeaturedImage(Number(button.dataset.featuredImageIndex));
+        });
+    });
+}
+
+function renderFeaturedProjects() {
+    const { switcher, stage } = getFeaturedProjectElements();
+    if (!switcher || !stage) return;
+
+    renderFeaturedProjectSwitcher();
+    renderFeaturedProjectStage();
+}
+
+function selectFeaturedProject(index, options = {}) {
+    if (!featuredProjects.length) return;
+
+    const { resetTimer = true } = options;
+    const normalizedIndex = (index + featuredProjects.length) % featuredProjects.length;
+
+    featuredProjectState.activeProjectIndex = normalizedIndex;
+    featuredProjectState.activeImageIndex = 0;
+    renderFeaturedProjects();
+
+    if (resetTimer) {
+        scheduleFeaturedProjectRotation();
+    }
+}
+
+function selectFeaturedImage(index) {
+    const project = featuredProjects[featuredProjectState.activeProjectIndex];
+    if (!project || !project.images || index < 0 || index >= project.images.length) return;
+
+    featuredProjectState.activeImageIndex = index;
+    renderFeaturedProjectStage();
+}
+
+function scheduleFeaturedProjectRotation() {
+    window.clearTimeout(featuredProjectState.rotationTimer);
+
+    if (featuredProjects.length <= 1) return;
+
+    featuredProjectState.rotationTimer = window.setTimeout(() => {
+        selectFeaturedProject(featuredProjectState.activeProjectIndex + 1, { resetTimer: false });
+        scheduleFeaturedProjectRotation();
+    }, FEATURED_PROJECT_ROTATION_INTERVAL);
+}
+
+function initFeaturedProjects() {
+    const { switcher, stage } = getFeaturedProjectElements();
+    if (!switcher || !stage) return;
+
+    renderFeaturedProjects();
+    scheduleFeaturedProjectRotation();
+}
+
 // ── Translation System ──
 const translations = {
     en: {
@@ -527,9 +952,20 @@ const translations = {
         "about.downloadCV": "DOWNLOAD CV",
         // Work
         "work.label": "Portfolio",
-        "work.title1": "Selected",
+        "work.title1": "My",
         "work.title2": "Work.",
         "work.subtitle": "A curated selection of projects that showcase problem-solving through design and code.",
+        "featuredWork.label": "Featured Project",
+        "featuredWork.subtitle": "A spotlighted case study with a presentation-style gallery, longer project context, and quick switching between featured builds.",
+        "featuredWork.rotation": "Auto-rotates every 30 minutes",
+        "featuredWork.stack": "Tech Stack",
+        "featuredWork.links": "Project Links",
+        "featuredWork.preview": "Project Preview",
+        "featuredWork.screens": "screens",
+        "featuredWork.singleView": "Single view",
+        "featuredWork.viewGithub": "GitHub",
+        "featuredWork.viewDemo": "Website",
+        "featuredWork.viewCaseStudy": "Case Study",
         "projects.dino.description": "An interactive educational platform exploring prehistoric life through immersive digital storytelling, dynamic content loading, and orchestrated animations.",
         "projects.teambuilder.description": "Strategic synergy calculator for competitive Pokémon players. Analyze type coverage, identify weaknesses, and build balanced teams.",
         "projects.uniforgym.description": "Native Android application for gym scheduling and workout tracking with user authentication and Material Design 3 components.",
@@ -629,9 +1065,20 @@ const translations = {
         "about.downloadCV": "BAIXAR CV",
         // Work
         "work.label": "Portfólio",
-        "work.title1": "Trabalhos",
-        "work.title2": "Selecionados.",
+        "work.title1": "Meu",
+        "work.title2": "Trabalho.",
         "work.subtitle": "Uma seleção curada de projetos que demonstram resolução de problemas através de design e código.",
+        "featuredWork.label": "Projeto em Destaque",
+        "featuredWork.subtitle": "Um destaque com galeria em estilo apresentação, contexto maior do projeto e troca rápida entre projetos em destaque.",
+        "featuredWork.rotation": "Troca automaticamente a cada 30 minutos",
+        "featuredWork.stack": "Tecnologias",
+        "featuredWork.links": "Links do Projeto",
+        "featuredWork.preview": "Preview do Projeto",
+        "featuredWork.screens": "telas",
+        "featuredWork.singleView": "Visual único",
+        "featuredWork.viewGithub": "GitHub",
+        "featuredWork.viewDemo": "Website",
+        "featuredWork.viewCaseStudy": "Case Study",
         "projects.dino.description": "Uma plataforma educacional interativa explorando a vida pré-histórica através de narrativa digital imersiva, carregamento dinâmico de conteúdo e animações orquestradas.",
         "projects.teambuilder.description": "Calculadora estratégica de sinergia para jogadores competitivos de Pokémon. Analise cobertura de tipos, identifique fraquezas e monte times balanceados.",
         "projects.uniforgym.description": "Aplicativo Android nativo para agendamento de academia e acompanhamento de treinos com autenticação de usuário e Material Design 3.",
@@ -716,6 +1163,8 @@ function setLanguage(lang) {
     if (mobileBtn) mobileBtn.textContent = lang.toUpperCase();
 
     localStorage.setItem('preferred-lang', lang);
+
+    renderFeaturedProjects();
 }
 
 function toggleLanguage() {
@@ -736,3 +1185,4 @@ function initLanguage() {
 }
 
 document.addEventListener('DOMContentLoaded', initLanguage);
+document.addEventListener('DOMContentLoaded', initFeaturedProjects);
