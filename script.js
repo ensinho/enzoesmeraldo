@@ -4,6 +4,8 @@
 
 gsap.registerPlugin(ScrollTrigger);
 
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 // ── Loader ──
 const initLoader = () => {
     const tl = gsap.timeline();
@@ -67,6 +69,7 @@ if (cursorDot && cursorRing) {
 
 // ── Falling Petals ──
 function createPetals() {
+    if (prefersReducedMotion) return;
     const container = document.getElementById('petals-container');
     if (!container) return;
     const petalCount = 20;
@@ -84,6 +87,15 @@ createPetals();
 
 // ── Scroll Animations ──
 function initScrollAnimations() {
+    if (prefersReducedMotion) {
+        gsap.set(".hero-text-anim", { y: 0 });
+        gsap.set(".gs-fade-in, .gs-reveal", { y: 0, opacity: 1 });
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+        });
+        return;
+    }
+
     // Parallax Hero
     gsap.to("#hero-bg", {
         yPercent: 25,
@@ -204,64 +216,58 @@ function checkCV(e) {
 
 // ── Music Card ──
 const songs = [
-        {
-        title: "505",
-        artist: "Arctic Monkeys",
-        file: "assets/songs/Arctic Monkeys- 505.mp3",
-        cover: "url('assets/albumCovers/arcticCover.jpg')",
-        heroBg: "assets/backgrounds/yellow.jpg",
+    {
+        title: "Oxygen",
+        artist: "Porch Light",
+        file: "assets/songs/Porch_light_-_Oxygen_(SkySound.cc).mp3",
+        cover: "url('assets/albumCovers/oxygenPorchLight.jpg')",
+        heroBg: "assets/backgrounds/catwhaleshark.jpg",
         easterEgg: {
-            en: "505 hits different at 5am, doesn't it?",
-            pt: "505 bate diferente às 5 da manhã, né?"
+            en: "Oxygen mode: quiet blue focus.",
+            pt: "Modo Oxygen: foco azul e tranquilo."
         },
-        consoleMsg: ["color: #c8ff00; font-size: 13px; font-weight: bold;", "Arctic Monkeys detected. Certified taste."],
+        consoleMsg: ["color: #7aa9d8; font-size: 13px; font-weight: bold;", "Porch Light / Oxygen theme loaded."],
         theme: {
-            bg: "8 8 8",
-            text: "255 255 255",
-            accent: "200 255 0",
-            secondary: "255 215 0",
-            panel: "17 17 17",
-            gray: "148 163 184"
+            bg: "5 13 25",
+            text: "239 247 255",
+            accent: "122 169 216",
+            secondary: "71 102 139",
+            panel: "10 22 39",
+            gray: "147 166 188",
+            heat: [
+                "rgba(255,255,255,0.055)",
+                "rgba(122,169,216,0.18)",
+                "rgba(122,169,216,0.34)",
+                "rgba(122,169,216,0.58)",
+                "rgba(235,247,255,0.95)"
+            ]
         }
     },
     {
-        title: "The Emptiness Machine",
-        artist: "Linkin Park",
-        file: "assets/songs/Linkin Park- The Emptiness Machine (2013venjix Edit).mp3",
-        cover: "url('assets/albumCovers/linkinCover.jpg')",
-        heroBg: "assets/backgrounds/pink.jpg",
+        title: "Change (In the House of Flies)",
+        artist: "Deftones",
+        file: "assets/songs/Deftones - Change (In the House of Flies).mp3",
+        cover: "url('assets/albumCovers/DeftonesCover.jpg')",
+        heroBg: "assets/backgrounds/black_and_white.jpg",
         easterEgg: {
-            en: "Hmm, you're into Linkin Park too?",
-            pt: "Hmm, você curte Linkin Park também?"
+            en: "Change mode: clean lines, no noise.",
+            pt: "Modo Change: linhas limpas, sem ruído."
         },
-        consoleMsg: ["color: #ff00ff; font-size: 13px; font-weight: bold;", "Linkin Park mode activated. Raw energy unlocked."],
+        consoleMsg: ["color: #111111; font-size: 13px; font-weight: bold;", "Deftones / Change theme loaded."],
         theme: {
-            bg: "8 8 8",
-            text: "255 255 255",
-            accent: "255 0 255",
-            secondary: "255 105 180",
-            panel: "17 17 17",
-            gray: "148 163 184"
-        }
-    },
-    {
-        title: "City Walls",
-        artist: "Twenty One Pilots",
-        file: "assets/songs/twenty one pilots - City Walls.mp3",
-        cover: "url('assets/albumCovers/twentyCover.png')",
-        heroBg: "assets/backgrounds/red.jpg",
-        easterEgg: {
-            en: "Twenty One Pilots? We'd get along just fine.",
-            pt: "Twenty One Pilots? A gente ia se dar muito bem."
-        },
-        consoleMsg: ["color: #ff3232; font-size: 13px; font-weight: bold;", "City Walls. Good choice for late-night coding."],
-        theme: {
-            bg: "8 8 8",
-            text: "255 255 255",
-            accent: "255 50 50",
-            secondary: "180 0 0",
-            panel: "17 17 17",
-            gray: "148 163 184"
+            bg: "244 244 241",
+            text: "10 10 10",
+            accent: "10 10 10",
+            secondary: "96 96 92",
+            panel: "255 255 255",
+            gray: "96 96 92",
+            heat: [
+                "rgba(10,10,10,0.055)",
+                "rgba(10,10,10,0.16)",
+                "rgba(10,10,10,0.34)",
+                "rgba(10,10,10,0.62)",
+                "rgba(10,10,10,0.94)"
+            ]
         }
     }
 ];
@@ -348,6 +354,12 @@ function loadSong(index) {
     root.style.setProperty('--secondary-rgb', song.theme.secondary);
     root.style.setProperty('--panel-rgb', song.theme.panel);
     root.style.setProperty('--gray-rgb', song.theme.gray);
+    root.style.setProperty('--heat-0', song.theme.heat[0]);
+    root.style.setProperty('--heat-1', song.theme.heat[1]);
+    root.style.setProperty('--heat-2', song.theme.heat[2]);
+    root.style.setProperty('--heat-3', song.theme.heat[3]);
+    root.style.setProperty('--heat-4', song.theme.heat[4]);
+    document.body.dataset.musicTheme = song.artist === 'Deftones' ? 'deftones' : 'oxygen';
 
     updateFavicon(`rgb(${song.theme.accent})`);
 }
@@ -464,6 +476,194 @@ const tryAutoplay = () => {
 
 tryAutoplay();
 
+// ── GitHub Activity Heatmap ──
+const GITHUB_USER = 'ensinho';
+const HEATMAP_URL = `https://github-contributions-api.jogruber.de/v4/${GITHUB_USER}?y=last`;
+let heatmapData = null;
+let heatTooltip = null;
+
+const monthLabels = {
+    en: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+    pt: ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+};
+
+const TECH_ICON_BASE = 'https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons';
+const techStack = [
+
+    { name: 'TypeScript', label: 'TS', icon: `${TECH_ICON_BASE}/typescript.png` },
+    { name: 'JavaScript', label: 'JS', icon: `${TECH_ICON_BASE}/javascript.png` },
+    { name: 'Tailwind CSS', label: 'Tailwind', icon: `${TECH_ICON_BASE}/tailwind_css.png` },
+    { name: 'React', label: 'React', icon: `${TECH_ICON_BASE}/react.png` },
+    { name: 'Angular', label: 'Angular', icon: `${TECH_ICON_BASE}/angular.png` },
+    { name: 'Node.js', label: 'Node.js', icon: `${TECH_ICON_BASE}/node_js.png` },
+    { name: 'Spring Boot', label: 'Spring Boot', icon: `${TECH_ICON_BASE}/spring_boot.png` },
+    { name: 'PostgreSQL', label: 'PostgreSQL', icon: `${TECH_ICON_BASE}/postgresql.png` },
+    { name: 'Google Cloud Platform', label: 'GCP', icon: `${TECH_ICON_BASE}/gcp.png` },
+];
+
+function countToLevel(count) {
+    if (!count) return 0;
+    if (count <= 3) return 1;
+    if (count <= 8) return 2;
+    if (count <= 15) return 3;
+    return 4;
+}
+
+function buildEmptyWeeks() {
+    return Array.from({ length: 52 }, () => Array.from({ length: 7 }, () => null));
+}
+
+function buildWeeks(contributions) {
+    const days = contributions
+        .map(item => ({
+            date: new Date(`${item.date}T00:00:00`),
+            iso: item.date,
+            count: Number(item.count) || 0
+        }))
+        .sort((a, b) => a.date - b.date);
+
+    if (!days.length) return buildEmptyWeeks();
+
+    while (days[0] && days[0].date.getDay() !== 0) days.unshift(null);
+    while (days.length % 7 !== 0) days.push(null);
+
+    const weeks = [];
+    for (let i = 0; i < days.length; i += 7) {
+        weeks.push(days.slice(i, i + 7));
+    }
+
+    return weeks.slice(-52);
+}
+
+function formatContributionText(isoDate, count) {
+    const locale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
+    const date = new Date(`${isoDate}T00:00:00`).toLocaleDateString(locale, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+    const word = Number(count) === 1
+        ? (currentLang === 'pt' ? 'contribuição' : 'contribution')
+        : (currentLang === 'pt' ? 'contribuições' : 'contributions');
+    const empty = currentLang === 'pt' ? 'Nenhuma contribuição' : 'No contributions';
+    return Number(count) > 0 ? `${count} ${word} · ${date}` : `${empty} · ${date}`;
+}
+
+function getContributionRange(contributions) {
+    if (!contributions.length) return '';
+    const first = new Date(`${contributions[0].date}T00:00:00`).getFullYear();
+    const last = new Date(`${contributions[contributions.length - 1].date}T00:00:00`).getFullYear();
+    return first === last ? String(first) : `${first}-${String(last).slice(2)}`;
+}
+
+function renderHeatmap() {
+    const grid = document.getElementById('contrib-grid');
+    const months = document.getElementById('contrib-months');
+    const total = document.getElementById('contrib-total');
+    if (!grid || !months || !total) return;
+
+    const contributions = Array.isArray(heatmapData && heatmapData.contributions) ? heatmapData.contributions : [];
+    const weeks = contributions.length ? buildWeeks(contributions) : buildEmptyWeeks();
+    const gridFragment = document.createDocumentFragment();
+    const monthsFragment = document.createDocumentFragment();
+    let lastMonth = null;
+
+    weeks.forEach((week, weekIndex) => {
+        const visibleDay = week.find(Boolean);
+        if (visibleDay && visibleDay.date.getMonth() !== lastMonth) {
+            const label = document.createElement('span');
+            label.textContent = monthLabels[currentLang][visibleDay.date.getMonth()];
+            label.style.gridColumn = String(weekIndex + 1);
+            monthsFragment.appendChild(label);
+            lastMonth = visibleDay.date.getMonth();
+        }
+
+        week.forEach(day => {
+            const cell = document.createElement('span');
+            const level = day ? countToLevel(day.count) : 0;
+            cell.className = 'heat-cell';
+            cell.style.setProperty('--cell', `var(--heat-${level})`);
+            cell.style.setProperty('--col', String(weekIndex));
+
+            if (day) {
+                cell.dataset.date = day.iso;
+                cell.dataset.count = String(day.count);
+                cell.title = formatContributionText(day.iso, day.count);
+            } else {
+                cell.dataset.empty = '1';
+            }
+
+            gridFragment.appendChild(cell);
+        });
+    });
+
+    grid.replaceChildren(gridFragment);
+    months.replaceChildren(monthsFragment);
+
+    if (!contributions.length) {
+        total.textContent = '-';
+        return;
+    }
+
+    const sum = contributions.reduce((acc, item) => acc + (Number(item.count) || 0), 0);
+    const totalCount = heatmapData && heatmapData.total && typeof heatmapData.total.lastYear === 'number' ? heatmapData.total.lastYear : sum;
+    const word = totalCount === 1
+        ? (currentLang === 'pt' ? 'contribuição' : 'contribution')
+        : (currentLang === 'pt' ? 'contribuições' : 'contributions');
+    total.textContent = `${totalCount} ${word} · ${getContributionRange(contributions)}`;
+}
+
+function initHeatmapTooltip() {
+    const grid = document.getElementById('contrib-grid');
+    if (!grid) return;
+
+    heatTooltip = document.createElement('div');
+    heatTooltip.className = 'heat-tooltip';
+    document.body.appendChild(heatTooltip);
+
+    const show = (cell) => {
+        if (!cell || !cell.dataset.date) return;
+        const rect = cell.getBoundingClientRect();
+        heatTooltip.textContent = formatContributionText(cell.dataset.date, cell.dataset.count);
+        heatTooltip.style.left = `${Math.min(window.innerWidth - 80, Math.max(80, rect.left + rect.width / 2))}px`;
+        heatTooltip.style.top = `${Math.max(48, rect.top - 8)}px`;
+        heatTooltip.classList.add('show');
+    };
+
+    const hide = () => heatTooltip.classList.remove('show');
+    grid.addEventListener('mouseover', event => show(event.target.closest('.heat-cell')));
+    grid.addEventListener('mouseout', hide);
+    grid.addEventListener('mouseleave', hide);
+}
+
+function loadHeatmap() {
+    renderHeatmap();
+    fetch(HEATMAP_URL)
+        .then(response => {
+            if (!response.ok) throw new Error('Heatmap request failed');
+            return response.json();
+        })
+        .then(data => {
+            heatmapData = data;
+            renderHeatmap();
+        })
+        .catch(() => {
+            heatmapData = null;
+            renderHeatmap();
+        });
+}
+
+function renderTechStack() {
+    const container = document.getElementById('tech-icons');
+    if (!container) return;
+
+    container.innerHTML = techStack.map((tech, index) => `
+        <span class="tech-tile" style="--i:${index}" title="${tech.name}" aria-label="${tech.name}">
+            <img src="${tech.icon}" alt="${tech.label}" loading="lazy" decoding="async">
+        </span>
+    `).join('');
+}
+
 // ── Journey Expand/Collapse ──
 function toggleJourney(id, btn) {
     const content = document.getElementById(id);
@@ -497,8 +697,8 @@ const featuredProjects = [
             alt: 'Pokémon Team Builder logo'
         },
         description: {
-            en: 'A presentation-style team building experience for competitive Pokémon players, combining roster assembly, type coverage analysis, a searchable Pokédex, and quick round generators in one cohesive interface.',
-            pt: 'Uma experiência de construção de times para jogadores competitivos de Pokémon, unindo montagem de equipe, análise de cobertura de tipos, Pokédex pesquisável e geradores de rodada em uma interface coesa.'
+            en: 'A competitive Pokémon workspace for <strong>building smarter teams</strong>, combining <strong>Pokédex search</strong>, <strong>type coverage analysis</strong>, custom movesets, saved teams, share links, favorites, quick generators, and <em>Showdown-ready export</em>.',
+            pt: 'Um workspace competitivo de Pokémon para <strong>montar equipes mais inteligentes</strong>, combinando <strong>busca na Pokédex</strong>, <strong>análise de cobertura de tipos</strong>, movesets customizados, times salvos, links de compartilhamento, favoritos, geradores rápidos e <em>exportação pronta para o Showdown</em>.'
         },
         technologies: ['React', 'JavaScript', 'Tailwind', 'Firebase', 'PokéAPI'],
         images: [
@@ -546,10 +746,10 @@ const featuredProjects = [
             alt: 'Dino Library logo'
         },
         description: {
-            en: 'An interactive learning platform that turns dinosaur research into guided digital storytelling, using motion, layered content, and playful interface details to keep exploration intuitive.',
-            pt: 'Uma plataforma educacional interativa que transforma pesquisa sobre dinossauros em storytelling digital guiado, usando movimento, camadas de conteúdo e detalhes lúdicos de interface para manter a exploração intuitiva.'
+            en: 'An immersive learning platform for <strong>dinosaur research</strong>, combining a <strong>scientific catalog</strong>, fossil maps, timelines, multilingual content, Firebase data, and external image enrichment into an <em>editorial exploration experience</em>.',
+            pt: 'Uma plataforma imersiva de aprendizado sobre <strong>pesquisa em dinossauros</strong>, combinando <strong>catálogo científico</strong>, mapas fósseis, linhas do tempo, conteúdo multilíngue, dados no Firebase e enriquecimento externo de imagens em uma <em>experiência editorial de exploração</em>.'
         },
-        technologies: ['React', 'TypeScript', 'Tailwind', 'Firebase'],
+        technologies: ['React', 'TypeScript', 'Tailwind', 'Firebase', 'Leaflet', 'i18next'],
         images: [
             {
                 src: 'assets/projectCovers/dino/Home1.png',
@@ -588,6 +788,48 @@ const featuredProjects = [
         }
     },
     {
+        id: 'qassistant',
+        title: 'QAssistant',
+        logo: {
+            src: 'assets/icons/qassistant-logo.png',
+            alt: 'QAssistant logo'
+        },
+        description: {
+            en: 'A VS Code extension for QA operations that turns selected commits into <strong>traceable validation packages</strong>, <strong>AI-assisted summaries</strong>, OpenProject tasks, testing prompts, and <em>reusable agent-ready project context</em>.',
+            pt: 'Uma extensão do VS Code para operação de QA que transforma commits selecionados em <strong>pacotes rastreáveis de validação</strong>, <strong>resumos assistidos por IA</strong>, tarefas no OpenProject, prompts de teste e <em>contexto reutilizável pronto para agentes</em>.'
+        },
+        technologies: ['TypeScript', 'VS Code API', 'React', 'Vite', 'OpenProject', 'AI'],
+        images: [
+            {
+                src: 'assets/projectCovers/qassistant/qassistant0.jpeg',
+                alt: 'QAssistant dashboard with telemetry and validation actions',
+                fit: 'contain',
+                position: 'center top'
+            },
+            {
+                src: 'assets/projectCovers/qassistant/QASSISTANT1.jpeg',
+                alt: 'QAssistant guided onboarding setup screen',
+                fit: 'contain',
+                position: 'center top'
+            },
+            {
+                src: 'assets/projectCovers/qassistant/qassistant2.jpeg',
+                alt: 'QAssistant commit selection workflow for validation packages',
+                fit: 'contain',
+                position: 'center top'
+            },
+            {
+                src: 'assets/projectCovers/qassistant/qassistant3.jpeg',
+                alt: 'QAssistant tests and artifacts runner screen',
+                fit: 'contain',
+                position: 'center top'
+            }
+        ],
+        links: {
+            github: 'https://github.com/ensinho/QAssistant'
+        }
+    },
+    {
         id: 'aqua-census',
         title: 'AquaCensus',
         logo: {
@@ -595,41 +837,21 @@ const featuredProjects = [
             alt: 'AquaCensus logo'
         },
         description: {
-            en: 'A marine research catalog built to organize specimen data, surface trends quickly, and make environmental records easier to navigate across analysis and documentation workflows.',
-            pt: 'Um catálogo de pesquisa marinha criado para organizar dados de espécimes, destacar tendências rapidamente e tornar registros ambientais mais fáceis de navegar em fluxos de análise e documentação.'
+            en: 'A marine research platform for <strong>cataloging field collections</strong>, managing researchers, labs and vessels, tracking specimen metadata, and surfacing <em>collection trends through operational dashboards</em>.',
+            pt: 'Uma plataforma de pesquisa marinha para <strong>catalogar coletas de campo</strong>, gerenciar pesquisadores, laboratórios e embarcações, rastrear metadados de espécimes e revelar <em>tendências de coleta em dashboards operacionais</em>.'
         },
-        technologies: ['React', 'Node.js', 'Tailwind'],
+        technologies: ['React', 'TypeScript', 'Node.js', 'Express', 'Supabase', 'Tailwind'],
         images: [
             {
-                src: 'assets/icons/fish.svg',
-                alt: 'AquaCensus project identity'
+                src: 'assets/projectCovers/aqua/defaultCoverAqua.jpeg',
+                alt: 'AquaCensus marine research dashboard cover',
+                fit: 'contain',
+                position: 'center'
             }
         ],
         links: {
             demo: 'https://pesquisa-maritima.vercel.app/',
             github: 'https://github.com/ensinho/pesquisaMaritima'
-        }
-    },
-    {
-        id: 'unifor-gym',
-        title: 'Unifor Gym',
-        logo: {
-            src: 'assets/icons/gymLogoBranca.png',
-            alt: 'Unifor Gym logo'
-        },
-        description: {
-            en: 'A native Android scheduling and workout tracking app shaped around clear flows, authentication, and Material 3 patterns for daily gym routines.',
-            pt: 'Um aplicativo Android nativo de agendamento e acompanhamento de treinos, construído com foco em fluxos claros, autenticação e padrões Material 3 para a rotina da academia.'
-        },
-        technologies: ['Kotlin', 'Android', 'Material 3', 'Firebase'],
-        images: [
-            {
-                src: 'assets/icons/gymLogoBranca.png',
-                alt: 'Unifor Gym project identity'
-            }
-        ],
-        links: {
-            github: 'https://github.com/ensinho/devMobile-gym'
         }
     }
 ];
@@ -684,15 +906,6 @@ function getFeaturedProjectDescription(project) {
     return project.description[currentLang] || project.description.en || '';
 }
 
-function getFeaturedProjectCountLabel(project) {
-    const copy = getFeaturedProjectCopy();
-    if (!project || !project.images || project.images.length <= 1) {
-        return copy.singleView;
-    }
-
-    return `${project.images.length} ${copy.screens}`;
-}
-
 function getFeaturedProjectLogoMarkup(project, variant) {
     if (!project || !project.logo || !project.logo.src) return '';
 
@@ -711,7 +924,6 @@ function buildFeaturedProjectSwitcher() {
         <div class="featured-project-switcher" role="tablist" aria-label="Featured projects">
             ${featuredProjects.map((project, index) => {
         const isActive = index === featuredProjectState.activeProjectIndex;
-        const countLabel = getFeaturedProjectCountLabel(project);
 
         return `
             <button
@@ -723,7 +935,6 @@ function buildFeaturedProjectSwitcher() {
                 ${getFeaturedProjectLogoMarkup(project, 'switcher')}
                 <span class="featured-project-switch-copy">
                     <span class="featured-project-switch-title">${(project.title).slice(0, 14)}${project.title.length > 14 ? '...' : ''}</span>
-                    <span class="featured-project-switch-meta">${countLabel}</span>
                 </span>
             </button>
         `;
@@ -801,10 +1012,6 @@ function renderFeaturedProjectStage() {
         <div class="featured-project-layout">
             <div class="featured-project-media-shell ${hasMultipleImages ? '' : 'is-single-image'}">
                 <div class="featured-project-primary">
-                    <div class="featured-project-media-caption">
-                        <span class="featured-project-media-pill">${copy.preview}</span>
-                        <span class="featured-project-media-pill">${hasMultipleImages ? `${String(featuredProjectState.activeImageIndex + 1).padStart(2, '0')} / ${String(project.images.length).padStart(2, '0')}` : copy.singleView}</span>
-                    </div>
                     <img class="featured-project-primary-image" src="${activeImage.src}" alt="${activeImage.alt}" style="--featured-fit: ${featuredFit}; --featured-position: ${featuredPosition};">
                 </div>
 
@@ -817,7 +1024,6 @@ function renderFeaturedProjectStage() {
                                 data-featured-image-index="${index}"
                                 aria-pressed="${index === featuredProjectState.activeImageIndex}"
                             >
-                                <img src="${image.src}" alt="${image.alt}">
                                 <span class="featured-project-thumb-index">${String(index + 1).padStart(2, '0')}</span>
                             </button>
                         `).join('')}
@@ -932,6 +1138,7 @@ const translations = {
         "about.title": "Enzo Esmeraldo",
         "about.description": "Fullstack Developer & Frontend enthusiast who thrives on creative challenges. I transform complex ideas into intuitive, visually striking interfaces. Passionate about UI/UX, design systems, and crafting pixel-perfect experiences.",
         "about.bio2": "When I'm not writing code, I'm probably overthinking a design, grinding at the gym, or blasting some killer rock — always with an eye for detail.",
+        "about.avatarJoke": "btw, that's me",
         "about.funfact.label": "Fun Fact",
         "about.funfact.title": "Fav. Pokémon is Lugia",
         "about.funfact.desc": "Psychic-type elegance, legendary rarity — basically my design philosophy wrapped in a Pokémon.",
@@ -954,7 +1161,7 @@ const translations = {
         "work.label": "Portfolio",
         "work.title1": "My",
         "work.title2": "Work.",
-        "work.subtitle": "A curated selection of projects that showcase problem-solving through design and code.",
+        "work.subtitle": "Projects focused on turning complex workflows into usable products: QA traceability, scientific catalogs, interactive learning tools, and role-based mobile apps.",
         "featuredWork.label": "Featured Project",
         "featuredWork.subtitle": "A spotlighted case study with a presentation-style gallery, longer project context, and quick switching between featured builds.",
         "featuredWork.rotation": "Auto-rotates every 30 minutes",
@@ -966,10 +1173,10 @@ const translations = {
         "featuredWork.viewGithub": "GitHub",
         "featuredWork.viewDemo": "Website",
         "featuredWork.viewCaseStudy": "Case Study",
-        "projects.dino.description": "An interactive educational platform exploring prehistoric life through immersive digital storytelling, dynamic content loading, and orchestrated animations.",
-        "projects.teambuilder.description": "Strategic synergy calculator for competitive Pokémon players. Analyze type coverage, identify weaknesses, and build balanced teams.",
-        "projects.uniforgym.description": "Native Android application for gym scheduling and workout tracking with user authentication and Material Design 3 components.",
-        "projects.aquacensus.description": "Marine biology research and specimen cataloging system. Comprehensive database solution for tracking marine life data.",
+        "projects.dino.description": "Immersive dinosaur learning platform with a scientific catalog, fossil maps, timelines, multilingual content, Firebase data, and external image enrichment.",
+        "projects.teambuilder.description": "Competitive Pokémon workspace with team persistence, Pokédex filters, type analysis, share links, favorites, generators, and Showdown export.",
+        "projects.uniforgym.description": "Native Android gym platform for student and professor workflows, Firebase auth, workout assignment, QR-guided exercise videos, and training history.",
+        "projects.aquacensus.description": "Marine research platform for field collections, researchers, laboratories, vessels, specimen metadata, and operational dashboards.",
         "projects.visitGithub": "Explore more on GitHub",
         // Journey
         "journey.subtitle": "Career Path",
@@ -978,34 +1185,35 @@ const translations = {
         "journey.role0": "Project Leader",
         "journey.date0": "Jan. 2026 — Present",
         "journey.status0": "Current · React + Node.js + PostgreSQL",
-        "journey.desc0": "Promoted to Project Leader, spearheading the development of an AI-powered medical solution — leading the team, defining architecture, and owning the product from vision to deployment.",
-        "journey.role0.item1": "Leading the end-to-end development of an AI-assisted medical platform that powers clinical decision-making for doctors",
-        "journey.role0.item2": "Designing and owning the entire visual identity, component library, and UI/UX of the platform from scratch",
-        "journey.role0.item3": "Architecting the full-stack solution with React, Node.js, and PostgreSQL, ensuring scalability and maintainability",
+        "journey.desc0": "Promoted <strong>within the same company</strong> to <strong>Project Leader</strong>, evolving from hands-on delivery into <strong>team leadership</strong>, architecture direction, and product ownership from vision to deployment.",
+        "journey.role0.item1": "<strong>Leading the end-to-end development</strong> of an AI-assisted medical platform that powers clinical decision-making for doctors",
+        "journey.role0.item2": "<strong>Designing and owning</strong> the entire visual identity, component library, and UI/UX of the platform from scratch",
+        "journey.role0.item3": "<strong>Architecting the full-stack solution</strong> with React, Node.js, and PostgreSQL, ensuring scalability and maintainability",
         "journey.role0.item4": "Managing version control strategy, Git workflows, and technical documentation across the team",
         "journey.role0.item5": "Mentoring team members on best practices, code quality standards, and modern development patterns",
         "journey.role0.item6": "Responsible for all project deliverables — from interface design to system architecture to deployment pipeline",
+        "journey.role0.item7": "<strong>Creating and participating in AI automations and workflow design</strong> for medical consultations and agile development routines",
         "journey.role1": "FullStack Developer",
         "journey.date1": "Jan. 2025 — Dec. 2025",
         "journey.status1": "Completed · Angular + Spring",
-        "journey.desc1": "Advanced to full developer role, taking ownership of system architecture, UI/UX decisions, and cross-team technical leadership.",
+        "journey.desc1": "Advanced <strong>within the same company</strong> to a <strong>FullStack Developer</strong> role, expanding that earlier foundation into <strong>system architecture</strong>, UI/UX decisions, and growing technical leadership.",
         "journey.readMore": "Read More",
         "journey.achievements": "Key Achievements",
-        "journey.role1.item1": "Developed the Exitus system end-to-end, working on front-end, back-end, and databases, focusing on scalability and performance",
+        "journey.role1.item1": "<strong>Developed the Exitus system end-to-end</strong>, working on front-end, back-end, and databases, focusing on scalability and performance",
         "journey.role1.item2": "Designed the system's visual identity and created user interfaces, ensuring consistency in the user experience (UI/UX)",
-        "journey.role1.item3": "Architected and implemented the front-end using Angular and TypeScript, applying best practices for componentization and responsiveness",
+        "journey.role1.item3": "<strong>Architected and implemented the front-end</strong> using Angular and TypeScript, applying best practices for componentization and responsiveness",
         "journey.role1.item4": "Assisted in defining and building the back-end architecture with Spring Boot, including database integrations and external services",
-        "journey.role1.item5": "Implemented integrations with AI services, automating question validation and improving the educational experience",
+        "journey.role1.item5": "<strong>Implemented AI integrations</strong>, automating question validation and improving the educational experience",
         "journey.role1.item6": "Integrated webhooks and deployed cloud-based solutions (Source Cloud) for continuous system deployment and maintenance",
         "journey.role1.item7": "Worked under Agile Scrum methodology, actively participating in planning, reviews, and retrospectives",
         "journey.role2": "FullStack Intern",
         "journey.date2": "Apr. 2024 — Dec. 2024",
         "journey.status2": "Completed · Angular + Spring",
-        "journey.desc2": "Started my professional journey as an intern, contributing to system development and learning industry best practices.",
-        "journey.role2.item1": "Contributed to the development and improvement of Exitus system interfaces, focusing on usability and accessibility",
+        "journey.desc2": "Started my professional journey as a <strong>FullStack Intern</strong>, contributing to system development and building the base that later evolved into broader engineering ownership.",
+        "journey.role2.item1": "<strong>Contributed to the development and improvement</strong> of Exitus system interfaces, focusing on usability and accessibility",
         "journey.role2.item2": "Assisted in creating user flows and interface design, collaborating closely with the UI/UX team",
-        "journey.role2.item3": "Participated in front-end development using Angular, TypeScript, and CSS, and supported the back-end with Spring Boot",
-        "journey.role2.item4": "Gained hands-on experience with full-stack development in a professional environment",
+        "journey.role2.item3": "<strong>Participated in front-end development</strong> using Angular, TypeScript, and CSS, and supported the back-end with Spring Boot",
+        "journey.role2.item4": "<strong>Gained hands-on experience</strong> with full-stack development in a professional environment",
         "journey.role2.item5": "Learned Agile development methodologies and team collaboration practices",
         // Skills
         "skills.subtitle": "What I Work With",
@@ -1019,6 +1227,11 @@ const translations = {
         "footer.title2": "something awsome.",
         "footer.copyright": "&copy; 2025 Enzo Esmeraldo",
         "footer.credits": "Crafted with <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> in Brazil",
+        // Heatmap / Tech
+        "contrib.label": "Contribution Activity",
+        "contrib.less": "Less",
+        "contrib.more": "More",
+        "tech.label": "Core Stack",
         // Music
         "music.hint": "Change song to switch theme"
     },
@@ -1045,6 +1258,7 @@ const translations = {
         "about.title": "Enzo Esmeraldo",
         "about.description": "Desenvolvedor especializado em Frontend que prospera em desafios criativos. Transformo ideias complexas em interfaces intuitivas e visualmente impactantes. Apaixonado por UI/UX, design systems e experiências pixel-perfect.",
         "about.bio2": "Quando não estou escrevendo código, provavelmente estou repensando um design, na academia ou ouvindo um rock bem maneiro — sempre com atenção aos detalhes.",
+        "about.avatarJoke": "e sim, esse sou eu",
         "about.funfact.label": "Curiosidade",
         "about.funfact.title": "Pokémon Fav. é Lugia",
         "about.funfact.desc": "Elegância do tipo Psíquico, raridade lendária — basicamente minha filosofia de design em forma de Pokémon.",
@@ -1067,7 +1281,7 @@ const translations = {
         "work.label": "Portfólio",
         "work.title1": "Meu",
         "work.title2": "Trabalho.",
-        "work.subtitle": "Uma seleção curada de projetos que demonstram resolução de problemas através de design e código.",
+        "work.subtitle": "Projetos focados em transformar fluxos complexos em produtos utilizáveis: rastreabilidade de QA, catálogos científicos, ferramentas interativas de aprendizado e apps mobile com papéis claros.",
         "featuredWork.label": "Projeto em Destaque",
         "featuredWork.subtitle": "Um destaque com galeria em estilo apresentação, contexto maior do projeto e troca rápida entre projetos em destaque.",
         "featuredWork.rotation": "Troca automaticamente a cada 30 minutos",
@@ -1079,10 +1293,10 @@ const translations = {
         "featuredWork.viewGithub": "GitHub",
         "featuredWork.viewDemo": "Website",
         "featuredWork.viewCaseStudy": "Case Study",
-        "projects.dino.description": "Uma plataforma educacional interativa explorando a vida pré-histórica através de narrativa digital imersiva, carregamento dinâmico de conteúdo e animações orquestradas.",
-        "projects.teambuilder.description": "Calculadora estratégica de sinergia para jogadores competitivos de Pokémon. Analise cobertura de tipos, identifique fraquezas e monte times balanceados.",
-        "projects.uniforgym.description": "Aplicativo Android nativo para agendamento de academia e acompanhamento de treinos com autenticação de usuário e Material Design 3.",
-        "projects.aquacensus.description": "Sistema de pesquisa em biologia marinha e catalogação de espécimes. Solução completa de banco de dados para rastrear dados de vida marinha.",
+        "projects.dino.description": "Plataforma imersiva de aprendizado sobre dinossauros com catálogo científico, mapas fósseis, linhas do tempo, conteúdo multilíngue, Firebase e enriquecimento externo de imagens.",
+        "projects.teambuilder.description": "Workspace competitivo de Pokémon com persistência de times, filtros de Pokédex, análise de tipos, links de compartilhamento, favoritos, geradores e exportação para Showdown.",
+        "projects.uniforgym.description": "Plataforma Android nativa para fluxos de alunos e professores, autenticação Firebase, atribuição de treinos, vídeos por QR code e histórico de treino.",
+        "projects.aquacensus.description": "Plataforma de pesquisa marinha para coletas de campo, pesquisadores, laboratórios, embarcações, metadados de espécimes e dashboards operacionais.",
         "projects.visitGithub": "Explore mais no GitHub",
         // Journey
         "journey.subtitle": "Trajetória Profissional",
@@ -1091,34 +1305,35 @@ const translations = {
         "journey.role0": "Líder de Projeto",
         "journey.date0": "Jan. 2026 — Presente",
         "journey.status0": "Atual · React + Node.js + PostgreSQL",
-        "journey.desc0": "Promovido a Líder de Projeto, liderando o desenvolvimento de uma solução médica com IA — conduzindo a equipe, definindo a arquitetura e sendo responsável pelo produto da concepção à entrega.",
-        "journey.role0.item1": "Liderando o desenvolvimento completo de uma plataforma médica assistida por IA que apoia a tomada de decisões clínicas para médicos",
-        "journey.role0.item2": "Projetando e sendo responsável por toda a identidade visual, biblioteca de componentes e UI/UX da plataforma do zero",
-        "journey.role0.item3": "Arquitetando a solução full-stack com React, Node.js e PostgreSQL, garantindo escalabilidade e manutenibilidade",
+        "journey.desc0": "Promovido <strong>dentro da mesma empresa</strong> a <strong>Líder de Projeto</strong>, evoluindo da entrega hands-on para <strong>liderança de time</strong>, direção de arquitetura e responsabilidade pelo produto da visão até a entrega.",
+        "journey.role0.item1": "<strong>Liderando o desenvolvimento completo</strong> de uma plataforma médica assistida por IA que apoia a tomada de decisões clínicas para médicos",
+        "journey.role0.item2": "<strong>Projetando e sendo responsável</strong> por toda a identidade visual, biblioteca de componentes e UI/UX da plataforma do zero",
+        "journey.role0.item3": "<strong>Arquitetando a solução full-stack</strong> com React, Node.js e PostgreSQL, garantindo escalabilidade e manutenibilidade",
         "journey.role0.item4": "Gerenciando a estratégia de versionamento, fluxos Git e documentação técnica da equipe",
         "journey.role0.item5": "Mentorando membros da equipe em boas práticas, padrões de qualidade de código e padrões modernos de desenvolvimento",
         "journey.role0.item6": "Responsável por todas as entregas do projeto — do design de interface à arquitetura do sistema ao pipeline de deploy",
+        "journey.role0.item7": "<strong>Criando e participando de automações com IA e desenho de workflows</strong> para consultas médicas e rotinas de desenvolvimento ágil",
         "journey.role1": "Desenvolvedor FullStack",
         "journey.date1": "Jan. 2025 — Dez. 2025",
         "journey.status1": "Concluído · Angular + Spring",
-        "journey.desc1": "Avancei para desenvolvedor pleno, assumindo responsabilidades na arquitetura do sistema, decisões de UI/UX e liderança técnica.",
+        "journey.desc1": "Avancei <strong>dentro da mesma empresa</strong> para o papel de <strong>Desenvolvedor FullStack</strong>, ampliando aquela base inicial para <strong>arquitetura de sistema</strong>, decisões de UI/UX e liderança técnica crescente.",
         "journey.readMore": "Ler Mais",
         "journey.achievements": "Principais Conquistas",
-        "journey.role1.item1": "Desenvolvi o sistema Exitus de ponta a ponta, trabalhando no front-end, back-end e bancos de dados, focando em escalabilidade e desempenho",
+        "journey.role1.item1": "<strong>Desenvolvi o sistema Exitus de ponta a ponta</strong>, trabalhando no front-end, back-end e bancos de dados, focando em escalabilidade e desempenho",
         "journey.role1.item2": "Projetei a identidade visual do sistema e criei interfaces de usuário, garantindo consistência na experiência do usuário (UI/UX)",
-        "journey.role1.item3": "Arquitetei e implementei o front-end usando Angular e TypeScript, aplicando melhores práticas de componentização e responsividade",
+        "journey.role1.item3": "<strong>Arquitetei e implementei o front-end</strong> usando Angular e TypeScript, aplicando melhores práticas de componentização e responsividade",
         "journey.role1.item4": "Auxiliei na definição e construção da arquitetura back-end com Spring Boot, incluindo integrações de banco de dados e serviços externos",
-        "journey.role1.item5": "Implementei integrações com serviços de IA, automatizando a validação de questões e melhorando a experiência educacional",
+        "journey.role1.item5": "<strong>Implementei integrações com IA</strong>, automatizando a validação de questões e melhorando a experiência educacional",
         "journey.role1.item6": "Integrei webhooks e implantei soluções baseadas em nuvem (Source Cloud) para implantação e manutenção contínua do sistema",
         "journey.role1.item7": "Trabalhei sob a metodologia Agile Scrum, participando ativamente de planejamentos, revisões e retrospectivas",
         "journey.role2": "Estagiário FullStack",
         "journey.date2": "Abr. 2024 — Dez. 2024",
         "journey.status2": "Concluído · Angular + Spring",
-        "journey.desc2": "Iniciei minha jornada profissional como estagiário, contribuindo para o desenvolvimento de sistemas e aprendendo as melhores práticas da indústria.",
-        "journey.role2.item1": "Contribuí para o desenvolvimento e melhoria das interfaces do sistema Exitus, focando em usabilidade e acessibilidade",
+        "journey.desc2": "Iniciei minha jornada profissional como <strong>Estagiário FullStack</strong>, contribuindo para o desenvolvimento de sistemas e construindo a base que depois evoluiu para uma atuação técnica mais ampla.",
+        "journey.role2.item1": "<strong>Contribuí para o desenvolvimento e melhoria</strong> das interfaces do sistema Exitus, focando em usabilidade e acessibilidade",
         "journey.role2.item2": "Auxiliei na criação de fluxos de usuário e design de interface, colaborando estreitamente com a equipe de UI/UX",
-        "journey.role2.item3": "Participei do desenvolvimento front-end usando Angular, TypeScript e CSS, e apoiei o back-end com Spring Boot",
-        "journey.role2.item4": "Ganhei experiência prática com desenvolvimento full-stack em um ambiente profissional",
+        "journey.role2.item3": "<strong>Participei do desenvolvimento front-end</strong> usando Angular, TypeScript e CSS, e apoiei o back-end com Spring Boot",
+        "journey.role2.item4": "<strong>Ganhei experiência prática</strong> com desenvolvimento full-stack em um ambiente profissional",
         "journey.role2.item5": "Aprendi metodologias de desenvolvimento Ágil e práticas de colaboração em equipe",
         // Skills
         "skills.subtitle": "Com o que trabalho",
@@ -1132,6 +1347,11 @@ const translations = {
         "footer.title2": "algo incrível.",
         "footer.copyright": "&copy; 2025 Enzo Esmeraldo",
         "footer.credits": "Criado com <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> no Brasil",
+        // Heatmap / Tech
+        "contrib.label": "Atividade de Contribuição",
+        "contrib.less": "Menos",
+        "contrib.more": "Mais",
+        "tech.label": "Stack Principal",
         // Music
         "music.hint": "Mude a música para trocar o tema"
     }
@@ -1141,6 +1361,7 @@ let currentLang = 'en';
 
 function setLanguage(lang) {
     currentLang = lang;
+    document.documentElement.lang = lang;
 
     document.querySelectorAll('[data-lang]').forEach(element => {
         const key = element.getAttribute('data-lang');
@@ -1165,6 +1386,8 @@ function setLanguage(lang) {
     localStorage.setItem('preferred-lang', lang);
 
     renderFeaturedProjects();
+    renderHeatmap();
+    renderTechStack();
 }
 
 function toggleLanguage() {
@@ -1186,3 +1409,6 @@ function initLanguage() {
 
 document.addEventListener('DOMContentLoaded', initLanguage);
 document.addEventListener('DOMContentLoaded', initFeaturedProjects);
+document.addEventListener('DOMContentLoaded', initHeatmapTooltip);
+document.addEventListener('DOMContentLoaded', loadHeatmap);
+document.addEventListener('DOMContentLoaded', renderTechStack);

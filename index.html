@@ -136,7 +136,7 @@
     <!-- ═══ HERO ═══ -->
     <section id="hero" class="relative min-h-screen flex items-center overflow-hidden">
         <!-- Background Image -->
-        <div id="hero-bg" class="absolute inset-0 bg-cover bg-center scale-110 opacity-30 transition-all duration-1000" style="background-image: url('assets/backgrounds/yellow.jpg');"></div>
+        <div id="hero-bg" class="absolute inset-0 bg-cover bg-center scale-105 opacity-45 transition-all duration-1000" style="background-image: url('assets/backgrounds/blue_wallpaper.jpg');"></div>
 
         <div class="relative z-10 max-w-[1400px] mx-auto px-6 md:px-10 w-full pt-32 pb-20">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-end">
@@ -230,6 +230,33 @@
                             <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" class="social-link w-10 h-10 flex items-center justify-center border border-white/10 hover:border-accent/40 rounded-full text-white hover:text-white transition-all"><i class="fab fa-linkedin-in text-sm"></i></a>
                             <a href="mailto:enzopo625@gmail.com" class="social-link w-10 h-10 flex items-center justify-center border border-white/10 hover:border-accent/40 rounded-full text-white hover:text-white transition-all"><i class="fas fa-envelope text-sm"></i></a>
                         </div>
+
+                        <!-- GitHub Activity -->
+                        <div class="hero-activity-panel">
+                            <div class="flex items-center justify-between gap-4 mb-3">
+                                <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase" data-lang="contrib.label">Contribution Activity</p>
+                                <span id="contrib-total" class="font-mono text-[10px] text-gray/40">&nbsp;</span>
+                            </div>
+                            <div class="contrib" role="img" aria-label="GitHub contribution activity over the past year">
+                                <div class="contrib-months" id="contrib-months" aria-hidden="true"></div>
+                                <div class="contrib-grid" id="contrib-grid" aria-hidden="true"></div>
+                                <div class="contrib-footer">
+                                    <div class="contrib-legend" aria-hidden="true">
+                                        <span data-lang="contrib.less">Less</span>
+                                        <span class="contrib-swatch" style="background:var(--heat-0)"></span>
+                                        <span class="contrib-swatch" style="background:var(--heat-1)"></span>
+                                        <span class="contrib-swatch" style="background:var(--heat-2)"></span>
+                                        <span class="contrib-swatch" style="background:var(--heat-3)"></span>
+                                        <span class="contrib-swatch" style="background:var(--heat-4)"></span>
+                                        <span data-lang="contrib.more">More</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase mb-2" data-lang="tech.label">Core Stack</p>
+                                <div id="tech-icons" class="tech-icons" aria-label="Core technology stack"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -260,7 +287,14 @@
                 <!-- Card 1 — Main bio (spans 2 cols) -->
                 <div class="gs-reveal bento-card lg:col-span-2 group">
                     <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col md:flex-row gap-8 items-start min-h-[280px]">
-                        <img src="assets/EnzoGym3.jpeg" alt="Enzo Esmeraldo" class="w-20 h-20 rounded-full object-cover border-2 border-accent/20 grayscale hover:grayscale-0 transition-all duration-500 shrink-0" />
+                        <div class="about-avatar-stack">
+                            <img src="assets/EnzoGym3.jpeg" alt="Enzo Esmeraldo" class="w-20 h-20 rounded-full object-cover border-2 border-accent/20 grayscale hover:grayscale-0 transition-all duration-500 shrink-0" />
+                            <div class="about-avatar-note" aria-label="And by the way, that's me">
+                                <img src="assets/icons/mudkipicon.png" alt="" class="about-avatar-note-icon" />
+                                <span data-lang="about.avatarJoke">btw, that's me</span>
+                                <span class="about-theme-mark about-theme-mark-deftones" aria-hidden="true"><i class="fas fa-circle-half-stroke"></i></span>
+                            </div>
+                        </div>
                         <div class="flex-1 space-y-4">
                             <span class="bento-tag">
                                 <i class="fas fa-user text-[10px]"></i>
@@ -280,7 +314,10 @@
                                 <i class="fas fa-star text-[10px]"></i>
                                 <span data-lang="about.funfact.label">Fun Fact</span>
                             </span>
-                            <h3 class="font-heading text-xl md:text-2xl text-text font-medium mt-4 mb-3" data-lang="about.funfact.title">Fav. Pokémon is Lugia</h3>
+                            <div class="fav-pokemon-heading">
+                                <h3 class="font-heading text-xl md:text-2xl text-text font-medium" data-lang="about.funfact.title">Fav. Pokémon is Lugia</h3>
+                                <img src="assets/icons/LugiaLittleIcon.png" alt="" class="fav-pokemon-icon" />
+                            </div>
                             <p class="font-body text-sm text-gray leading-relaxed" data-lang="about.funfact.desc">Psychic-type elegance, legendary rarity — basically my design philosophy wrapped in a Pokémon.</p>
                         </div>
                         <div class="flex items-center gap-2 mt-6 text-accent/0 group-hover:text-accent/60 transition-all duration-500">
@@ -386,11 +423,15 @@
                                 </li>
                                 <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
                                     <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                    <span data-lang="journey.role0.item2">Designing and owning the entire visual identity, component library, and UI/UX of the platform from scratch</span>
+                                    <span data-lang="journey.role0.item3">Architecting the full-stack solution with React, Node.js, and PostgreSQL, ensuring scalability and maintainability</span>
                                 </li>
                                 <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
                                     <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                    <span data-lang="journey.role0.item3">Architecting the full-stack solution with React, Node.js, and PostgreSQL, ensuring scalability and maintainability</span>
+                                    <span data-lang="journey.role0.item7">Creating and participating in AI automations and workflow design for medical consultations and agile development routines</span>
+                                </li>
+                                <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
+                                    <span data-lang="journey.role0.item2">Designing and owning the entire visual identity, component library, and UI/UX of the platform from scratch</span>
                                 </li>
                                 <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
                                     <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
@@ -552,6 +593,7 @@
                         <span data-lang="work.title1">My</span>
                         <span class="text-accent italic" data-lang="work.title2">Work.</span>
                     </h2>
+                    <p class="mt-4 max-w-2xl font-body text-sm md:text-base text-gray leading-relaxed" data-lang="work.subtitle">Projects focused on turning complex workflows into usable products: QA traceability, scientific catalogs, interactive learning tools, and role-based mobile apps.</p>
                 </div>
                 <div id="featured-project-switcher" class="featured-project-header-switcher" aria-label="Featured projects"></div>
             </div>
@@ -581,8 +623,8 @@
         <div class="flex items-center gap-3">
             <div id="album-art" class="w-10 h-10 rounded-sm bg-cover bg-center shrink-0 shadow-lg"></div>
             <div id="music-meta" class="flex-1 min-w-0">
-                <p id="song-title" class="font-heading text-xs text-text font-medium truncate">505</p>
-                <p id="artist-name" class="font-mono text-[10px] text-gray truncate">Arctic Monkeys</p>
+                <p id="song-title" class="font-heading text-xs text-text font-medium truncate">Oxygen</p>
+                <p id="artist-name" class="font-mono text-[10px] text-gray truncate">Porch Light</p>
             </div>
             <div id="music-nav" class="flex items-center gap-1">
                 <button id="prev-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
