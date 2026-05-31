@@ -22,7 +22,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400..800&family=Fredoka:wght@300..700&family=Instrument+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -31,10 +31,10 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        display: ['"Fredoka"', 'sans-serif'],
+                        display: ['"Syne"', 'sans-serif'],
                         heading: ['"Fredoka"', 'sans-serif'],
-                        body: ['"Fredoka"', 'sans-serif'],
-                        mono: ['"Fredoka"', 'sans-serif'],
+                        body: ['"Instrument Sans"', 'sans-serif'],
+                        mono: ['"Space Mono"', 'monospace'],
                     },
                     colors: {
                         bg: 'rgb(var(--bg-rgb) / <alpha-value>)',
@@ -285,10 +285,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
 
                 <!-- Card 1 — Main bio (spans 2 cols) -->
-                <div class="gs-reveal bento-card lg:col-span-2 group">
+                <div class="gs-reveal bento-card about-card about-card-main lg:col-span-2 group">
                     <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col md:flex-row gap-8 items-start min-h-[280px]">
                         <div class="about-avatar-stack">
-                            <img src="assets/EnzoGym3.jpeg" alt="Enzo Esmeraldo" class="w-20 h-20 rounded-full object-cover border-2 border-accent/20 grayscale hover:grayscale-0 transition-all duration-500 shrink-0" />
+                            <img src="assets/EnzoGym3.jpeg" alt="Enzo Esmeraldo" class="about-avatar-image w-20 h-20 rounded-full object-cover border-2 border-accent/20 transition-all duration-500 shrink-0" />
                             <div class="about-avatar-note" aria-label="And by the way, that's me">
                                 <img src="assets/icons/mudkipicon.png" alt="" class="about-avatar-note-icon" />
                                 <span data-lang="about.avatarJoke">btw, that's me</span>
@@ -300,14 +300,14 @@
                                 <i class="fas fa-user text-[10px]"></i>
                                 <span data-lang="about.offCode">About the Developer</span>
                             </span>
-                            <p class="font-body text-sm md:text-base text-gray leading-relaxed" data-lang="about.description">Frontend-specialized developer who thrives on creative challenges. I transform complex ideas into intuitive, visually striking interfaces. Passionate about UI/UX, design systems, and crafting pixel-perfect experiences.</p>
-                            <p class="font-body text-sm text-gray/60 leading-relaxed" data-lang="about.bio2">When I'm not writing code, I'm probably overthinking a design, grinding at the gym, or blasting some killer rock — always with an eye for detail.</p>
+                            <p class="font-body text-sm md:text-base text-gray leading-relaxed" data-lang="about.description">Fullstack Developer and Frontend enthusiast focused on <strong>front-end architecture</strong>, <strong>design systems</strong>, and interfaces that make complex workflows easier to use. I like building products where UI decisions, technical structure, and product value point in the same direction.</p>
+                            <p class="font-body text-sm text-gray/60 leading-relaxed" data-lang="about.bio2">My current work connects product delivery with <strong>AI automation</strong>, agile routines, and tools that help teams move with more context and less friction.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Card 2 — Fav Pokemon / Fun fact -->
-                <div class="gs-reveal bento-card group">
+                <div class="gs-reveal bento-card about-card about-card-funfact group">
                     <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col justify-between min-h-[280px]">
                         <div>
                             <span class="bento-tag">
@@ -320,7 +320,7 @@
                             </div>
                             <p class="font-body text-sm text-gray leading-relaxed" data-lang="about.funfact.desc">Psychic-type elegance, legendary rarity — basically my design philosophy wrapped in a Pokémon.</p>
                         </div>
-                        <div class="flex items-center gap-2 mt-6 text-accent/0 group-hover:text-accent/60 transition-all duration-500">
+                        <div class="about-funfact-footer flex items-center gap-2 mt-6 transition-all duration-500">
                             <span class="w-8 h-[1px] bg-accent/30"></span>
                             <span class="font-mono text-[10px] tracking-widest uppercase">Pokémon 2000</span>
                         </div>
@@ -328,27 +328,27 @@
                 </div>
 
                 <!-- Card 3 — Stats -->
-                <div class="gs-reveal bento-card group">
+                <div class="gs-reveal bento-card about-card about-card-stats group">
                     <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col justify-between min-h-[200px]">
-                        <span class="bento-tag">
+                        <span class="bento-tag max-w-fit">
                             <i class="fas fa-chart-simple text-[10px]"></i>
                             <span data-lang="about.numbers.label">By the Numbers</span>
                         </span>
                         <div class="grid grid-cols-2 gap-5 mt-4">
                             <div class="space-y-1">
-                                <p class="font-heading text-3xl text-accent font-light" data-lang="about.stat1.value">2+</p>
+                                <p class="about-stat-value font-heading text-3xl font-light" data-lang="about.stat1.value">2+</p>
                                 <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase" data-lang="about.stat1.label">Years Exp.</p>
                             </div>
                             <div class="space-y-1">
-                                <p class="font-heading text-3xl text-accent font-light" data-lang="about.stat2.value">10+</p>
+                                <p class="about-stat-value font-heading text-3xl font-light" data-lang="about.stat2.value">10+</p>
                                 <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase" data-lang="about.stat2.label">Projects</p>
                             </div>
                             <div class="space-y-1">
-                                <p class="font-heading text-3xl text-accent font-light" data-lang="about.stat3.value">Front-End</p>
+                                <p class="about-stat-value font-heading text-3xl font-light" data-lang="about.stat3.value">Front-End</p>
                                 <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase" data-lang="about.stat3.label">Focus</p>
                             </div>
                             <div class="space-y-1">
-                                <p class="font-heading text-3xl text-accent font-light" data-lang="about.stat4.value">2027</p>
+                                <p class="about-stat-value font-heading text-3xl font-light" data-lang="about.stat4.value">2027</p>
                                 <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase" data-lang="about.stat4.label">Graduation</p>
                             </div>
                         </div>
@@ -356,14 +356,14 @@
                 </div>
 
                 <!-- Card 4 — Currently building -->
-                <div class="gs-reveal bento-card lg:col-span-2 group">
+                <div class="gs-reveal bento-card about-card about-card-current lg:col-span-2 group">
                     <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col justify-between min-h-[180px]">
                         <div>
                             <span class="bento-tag">
                                 <i class="fas fa-code-branch text-[10px]"></i>
                                 <span data-lang="about.current.label">Currently Building</span>
                             </span>
-                            <p class="font-body text-sm md:text-base text-gray leading-relaxed mt-4" data-lang="about.current.desc">An AI-powered medical platform that helps doctors make better clinical decisions — leading the team, owning the architecture, and designing every pixel of the experience.</p>
+                            <p class="font-body text-sm md:text-base text-gray leading-relaxed mt-4" data-lang="about.current.desc">An AI-powered medical platform that helps doctors make better clinical decisions — leading the team, owning the architecture, creating <strong>AI automations</strong>, and shaping <strong>agile development tools</strong> for the workflow around medical consultations.</p>
                         </div>
                         <div class="flex items-center gap-3 mt-6">
                             <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
@@ -372,6 +372,19 @@
                     </div>
                 </div>
 
+            </div>
+
+            <!-- Interest Chips -->
+            <div class="gs-reveal about-interest-panel mt-5">
+                <div class="about-interest-copy">
+                    <span class="bento-tag max-w-fit">
+                        <i class="fas fa-compass text-[10px]"></i>
+                        <span data-lang="about.interests.label">Interests</span>
+                    </span>
+                    <p class="about-interest-title" data-lang="about.interests.title">Outside the editor</p>
+                    <p id="about-interest-text" class="about-interest-text"><strong>Pokemon and sharks</strong> are my main hype focus: <strong>Lugia</strong>, <strong>Gengar</strong>, and <strong>Arcanine</strong> for personality and style; <strong>whale sharks</strong> and <strong>hammerheads</strong> for calm scale, sharp silhouettes, and natural design energy.</p>
+                </div>
+                <div id="about-interest-buttons" class="about-interest-buttons" role="tablist" aria-label="Personal interests"></div>
             </div>
         </div>
     </section>

@@ -664,6 +664,67 @@ function renderTechStack() {
     `).join('');
 }
 
+// ── About Interest Chips ──
+const aboutInterests = [
+    {
+        id: 'hype-focus',
+        label: { en: 'Hype Focus', pt: 'Hype Focus' },
+        text: {
+            en: '<strong>Pokemon and sharks</strong> are my main hype focus: <strong>Lugia</strong>, <strong>Gengar</strong>, and <strong>Arcanine</strong> for personality and style; <strong>whale sharks</strong> and <strong>hammerheads</strong> for calm scale, sharp silhouettes, and natural design energy.',
+            pt: '<strong>Pokemon e tubarões</strong> são meu principal hype focus: <strong>Lugia</strong>, <strong>Gengar</strong> e <strong>Arcanine</strong> por personalidade e estilo; <strong>tubarões-baleia</strong> e <strong>tubarões-martelo</strong> por escala calma, silhuetas marcantes e energia de design natural.'
+        }
+    },
+    {
+        id: 'interests',
+        label: { en: 'Interests', pt: 'Interesses' },
+        text: {
+            en: '<strong>Games and anime</strong> keep me close to strategy, pacing, and memorable worlds: <strong>Valorant</strong>, <strong>Elden Ring</strong>, <strong>Attack on Titan</strong>, <strong>Hunter x Hunter</strong>, and <strong>Code Geass</strong>.',
+            pt: '<strong>Jogos e animes</strong> me mantêm perto de estratégia, ritmo e mundos memoráveis: <strong>Valorant</strong>, <strong>Elden Ring</strong>, <strong>Attack on Titan</strong>, <strong>Hunter x Hunter</strong> e <strong>Code Geass</strong>.'
+        }
+    },
+    {
+        id: 'learning',
+        label: { en: 'Learning', pt: 'Aprendizado' },
+        text: {
+            en: '<strong>Current learning:</strong> building practical <strong>AI automations</strong> with <strong>Claude</strong> and <strong>Gemini</strong>, designing reusable skills, mapping workflow steps, and studying <strong>Chinese / Mandarin</strong> with consistency.',
+            pt: '<strong>Aprendizado atual:</strong> criando <strong>automações práticas com IA</strong> usando <strong>Claude</strong> e <strong>Gemini</strong>, desenhando skills reutilizáveis, mapeando etapas de workflow e estudando <strong>chinês / mandarim</strong> com consistência.'
+        }
+    }
+];
+
+let activeAboutInterestId = 'hype-focus';
+
+function renderAboutInterests() {
+    const buttons = document.getElementById('about-interest-buttons');
+    const text = document.getElementById('about-interest-text');
+    if (!buttons || !text) return;
+
+    const activeInterest = aboutInterests.find(interest => interest.id === activeAboutInterestId) || aboutInterests[0];
+
+    buttons.innerHTML = aboutInterests.map(interest => {
+        const isActive = interest.id === activeInterest.id;
+        return `
+            <button
+                type="button"
+                class="about-interest-chip ${isActive ? 'is-active' : ''}"
+                data-about-interest="${interest.id}"
+                aria-pressed="${isActive}"
+            >
+                ${interest.label[currentLang] || interest.label.en}
+            </button>
+        `;
+    }).join('');
+
+    text.innerHTML = activeInterest.text[currentLang] || activeInterest.text.en;
+
+    buttons.querySelectorAll('[data-about-interest]').forEach(button => {
+        button.addEventListener('click', () => {
+            activeAboutInterestId = button.dataset.aboutInterest;
+            renderAboutInterests();
+        });
+    });
+}
+
 // ── Journey Expand/Collapse ──
 function toggleJourney(id, btn) {
     const content = document.getElementById(id);
@@ -697,8 +758,20 @@ const featuredProjects = [
             alt: 'Pokémon Team Builder logo'
         },
         description: {
-            en: 'A competitive Pokémon workspace for <strong>building smarter teams</strong>, combining <strong>Pokédex search</strong>, <strong>type coverage analysis</strong>, custom movesets, saved teams, share links, favorites, quick generators, and <em>Showdown-ready export</em>.',
-            pt: 'Um workspace competitivo de Pokémon para <strong>montar equipes mais inteligentes</strong>, combinando <strong>busca na Pokédex</strong>, <strong>análise de cobertura de tipos</strong>, movesets customizados, times salvos, links de compartilhamento, favoritos, geradores rápidos e <em>exportação pronta para o Showdown</em>.'
+            en: 'A competitive Pokémon workspace for <strong>building smarter teams</strong>, combining <strong>Pokédex search</strong>, <strong>type coverage analysis</strong>, saved teams, quick generators, and <em>Showdown-ready export</em>.',
+            pt: 'Um workspace competitivo de Pokémon para <strong>montar equipes mais inteligentes</strong>, combinando <strong>busca na Pokédex</strong>, <strong>análise de cobertura de tipos</strong>, times salvos, geradores rápidos e <em>exportação pronta para o Showdown</em>.'
+        },
+        narrative: {
+            en: {
+                why: 'Built to turn a fan workflow into a polished product surface with clear decisions and fast iteration.',
+                does: 'Lets players search, filter, save, share, analyze coverage, and export teams for battle planning.',
+                problem: 'Team building often gets split across tools; this brings discovery, strategy, and persistence together.'
+            },
+            pt: {
+                why: 'Criado para transformar um fluxo de fã em uma experiência de produto polida, com decisões claras e iteração rápida.',
+                does: 'Permite buscar, filtrar, salvar, compartilhar, analisar cobertura e exportar times para planejamento de batalha.',
+                problem: 'A montagem de times costuma ficar espalhada em várias ferramentas; aqui descoberta, estratégia e persistência ficam juntas.'
+            }
         },
         technologies: ['React', 'JavaScript', 'Tailwind', 'Firebase', 'PokéAPI'],
         images: [
@@ -749,6 +822,18 @@ const featuredProjects = [
             en: 'An immersive learning platform for <strong>dinosaur research</strong>, combining a <strong>scientific catalog</strong>, fossil maps, timelines, multilingual content, Firebase data, and external image enrichment into an <em>editorial exploration experience</em>.',
             pt: 'Uma plataforma imersiva de aprendizado sobre <strong>pesquisa em dinossauros</strong>, combinando <strong>catálogo científico</strong>, mapas fósseis, linhas do tempo, conteúdo multilíngue, dados no Firebase e enriquecimento externo de imagens em uma <em>experiência editorial de exploração</em>.'
         },
+        narrative: {
+            en: {
+                why: 'Built to make educational research feel visual, navigable, and alive instead of buried in static lists.',
+                does: 'Organizes species, maps, timelines, quizzes, multilingual content, and enriched imagery into one learning flow.',
+                problem: 'Prehistoric data can feel fragmented; the interface gives it context, pacing, and a reason to keep exploring.'
+            },
+            pt: {
+                why: 'Criado para fazer pesquisa educacional parecer visual, navegável e viva em vez de presa em listas estáticas.',
+                does: 'Organiza espécies, mapas, linhas do tempo, quizzes, conteúdo multilíngue e imagens enriquecidas em um fluxo de aprendizado.',
+                problem: 'Dados pré-históricos podem parecer fragmentados; a interface dá contexto, ritmo e motivo para continuar explorando.'
+            }
+        },
         technologies: ['React', 'TypeScript', 'Tailwind', 'Firebase', 'Leaflet', 'i18next'],
         images: [
             {
@@ -798,6 +883,18 @@ const featuredProjects = [
             en: 'A VS Code extension for QA operations that turns selected commits into <strong>traceable validation packages</strong>, <strong>AI-assisted summaries</strong>, OpenProject tasks, testing prompts, and <em>reusable agent-ready project context</em>.',
             pt: 'Uma extensão do VS Code para operação de QA que transforma commits selecionados em <strong>pacotes rastreáveis de validação</strong>, <strong>resumos assistidos por IA</strong>, tarefas no OpenProject, prompts de teste e <em>contexto reutilizável pronto para agentes</em>.'
         },
+        narrative: {
+            en: {
+                why: 'Built from a real QA handoff pain: commits need context, traceability, and repeatable validation.',
+                does: 'Generates summaries, validation packages, testing context, OpenProject tasks, and agent-ready docs from selected commits.',
+                problem: 'QA workflows lose time when evidence, tickets, and technical context live in separate places.'
+            },
+            pt: {
+                why: 'Criado a partir de uma dor real de handoff de QA: commits precisam de contexto, rastreabilidade e validação repetível.',
+                does: 'Gera resumos, pacotes de validação, contexto de testes, tarefas no OpenProject e docs para agentes a partir de commits selecionados.',
+                problem: 'Fluxos de QA perdem tempo quando evidências, tarefas e contexto técnico ficam em lugares separados.'
+            }
+        },
         technologies: ['TypeScript', 'VS Code API', 'React', 'Vite', 'OpenProject', 'AI'],
         images: [
             {
@@ -839,6 +936,18 @@ const featuredProjects = [
         description: {
             en: 'A marine research platform for <strong>cataloging field collections</strong>, managing researchers, labs and vessels, tracking specimen metadata, and surfacing <em>collection trends through operational dashboards</em>.',
             pt: 'Uma plataforma de pesquisa marinha para <strong>catalogar coletas de campo</strong>, gerenciar pesquisadores, laboratórios e embarcações, rastrear metadados de espécimes e revelar <em>tendências de coleta em dashboards operacionais</em>.'
+        },
+        narrative: {
+            en: {
+                why: 'Built to support scientific collection work with structure, permissions, and clearer research visibility.',
+                does: 'Catalogs collections, specimens, photos, laboratories, vessels, researchers, favorites, and dashboard metrics.',
+                problem: 'Research records become harder to trust when metadata, people, and collection context are not connected.'
+            },
+            pt: {
+                why: 'Criado para apoiar coletas científicas com estrutura, permissões e mais visibilidade para pesquisa.',
+                does: 'Cataloga coletas, espécimes, fotos, laboratórios, embarcações, pesquisadores, favoritos e métricas em dashboards.',
+                problem: 'Registros de pesquisa ficam difíceis de confiar quando metadados, pessoas e contexto da coleta não estão conectados.'
+            }
         },
         technologies: ['React', 'TypeScript', 'Node.js', 'Express', 'Supabase', 'Tailwind'],
         images: [
@@ -906,6 +1015,11 @@ function getFeaturedProjectDescription(project) {
     return project.description[currentLang] || project.description.en || '';
 }
 
+function getFeaturedProjectNarrative(project) {
+    if (!project || !project.narrative) return null;
+    return project.narrative[currentLang] || project.narrative.en || null;
+}
+
 function getFeaturedProjectLogoMarkup(project, variant) {
     if (!project || !project.logo || !project.logo.src) return '';
 
@@ -934,7 +1048,7 @@ function buildFeaturedProjectSwitcher() {
             >
                 ${getFeaturedProjectLogoMarkup(project, 'switcher')}
                 <span class="featured-project-switch-copy">
-                    <span class="featured-project-switch-title">${(project.title).slice(0, 14)}${project.title.length > 14 ? '...' : ''}</span>
+                    <span class="featured-project-switch-title">${project.title}</span>
                 </span>
             </button>
         `;
@@ -989,6 +1103,97 @@ function buildFeaturedProjectLinks(project) {
     `;
 }
 
+function buildFeaturedProjectNarrative(project) {
+    const narrative = getFeaturedProjectNarrative(project);
+    if (!narrative) return '';
+
+    const activeTranslations = translations[currentLang] || translations.en;
+    const items = [
+        { label: activeTranslations['featuredWork.why'], text: narrative.why },
+        { label: activeTranslations['featuredWork.does'], text: narrative.does },
+        { label: activeTranslations['featuredWork.problem'], text: narrative.problem }
+    ].filter(item => item.text);
+
+    if (!items.length) return '';
+
+    return `
+        <div class="featured-project-narrative">
+            ${items.map(item => `
+                <div class="featured-project-narrative-item">
+                    <span class="featured-project-narrative-label">${item.label}</span>
+                    <p>${item.text}</p>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function ensureFeaturedImageModal() {
+    let modal = document.getElementById('featured-image-modal');
+    if (modal) return modal;
+
+    modal = document.createElement('div');
+    modal.id = 'featured-image-modal';
+    modal.className = 'featured-image-modal';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+        <div class="featured-image-modal-backdrop" data-featured-modal-close></div>
+        <div class="featured-image-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="featured-image-modal-title">
+            <div class="featured-image-modal-header">
+                <div>
+                    <p class="featured-image-modal-kicker" id="featured-image-modal-kicker"></p>
+                    <h3 class="featured-image-modal-title" id="featured-image-modal-title"></h3>
+                </div>
+                <button type="button" class="featured-image-modal-close" data-featured-modal-close aria-label="Close image preview">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+            <div class="featured-image-modal-media">
+                <img id="featured-image-modal-img" src="" alt="">
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    modal.querySelectorAll('[data-featured-modal-close]').forEach(element => {
+        element.addEventListener('click', closeFeaturedImageModal);
+    });
+
+    return modal;
+}
+
+function openFeaturedImageModal() {
+    const project = featuredProjects[featuredProjectState.activeProjectIndex];
+    const image = project && project.images ? project.images[featuredProjectState.activeImageIndex] : null;
+    if (!project || !image) return;
+
+    const modal = ensureFeaturedImageModal();
+    const imageElement = modal.querySelector('#featured-image-modal-img');
+    const titleElement = modal.querySelector('#featured-image-modal-title');
+    const kickerElement = modal.querySelector('#featured-image-modal-kicker');
+    const closeButton = modal.querySelector('.featured-image-modal-close');
+
+    imageElement.src = image.src;
+    imageElement.alt = image.alt;
+    titleElement.textContent = project.title;
+    kickerElement.textContent = `${String(featuredProjectState.activeImageIndex + 1).padStart(2, '0')} / ${String(project.images.length).padStart(2, '0')}`;
+
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    closeButton.focus();
+}
+
+function closeFeaturedImageModal() {
+    const modal = document.getElementById('featured-image-modal');
+    if (!modal) return;
+
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+}
+
 function renderFeaturedProjectStage() {
     const { stage } = getFeaturedProjectElements();
     if (!stage) return;
@@ -1005,7 +1210,8 @@ function renderFeaturedProjectStage() {
     const hasMultipleImages = project.images.length > 1;
     const copy = getFeaturedProjectCopy();
     const linkMarkup = buildFeaturedProjectLinks(project);
-    const featuredFit = activeImage.fit || 'contain';
+    const narrativeMarkup = buildFeaturedProjectNarrative(project);
+    const featuredFit = 'contain';
     const featuredPosition = activeImage.position || 'center';
 
     stage.innerHTML = `
@@ -1013,6 +1219,10 @@ function renderFeaturedProjectStage() {
             <div class="featured-project-media-shell ${hasMultipleImages ? '' : 'is-single-image'}">
                 <div class="featured-project-primary">
                     <img class="featured-project-primary-image" src="${activeImage.src}" alt="${activeImage.alt}" style="--featured-fit: ${featuredFit}; --featured-position: ${featuredPosition};">
+                    <button type="button" class="featured-project-expand-btn" data-featured-expand aria-label="${translations[currentLang]['featuredWork.expandImage'] || 'Expand image'}">
+                        <i class="fas fa-up-right-and-down-left-from-center"></i>
+                        <span>${translations[currentLang]['featuredWork.expandImage'] || 'Expand'}</span>
+                    </button>
                 </div>
 
                 ${hasMultipleImages ? `
@@ -1044,6 +1254,8 @@ function renderFeaturedProjectStage() {
 
                 <p class="featured-project-description">${getFeaturedProjectDescription(project)}</p>
 
+                ${narrativeMarkup}
+
                 <div class="featured-project-section">
                     <p class="featured-project-section-label">${copy.stack}</p>
                     <div class="featured-project-tech">
@@ -1061,6 +1273,11 @@ function renderFeaturedProjectStage() {
             selectFeaturedImage(Number(button.dataset.featuredImageIndex));
         });
     });
+
+    const expandButton = stage.querySelector('[data-featured-expand]');
+    if (expandButton) {
+        expandButton.addEventListener('click', openFeaturedImageModal);
+    }
 }
 
 function renderFeaturedProjects() {
@@ -1136,24 +1353,26 @@ const translations = {
         "about.title2": "am.",
         "about.offCode": "About the Developer",
         "about.title": "Enzo Esmeraldo",
-        "about.description": "Fullstack Developer & Frontend enthusiast who thrives on creative challenges. I transform complex ideas into intuitive, visually striking interfaces. Passionate about UI/UX, design systems, and crafting pixel-perfect experiences.",
-        "about.bio2": "When I'm not writing code, I'm probably overthinking a design, grinding at the gym, or blasting some killer rock — always with an eye for detail.",
+        "about.description": "Fullstack Developer and Frontend enthusiast focused on <strong>front-end architecture</strong>, <strong>design systems</strong>, and interfaces that make complex workflows easier to use. I like building products where UI decisions, technical structure, and product value point in the same direction.",
+        "about.bio2": "My current work connects product delivery with <strong>AI automation</strong>, agile routines, and tools that help teams move with more context and less friction.",
         "about.avatarJoke": "btw, that's me",
+        "about.interests.label": "Interests",
+        "about.interests.title": "Outside the editor",
         "about.funfact.label": "Fun Fact",
         "about.funfact.title": "Fav. Pokémon is Lugia",
         "about.funfact.desc": "Psychic-type elegance, legendary rarity — basically my design philosophy wrapped in a Pokémon.",
         "about.numbers.label": "By the Numbers",
         "about.current.label": "Currently Building",
-        "about.current.desc": "An AI-powered medical platform that helps doctors make better clinical decisions — leading the team, owning the architecture, and designing every pixel of the experience.",
+        "about.current.desc": "An AI-powered medical platform that helps doctors make better clinical decisions — leading the team, owning the architecture, creating <strong>AI automations</strong>, and shaping <strong>agile development tools</strong> for the workflow around medical consultations.",
         "about.current.status": "In active development",
         "about.stat1.label": "Years",
         "about.stat1.value": "2+",
         "about.stat2.label": "Projects",
         "about.stat2.value": "10+",
         "about.stat3.label": "Focus",
-        "about.stat3.value": "Fullstack",
+        "about.stat3.value": "Frontend",
         "about.stat4.label": "Graduation",
-        "about.stat4.value": "2026",
+        "about.stat4.value": "2027",
         "about.stat5.label": "Fav. Pokémon",
         "about.stat5.value": "Lugia",
         "about.downloadCV": "DOWNLOAD CV",
@@ -1173,6 +1392,10 @@ const translations = {
         "featuredWork.viewGithub": "GitHub",
         "featuredWork.viewDemo": "Website",
         "featuredWork.viewCaseStudy": "Case Study",
+        "featuredWork.expandImage": "Expand",
+        "featuredWork.why": "Why",
+        "featuredWork.does": "What it does",
+        "featuredWork.problem": "Problem",
         "projects.dino.description": "Immersive dinosaur learning platform with a scientific catalog, fossil maps, timelines, multilingual content, Firebase data, and external image enrichment.",
         "projects.teambuilder.description": "Competitive Pokémon workspace with team persistence, Pokédex filters, type analysis, share links, favorites, generators, and Showdown export.",
         "projects.uniforgym.description": "Native Android gym platform for student and professor workflows, Firebase auth, workout assignment, QR-guided exercise videos, and training history.",
@@ -1256,15 +1479,17 @@ const translations = {
         "about.title2": "sou.",
         "about.offCode": "Sobre o Desenvolvedor",
         "about.title": "Enzo Esmeraldo",
-        "about.description": "Desenvolvedor especializado em Frontend que prospera em desafios criativos. Transformo ideias complexas em interfaces intuitivas e visualmente impactantes. Apaixonado por UI/UX, design systems e experiências pixel-perfect.",
-        "about.bio2": "Quando não estou escrevendo código, provavelmente estou repensando um design, na academia ou ouvindo um rock bem maneiro — sempre com atenção aos detalhes.",
+        "about.description": "Desenvolvedor Fullstack e entusiasta de Frontend com foco em <strong>arquitetura front-end</strong>, <strong>design systems</strong> e interfaces que tornam fluxos complexos mais fáceis de usar. Gosto de construir produtos onde UI, estrutura técnica e valor de negócio apontam para a mesma direção.",
+        "about.bio2": "Meu trabalho atual conecta entrega de produto com <strong>automação com IA</strong>, rotinas ágeis e ferramentas que ajudam equipes a trabalhar com mais contexto e menos atrito.",
         "about.avatarJoke": "e sim, esse sou eu",
+        "about.interests.label": "Interesses",
+        "about.interests.title": "Fora do editor",
         "about.funfact.label": "Curiosidade",
         "about.funfact.title": "Pokémon Fav. é Lugia",
         "about.funfact.desc": "Elegância do tipo Psíquico, raridade lendária — basicamente minha filosofia de design em forma de Pokémon.",
         "about.numbers.label": "Em Números",
         "about.current.label": "Em Desenvolvimento",
-        "about.current.desc": "Uma plataforma médica com IA que ajuda médicos a tomar melhores decisões clínicas — liderando a equipe, definindo a arquitetura e projetando cada pixel da experiência.",
+        "about.current.desc": "Uma plataforma médica com IA que ajuda médicos a tomar melhores decisões clínicas — liderando a equipe, definindo a arquitetura, criando <strong>automações com IA</strong> e moldando <strong>ferramentas para desenvolvimento ágil</strong> no fluxo de consultas médicas.",
         "about.current.status": "Em desenvolvimento ativo",
         "about.stat1.label": "Anos",
         "about.stat1.value": "2+",
@@ -1273,7 +1498,7 @@ const translations = {
         "about.stat3.label": "Foco",
         "about.stat3.value": "Front-End",
         "about.stat4.label": "Graduação",
-        "about.stat4.value": "2026",
+        "about.stat4.value": "2027",
         "about.stat5.label": "Pokémon Fav.",
         "about.stat5.value": "Lugia",
         "about.downloadCV": "BAIXAR CV",
@@ -1293,6 +1518,10 @@ const translations = {
         "featuredWork.viewGithub": "GitHub",
         "featuredWork.viewDemo": "Website",
         "featuredWork.viewCaseStudy": "Case Study",
+        "featuredWork.expandImage": "Expandir",
+        "featuredWork.why": "Por quê",
+        "featuredWork.does": "O que faz",
+        "featuredWork.problem": "Problema",
         "projects.dino.description": "Plataforma imersiva de aprendizado sobre dinossauros com catálogo científico, mapas fósseis, linhas do tempo, conteúdo multilíngue, Firebase e enriquecimento externo de imagens.",
         "projects.teambuilder.description": "Workspace competitivo de Pokémon com persistência de times, filtros de Pokédex, análise de tipos, links de compartilhamento, favoritos, geradores e exportação para Showdown.",
         "projects.uniforgym.description": "Plataforma Android nativa para fluxos de alunos e professores, autenticação Firebase, atribuição de treinos, vídeos por QR code e histórico de treino.",
@@ -1388,6 +1617,7 @@ function setLanguage(lang) {
     renderFeaturedProjects();
     renderHeatmap();
     renderTechStack();
+    renderAboutInterests();
 }
 
 function toggleLanguage() {
@@ -1412,3 +1642,9 @@ document.addEventListener('DOMContentLoaded', initFeaturedProjects);
 document.addEventListener('DOMContentLoaded', initHeatmapTooltip);
 document.addEventListener('DOMContentLoaded', loadHeatmap);
 document.addEventListener('DOMContentLoaded', renderTechStack);
+document.addEventListener('DOMContentLoaded', renderAboutInterests);
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+        closeFeaturedImageModal();
+    }
+});
