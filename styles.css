@@ -5,8 +5,8 @@
 
 :root {
     --font-display: 'Syne', sans-serif;
-    --font-heading: 'Fredoka', sans-serif;
-    --font-body: 'Instrument Sans', sans-serif;
+    --font-heading: 'Syne', sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     --font-mono: 'Space Mono', monospace;
 
     --bg-rgb: 10 10 10;
@@ -41,9 +41,8 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: var(--font-body);
-    cursor: none;
-    transition: background-color 1.5s cubic-bezier(0.4, 0, 0.2, 1),
-                color 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body.modal-open {
@@ -52,82 +51,8 @@ body.modal-open {
 
 *, *::before, *::after {
     transition-property: background-color, border-color, color, fill, stroke, box-shadow;
-    transition-duration: 1s;
-    transition-timing-function: ease-in-out;
-}
-
-/* ── Film Grain Overlay ── */
-.grain-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9990;
-    pointer-events: none;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 128px;
-}
-
-/* ── Custom Cursor ── */
-.cursor-dot,
-.cursor-ring {
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: 9999;
-    pointer-events: none;
-}
-
-.cursor-dot {
-    width: 6px;
-    height: 6px;
-    background-color: var(--accent-color);
-    box-shadow: 0 0 8px var(--accent-color);
-    transition: background-color 0.5s ease, box-shadow 0.5s ease;
-}
-
-.cursor-ring {
-    width: 36px;
-    height: 36px;
-    border: 1px solid rgb(var(--accent-rgb) / 0.3);
-    transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.5s ease;
-}
-
-body:hover .cursor-ring {
-    opacity: 1;
-}
-
-.cursor-hover .cursor-ring {
-    width: 64px;
-    height: 64px;
-    background-color: rgb(var(--accent-rgb) / 0.05);
-    border-color: var(--accent-color);
-}
-
-.cursor-hover .cursor-dot {
-    background-color: var(--accent-color);
-    box-shadow: 0 0 12px var(--accent-color);
-}
-
-/* ── Hero Outline Text ── */
-.hero-outline {
-    -webkit-text-stroke: 2px rgb(var(--accent-rgb) / 0.4);
-    color: transparent;
-    transition: all 0.5s ease;
-}
-
-.hero-outline:hover {
-    -webkit-text-stroke: 2px var(--accent-color);
-    color: rgb(var(--accent-rgb) / 0.05);
-}
-
-body[data-music-theme="deftones"] .hero-outline,
-body[data-music-theme="deftones"] .hero-outline:hover {
-    -webkit-text-stroke: 0;
-    -webkit-text-fill-color: #050505 !important;
-    color: #050505 !important;
+    transition-duration: 0.4s;
+    transition-timing-function: ease;
 }
 
 body[data-music-theme="deftones"] .bg-accent.text-black,
@@ -142,38 +67,6 @@ body[data-music-theme="deftones"] .bg-accent.text-black span,
 body[data-music-theme="deftones"] a.bg-accent span {
     -webkit-text-fill-color: inherit !important;
     color: inherit !important;
-}
-
-/* ── Loader ── */
-#loader {
-    position: fixed;
-    inset: 0;
-    background-color: var(--bg-color);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.loader-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.loader-progress-wrap {
-    width: 200px;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 1px;
-    overflow: hidden;
-}
-
-.loader-bar {
-    width: 0%;
-    height: 100%;
-    background-color: var(--accent-color);
-    transition: width 0.4s ease;
 }
 
 /* ── Scrollbar ── */
@@ -193,7 +86,7 @@ body[data-music-theme="deftones"] a.bg-accent span {
 
 /* ── Navigation ── */
 .nav-link {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgb(var(--gray-rgb) / 0.85);
     position: relative;
     transition: color 0.3s ease;
 }
@@ -221,47 +114,6 @@ body[data-music-theme="deftones"] a.bg-accent span {
     background: rgba(var(--bg-rgb), 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-}
-
-/* ── Petals / Particles ── */
-.petal-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.petal {
-    position: absolute;
-    display: block;
-    width: 12px;
-    height: 8px;
-    background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
-    border-radius: 8px 0px 8px 0px;
-    opacity: 0.5;
-    top: -20px;
-    animation: falling 12s linear infinite;
-    transition: background 1s ease;
-}
-
-.petal:nth-child(2n) { width: 10px; height: 6px; animation-duration: 14s; animation-delay: 1s; opacity: 0.3; }
-.petal:nth-child(3n) { width: 14px; height: 9px; animation-duration: 10s; animation-delay: 2s; opacity: 0.4; }
-.petal:nth-child(4n) { width: 8px; height: 5px; animation-duration: 16s; animation-delay: 0.5s; opacity: 0.25; }
-.petal:nth-child(5n) { animation-duration: 13s; animation-delay: 3s; opacity: 0.35; }
-
-@keyframes falling {
-    0% {
-        transform: translate3d(0, -20px, 0) rotate(0deg);
-        opacity: 0.5;
-    }
-    100% {
-        transform: translate3d(80px, 100vh, 0) rotate(360deg);
-        opacity: 0;
-    }
 }
 
 /* ── Bento Cards ── */
@@ -329,7 +181,7 @@ body[data-music-theme="deftones"] a.bg-accent span {
     background: rgb(var(--accent-rgb) / 0.06);
     border: 1px solid rgb(var(--accent-rgb) / 0.1);
     border-radius: 100px;
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 10px;
     color: rgb(var(--accent-rgb) / 0.6);
     letter-spacing: 0.05em;
@@ -362,7 +214,7 @@ body[data-music-theme="deftones"] a.bg-accent span {
     border: 1px solid rgba(255, 255, 255, 0.06);
     background: rgb(var(--panel-rgb) / 0.7);
     color: rgb(var(--text-rgb) / 0.54);
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 10px;
     line-height: 1.2;
     white-space: normal;
@@ -474,7 +326,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 }
 
 .about-interest-title {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 18px;
     line-height: 1.2;
     color: rgb(var(--text-rgb));
@@ -483,7 +335,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 .about-interest-text {
     min-height: 48px;
     max-width: 760px;
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 13px;
     line-height: 1.72;
     color: rgb(var(--text-rgb) / 0.54);
@@ -510,7 +362,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(255, 255, 255, 0.025);
     color: rgb(var(--text-rgb) / 0.62);
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 500;
     transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
@@ -548,7 +400,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     background: rgba(255, 255, 255, 0.025);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 100px;
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 500;
     color: rgb(var(--text-rgb) / 0.58);
@@ -571,7 +423,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     background: var(--accent-color);
     color: #0a0a0a;
     border-radius: 10px;
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-weight: 600;
     font-size: 13px;
     letter-spacing: 0.02em;
@@ -633,13 +485,14 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 .featured-project-switcher {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: 8px;
     width: 100%;
     min-height: 0;
     padding-top: 8px;
-    overflow-x: auto;
+    overflow: visible;
     padding-bottom: 0;
-    scrollbar-width: none;
 }
 
 .featured-project-switcher::-webkit-scrollbar,
@@ -687,7 +540,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -733,15 +586,12 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 }
 
 .featured-project-switch-title {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 500;
     color: rgb(var(--text-rgb) / 0.74);
     text-align: left;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    white-space: nowrap;
 }
 
 .featured-project-switch-btn.is-active .featured-project-switch-title,
@@ -792,8 +642,23 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     content: none;
 }
 
+/* ── Duotone: screenshots re-ink to the active record's palette.
+      Hover restores true color — the argument first, the pixels on demand. ── */
 .featured-project-primary::after {
-    content: none;
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: rgb(var(--accent-rgb));
+    mix-blend-mode: color;
+    opacity: 0.45;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.featured-project-primary:hover::after,
+.featured-project-primary:focus-within::after {
+    opacity: 0;
 }
 
 .featured-project-primary-image {
@@ -802,10 +667,16 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: var(--featured-fit, contain);
+    object-fit: var(--featured-fit, cover);
     object-position: var(--featured-position, center top);
     padding: 0;
     border-radius: 0;
+    filter: grayscale(0.6) contrast(1.02);
+    transition: filter 0.5s ease;
+}
+
+.featured-project-primary:hover .featured-project-primary-image,
+.featured-project-primary:focus-within .featured-project-primary-image {
     filter: none;
 }
 
@@ -823,7 +694,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     border: 1px solid rgb(var(--accent-rgb) / 0.28);
     background: rgb(var(--panel-rgb) / 0.76);
     color: rgb(var(--text-rgb));
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 600;
     backdrop-filter: blur(14px);
@@ -890,7 +761,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     border-radius: 999px;
     background: transparent;
     border: 0;
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 9px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -952,7 +823,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 }
 
 .featured-project-title {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: clamp(1.8rem, 2.6vw, 2rem);
     line-height: 1.02;
     letter-spacing: -0.03em;
@@ -967,7 +838,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     border-radius: 999px;
     border: 1px solid rgb(var(--accent-rgb) / 0.16);
     background: rgb(var(--accent-rgb) / 0.08);
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -976,7 +847,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 }
 
 .featured-project-description {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 14px;
     line-height: 1.7;
     color: rgb(var(--text-rgb) / 0.66);
@@ -1019,7 +890,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 .featured-project-narrative-label {
     display: block;
     margin-bottom: 7px;
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 9px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -1027,7 +898,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 }
 
 .featured-project-narrative-item p {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 12px;
     line-height: 1.55;
     color: rgb(var(--text-rgb) / 0.58);
@@ -1040,7 +911,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 }
 
 .featured-project-section-label {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -1064,7 +935,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     border: 1px solid rgba(255, 255, 255, 0.09);
     background: rgba(255, 255, 255, 0.03);
     color: rgb(var(--text-rgb) / 0.82);
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 500;
     transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
@@ -1144,7 +1015,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 
 .featured-image-modal-kicker {
     margin-bottom: 4px;
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -1152,7 +1023,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 }
 
 .featured-image-modal-title {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 20px;
     line-height: 1.2;
     color: rgb(var(--text-rgb));
@@ -1276,6 +1147,11 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
         overflow: visible;
     }
 
+    /* Odd project count: let the last button span the full row */
+    .featured-project-switcher > .featured-project-switch-btn:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+
     .featured-project-switch-btn {
         width: 100%;
         min-height: 58px;
@@ -1283,6 +1159,10 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
         gap: 8px;
         padding: 8px;
         border-radius: 16px;
+    }
+
+    .featured-project-switch-title {
+        white-space: normal;
     }
 
     .featured-project-switch-icon {
@@ -1470,7 +1350,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     background: rgb(var(--panel-rgb) / 0.5);
     border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 12px;
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-weight: 500;
     font-size: 14px;
     color: rgb(var(--text-rgb) / 0.7);
@@ -1494,7 +1374,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgb(var(--text-rgb) / 0.6);
     transition: all 0.3s ease;
 }
 
@@ -1529,7 +1409,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     min-height: 12px;
     margin-bottom: 4px;
     color: rgb(var(--gray-rgb) / 0.55);
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 8px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1571,7 +1451,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     align-items: center;
     gap: 3px;
     color: rgb(var(--gray-rgb) / 0.45);
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 8px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -1617,14 +1497,6 @@ body[data-music-theme="deftones"] .tech-tile {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
-body[data-music-theme="deftones"] h1.hero-outline,
-body[data-music-theme="deftones"] h1.hero-outline.text-white,
-body[data-music-theme="deftones"] h1.hero-outline:hover {
-    -webkit-text-stroke-color: transparent !important;
-    -webkit-text-fill-color: #050505 !important;
-    color: #050505 !important;
-}
-
 body[data-music-theme="deftones"] a.bg-accent.text-black,
 body[data-music-theme="deftones"] a.bg-accent.text-black:hover,
 body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
@@ -1641,7 +1513,7 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
     border: 1px solid rgb(var(--accent-rgb) / 0.16);
     background: rgb(var(--panel-rgb) / 0.96);
     color: rgb(var(--text-rgb));
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 11px;
     line-height: 1.4;
     opacity: 0;
@@ -1670,7 +1542,8 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
     gap: 8px;
     z-index: 9998;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-    transition: all 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease,
+                background-color 0.4s ease, width 0.3s ease;
     width: 300px;
     transform: translateY(0) scale(1);
     opacity: 1;
@@ -1697,7 +1570,7 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
     color: rgba(255, 255, 255, 0.2);
     text-align: center;
     width: 100%;
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
@@ -1807,7 +1680,7 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
 }
 
 .song-title {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-weight: 700;
     font-size: 15px;
     color: var(--text-color);
@@ -1822,7 +1695,7 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
 }
 
 .artist-name {
-    font-family: 'Fredoka', sans-serif;
+    font-family: var(--font-mono);
     font-size: 11px;
     color: rgba(255, 255, 255, 0.3);
     white-space: nowrap;
@@ -1932,6 +1805,358 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* ═══════════════════════════════════════════════════
+   THE JUKEBOX — signature moment.
+   First visit: pick a record, the record is the theme.
+   ═══════════════════════════════════════════════════ */
+#jukebox {
+    position: fixed;
+    inset: 0;
+    z-index: 10050;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background:
+        radial-gradient(ellipse 90% 70% at 50% 110%, rgba(122, 169, 216, 0.08), transparent 60%),
+        #06070a;
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#jukebox.is-leaving {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+}
+
+.jukebox-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    max-width: 760px;
+    width: 100%;
+}
+
+.jukebox-kicker {
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.32);
+}
+
+.jukebox-title {
+    margin-top: 4px;
+    font-size: clamp(1.7rem, 5vw, 2.6rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    color: #f4f6fa;
+}
+
+.jukebox-title-sub {
+    font-weight: 400;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.42);
+}
+
+.jukebox-records {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(18px, 4vw, 40px);
+    width: 100%;
+    margin-top: clamp(18px, 4vh, 36px);
+}
+
+.jukebox-record {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.jukebox-media {
+    position: relative;
+    width: min(240px, 36vw);
+    aspect-ratio: 1 / 1;
+}
+
+.jukebox-sleeve {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.07);
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.45s ease;
+}
+
+.jukebox-vinyl {
+    position: absolute;
+    top: 4%;
+    left: 6%;
+    z-index: 1;
+    width: 92%;
+    height: 92%;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle, var(--vinyl-label, #888) 0 17%, #0c0c0e 17.5% 18.5%, transparent 19%),
+        repeating-radial-gradient(circle, #131316 0 2px, #1c1c20 2px 4px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.jukebox-record:hover .jukebox-sleeve,
+.jukebox-record:focus-visible .jukebox-sleeve {
+    transform: translateY(-6px) rotate(-2deg);
+    box-shadow: 0 32px 70px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+.jukebox-record:hover .jukebox-vinyl,
+.jukebox-record:focus-visible .jukebox-vinyl {
+    transform: translateX(38%) rotate(160deg);
+}
+
+.jukebox-record-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.jukebox-side {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.34);
+}
+
+.jukebox-song {
+    font-size: 18px;
+    font-weight: 600;
+    color: #f4f6fa;
+}
+
+.jukebox-artist {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.jukebox-artist em {
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.jukebox-skip {
+    margin-top: clamp(16px, 4vh, 32px);
+    padding: 8px 14px;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.34);
+    cursor: pointer;
+    transition: color 0.25s ease, border-color 0.25s ease;
+}
+
+.jukebox-skip:hover {
+    color: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+@media (max-width: 560px) {
+    .jukebox-records {
+        gap: 14px;
+    }
+
+    .jukebox-media {
+        width: min(150px, 40vw);
+    }
+
+    .jukebox-record:hover .jukebox-vinyl {
+        transform: translateX(18%) rotate(120deg);
+    }
+
+    .jukebox-song {
+        font-size: 14px;
+    }
+}
+
+/* ── Theme veil: the flip is a moment, not a repaint ── */
+.theme-veil {
+    position: fixed;
+    inset: 0;
+    z-index: 10040;
+    background: rgb(var(--accent-rgb));
+    opacity: 0;
+    pointer-events: none;
+    transition: none;
+}
+
+.theme-veil.is-active {
+    animation: theme-veil-flash 0.55s ease-out;
+}
+
+@keyframes theme-veil-flash {
+    0% { opacity: 0; }
+    30% { opacity: 0.1; }
+    100% { opacity: 0; }
+}
+
+/* ── Nav record flip ── */
+.theme-flip .theme-flip-icon {
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.theme-flip:hover .theme-flip-icon {
+    transform: rotate(180deg);
+}
+
+/* ── Hero promotion timeline (the stat that matters) ── */
+.hero-timeline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: rgb(var(--gray-rgb) / 0.75);
+}
+
+.hero-timeline-step {
+    white-space: nowrap;
+}
+
+.hero-timeline-arrow {
+    color: rgb(var(--accent-rgb) / 0.55);
+}
+
+.hero-timeline-step.is-current {
+    color: var(--accent-color);
+    border-bottom: 1px solid rgb(var(--accent-rgb) / 0.4);
+    padding-bottom: 1px;
+}
+
+/* ── Portrait obeys the theme too ── */
+.duotone-portrait {
+    filter: grayscale(1) contrast(1.04);
+}
+
+.duotone-portrait:hover {
+    filter: none;
+}
+
+/* ── Featured screenshot captions (the argument, per screen) ── */
+.featured-project-caption {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 2px 4px 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.55;
+    color: rgb(var(--text-rgb) / 0.56);
+}
+
+.featured-project-caption-index {
+    flex-shrink: 0;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: rgb(var(--accent-rgb) / 0.85);
+}
+
+/* ── NDA / locked project card ── */
+.featured-project-locked {
+    display: grid;
+    place-items: center;
+    background:
+        radial-gradient(circle at 50% 30%, rgb(var(--accent-rgb) / 0.06), transparent 50%),
+        rgb(var(--panel-rgb) / 0.55);
+}
+
+.featured-locked-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    padding: 24px;
+}
+
+.featured-locked-inner i {
+    font-size: 22px;
+    color: rgb(var(--accent-rgb) / 0.8);
+}
+
+.featured-locked-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgb(var(--text-rgb) / 0.85);
+}
+
+.featured-locked-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: rgb(var(--gray-rgb) / 0.7);
+    font-style: italic;
+}
+
+.featured-locked-bars {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 14% 10%;
+    opacity: 0.5;
+}
+
+.featured-locked-bars span {
+    display: block;
+    width: var(--w, 60%);
+    height: 10px;
+    border-radius: 3px;
+    background: rgb(var(--text-rgb) / 0.07);
+}
+
+.featured-project-switch-icon.is-locked,
+.featured-project-logo-wrap.is-locked {
+    color: rgb(var(--accent-rgb) / 0.75);
+    font-size: 12px;
+}
+
+.featured-project-logo-wrap.is-locked {
+    font-size: 18px;
+}
+
+/* ── Heatmap: staggered re-ink on theme flip + peak/story markers ── */
+.heat-cell {
+    transition: background-color 0.35s ease;
+    transition-delay: calc(var(--col, 0) * 7ms);
+}
+
+.heat-cell.is-peak {
+    box-shadow: 0 0 0 1px rgb(var(--accent-rgb) / 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.heat-cell.has-story {
+    box-shadow: 0 0 0 1px rgb(var(--accent-rgb)), 0 0 6px rgb(var(--accent-rgb) / 0.5);
+    cursor: help;
+}
+
 /* ── Selection ── */
 ::selection {
     background: var(--accent-color);
@@ -1944,15 +2169,5 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
         scroll-behavior: auto !important;
         transition-duration: 1ms !important;
         transition-delay: 0ms !important;
-    }
-
-    body {
-        cursor: auto;
-    }
-
-    .cursor-dot,
-    .cursor-ring,
-    .petal {
-        display: none !important;
     }
 }

@@ -6,84 +6,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ── Loader ──
-const initLoader = () => {
-    const tl = gsap.timeline();
-    let progress = 0;
-    const progressEl = document.getElementById('progress');
-    const loaderBar = document.getElementById('loader-bar');
-    
-    const interval = setInterval(() => {
-        progress += Math.floor(Math.random() * 12) + 5;
-        if (progress > 100) progress = 100;
-        progressEl.innerText = String(progress).padStart(3, '0');
-        loaderBar.style.width = progress + '%';
-        
-        if (progress === 100) {
-            clearInterval(interval);
-            setTimeout(() => {
-                tl.to("#loader", {
-                    yPercent: -100,
-                    duration: 0.8,
-                    ease: "power4.inOut",
-                    onComplete: () => {
-                        document.getElementById('loader').style.display = 'none';
-                        initScrollAnimations();
-                    }
-                });
-            }, 400);
-        }
-    }, 80);
-};
-
-window.addEventListener('load', initLoader);
-setTimeout(() => {
-    if (document.getElementById('loader') && document.getElementById('loader').offsetHeight > 0) {
-        initLoader();
-    }
-}, 4000);
-
-// ── Custom Cursor ──
-const cursorDot = document.querySelector('.cursor-dot');
-const cursorRing = document.querySelector('.cursor-ring');
-
-if (cursorDot && cursorRing) {
-    const xToDot = gsap.quickTo(cursorDot, "x", { duration: 0.1, ease: "power3" });
-    const yToDot = gsap.quickTo(cursorDot, "y", { duration: 0.1, ease: "power3" });
-    const xToRing = gsap.quickTo(cursorRing, "x", { duration: 0.3, ease: "power3" });
-    const yToRing = gsap.quickTo(cursorRing, "y", { duration: 0.3, ease: "power3" });
-
-    window.addEventListener('mousemove', (e) => {
-        xToDot(e.clientX);
-        yToDot(e.clientY);
-        xToRing(e.clientX);
-        yToRing(e.clientY);
-    });
-
-    const hoverTriggers = document.querySelectorAll('.hover-trigger, a, button');
-    hoverTriggers.forEach(trigger => {
-        trigger.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
-        trigger.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
-    });
+// ── Site start (called once the jukebox is dismissed) ──
+let siteStarted = false;
+function startSite() {
+    if (siteStarted) return;
+    siteStarted = true;
+    initScrollAnimations();
 }
-
-// ── Falling Petals ──
-function createPetals() {
-    if (prefersReducedMotion) return;
-    const container = document.getElementById('petals-container');
-    if (!container) return;
-    const petalCount = 20;
-    
-    for (let i = 0; i < petalCount; i++) {
-        const petal = document.createElement('span');
-        petal.classList.add('petal');
-        petal.style.left = Math.random() * 100 + '%';
-        petal.style.animationDelay = Math.random() * 8 + 's';
-        petal.style.animationDuration = (Math.random() * 10 + 8) + 's';
-        container.appendChild(petal);
-    }
-}
-createPetals();
 
 // ── Scroll Animations ──
 function initScrollAnimations() {
@@ -207,11 +136,8 @@ mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
 function checkCV(e) {
     const btn = e.currentTarget;
     const originalText = btn.innerHTML;
-    btn.innerHTML = '<span>DOWNLOADING...</span> <i class="fas fa-spinner fa-spin text-xs"></i>';
-    setTimeout(() => {
-        btn.innerHTML = '<span>DOWNLOADED ✓</span>';
-        setTimeout(() => btn.innerHTML = originalText, 2000);
-    }, 1000);
+    btn.innerHTML = '<span>DOWNLOADED ✓</span>';
+    setTimeout(() => btn.innerHTML = originalText, 2000);
 }
 
 // ── Music Card ──
@@ -335,8 +261,24 @@ function showEasterEgg(msgObj) {
     }, 4000);
 }
 
+// ── Theme veil: a brief accent wash that makes the flip feel like a moment ──
+let themeLoadedOnce = false;
+function flashThemeVeil() {
+    if (prefersReducedMotion) return;
+    let veil = document.querySelector('.theme-veil');
+    if (!veil) {
+        veil = document.createElement('div');
+        veil.className = 'theme-veil';
+        document.body.appendChild(veil);
+    }
+    veil.classList.remove('is-active');
+    void veil.offsetWidth;
+    veil.classList.add('is-active');
+}
+
 function loadSong(index) {
     const song = songs[index];
+    const isThemeSwitch = themeLoadedOnce;
     songTitle.innerText = song.title;
     artistName.innerText = song.artist;
     albumArt.style.backgroundImage = song.cover;
@@ -344,8 +286,29 @@ function loadSong(index) {
     audioPlayer.src = song.file;
 
     if (heroBg) {
-        heroBg.style.backgroundImage = `url('${song.heroBg}')`;
+        if (!isThemeSwitch || prefersReducedMotion) {
+            heroBg.style.backgroundImage = `url('${song.heroBg}')`;
+        } else {
+            // Crossfade: preload, fade out, swap, fade back to the class opacity
+            const swap = () => {
+                heroBg.style.backgroundImage = `url('${song.heroBg}')`;
+                heroBg.style.opacity = '';
+            };
+            const img = new Image();
+            heroBg.style.opacity = '0';
+            img.onload = () => setTimeout(swap, 420);
+            img.onerror = swap;
+            img.src = song.heroBg;
+        }
     }
+
+    // Keep the nav flip control + storage in sync with whichever record is on
+    document.querySelectorAll('.theme-flip-side').forEach(el => {
+        el.textContent = index === 0 ? 'SIDE A' : 'SIDE B';
+    });
+    localStorage.setItem('jukebox-side', String(index));
+    if (themeLoadedOnce) flashThemeVeil();
+    themeLoadedOnce = true;
 
     const root = document.documentElement;
     root.style.setProperty('--bg-rgb', song.theme.bg);
@@ -452,35 +415,119 @@ playBtn.addEventListener('click', togglePlay);
 nextBtn.addEventListener('click', nextSong);
 prevBtn.addEventListener('click', prevSong);
 
-loadSong(currentSongIndex);
+// ── The Jukebox: first visit picks a record; the record is the theme. ──
+// No autoplay — music only starts from the visitor's own click on a record.
+const jukebox = document.getElementById('jukebox');
 
-const tryAutoplay = () => {
-    audioPlayer.volume = 0.4;
-    const playPromise = audioPlayer.play();
-    if (playPromise !== undefined) {
-        playPromise.then(() => {
-            isPlaying = true;
-            const icon = playBtn.querySelector('i');
-            icon.classList.remove('fa-play');
-            icon.classList.add('fa-pause');
-            musicCard.classList.remove('paused');
-        }).catch(() => {
-            isPlaying = false;
-            const icon = playBtn.querySelector('i');
-            icon.classList.remove('fa-pause');
-            icon.classList.add('fa-play');
-            musicCard.classList.add('paused');
-        });
+function setPlayingState(playing) {
+    isPlaying = playing;
+    const icon = playBtn.querySelector('i');
+    icon.classList.toggle('fa-pause', playing);
+    icon.classList.toggle('fa-play', !playing);
+    musicCard.classList.toggle('paused', !playing);
+}
+
+function dismissJukebox(immediate = false) {
+    if (!jukebox || !document.body.contains(jukebox)) {
+        startSite();
+        return;
     }
-};
+    if (immediate || prefersReducedMotion) {
+        jukebox.remove();
+        startSite();
+        return;
+    }
+    jukebox.classList.add('is-leaving');
+    setTimeout(() => {
+        jukebox.remove();
+        startSite();
+    }, 750);
+}
 
-tryAutoplay();
+function chooseRecord(index, options = {}) {
+    const { withMusic = true } = options;
+    currentSongIndex = (index + songs.length) % songs.length;
+    loadSong(currentSongIndex);
+
+    if (withMusic) {
+        audioPlayer.volume = 0.4;
+        const playPromise = audioPlayer.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => setPlayingState(true)).catch(() => setPlayingState(false));
+        }
+    }
+
+    dismissJukebox();
+}
+
+function initJukebox() {
+    const savedSide = localStorage.getItem('jukebox-side');
+
+    if (savedSide !== null) {
+        // Returning visitor: apply their record quietly, skip the ceremony
+        currentSongIndex = (Number(savedSide) || 0) % songs.length;
+        loadSong(currentSongIndex);
+        dismissJukebox(true);
+        return;
+    }
+
+    // First visit: the overlay is the loader
+    loadSong(currentSongIndex);
+    localStorage.removeItem('jukebox-side'); // loadSong persisted a default; first pick should be deliberate
+
+    if (!jukebox) {
+        startSite();
+        return;
+    }
+
+    jukebox.querySelectorAll('[data-jukebox-side]').forEach(button => {
+        button.addEventListener('click', () => chooseRecord(Number(button.dataset.jukeboxSide)));
+    });
+
+    const skipBtn = document.getElementById('jukebox-skip');
+    if (skipBtn) skipBtn.addEventListener('click', () => chooseRecord(0, { withMusic: false }));
+}
+
+initJukebox();
+
+// ── Record flip (navbar): swaps theme, keeps the music state as-is ──
+function flipRecord() {
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    loadSong(currentSongIndex);
+    if (isPlaying) audioPlayer.play();
+
+    const song = songs[currentSongIndex];
+    showEasterEgg(song.easterEgg);
+    console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
+}
+
+['theme-flip-desktop', 'theme-flip-mobile'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener('click', flipRecord);
+});
 
 // ── GitHub Activity Heatmap ──
 const GITHUB_USER = 'ensinho';
 const HEATMAP_URL = `https://github-contributions-api.jogruber.de/v4/${GITHUB_USER}?y=last`;
 let heatmapData = null;
 let heatTooltip = null;
+
+// Annotate notable weeks with what actually shipped — turns the heatmap from
+// decoration into proof-of-work. Dates are ISO (YYYY-MM-DD); fill these in as
+// milestones land. Self-aware entries (e.g. "finals week — I'm a student") welcome.
+const CONTRIB_STORIES = [
+    // { date: '2026-01-12', en: 'QAssistant v1 shipped', pt: 'QAssistant v1 lançado' },
+];
+
+const PEAK_MARKER_COUNT = 3;
+
+function getPeakDates(contributions) {
+    return contributions
+        .filter(item => Number(item.count) > 0)
+        .sort((a, b) => Number(b.count) - Number(a.count))
+        .slice(0, PEAK_MARKER_COUNT)
+        .map(item => item.date);
+}
 
 const monthLabels = {
     en: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
@@ -568,6 +615,9 @@ function renderHeatmap() {
     const monthsFragment = document.createDocumentFragment();
     let lastMonth = null;
 
+    const peakDates = new Set(getPeakDates(contributions));
+    const storyByDate = new Map(CONTRIB_STORIES.map(story => [story.date, story]));
+
     weeks.forEach((week, weekIndex) => {
         const visibleDay = week.find(Boolean);
         if (visibleDay && visibleDay.date.getMonth() !== lastMonth) {
@@ -588,7 +638,17 @@ function renderHeatmap() {
             if (day) {
                 cell.dataset.date = day.iso;
                 cell.dataset.count = String(day.count);
-                cell.title = formatContributionText(day.iso, day.count);
+
+                const story = storyByDate.get(day.iso);
+                if (story) {
+                    cell.classList.add('has-story');
+                    cell.dataset.story = story[currentLang] || story.en;
+                }
+                if (peakDates.has(day.iso)) {
+                    cell.classList.add('is-peak');
+                }
+
+                cell.title = formatContributionText(day.iso, day.count) + (cell.dataset.story ? ` — ${cell.dataset.story}` : '');
             } else {
                 cell.dataset.empty = '1';
             }
@@ -624,7 +684,8 @@ function initHeatmapTooltip() {
     const show = (cell) => {
         if (!cell || !cell.dataset.date) return;
         const rect = cell.getBoundingClientRect();
-        heatTooltip.textContent = formatContributionText(cell.dataset.date, cell.dataset.count);
+        const storySuffix = cell.dataset.story ? ` — ${cell.dataset.story}` : '';
+        heatTooltip.textContent = formatContributionText(cell.dataset.date, cell.dataset.count) + storySuffix;
         heatTooltip.style.left = `${Math.min(window.innerWidth - 80, Math.max(80, rect.left + rect.width / 2))}px`;
         heatTooltip.style.top = `${Math.max(48, rect.top - 8)}px`;
         heatTooltip.classList.add('show');
@@ -746,10 +807,107 @@ function toggleJourney(id, btn) {
 }
 
 // ── Featured Projects Spotlight ──
-const FEATURED_PROJECT_ROTATION_INTERVAL = 30 * 60 * 1000;
-
-// Replace single-image entries with dedicated screenshot arrays as more project captures land.
+// Order is deliberate: lead with the most professional artifact, then the NDA flagship.
 const featuredProjects = [
+    {
+        id: 'qassistant',
+        title: 'QAssistant',
+        logo: {
+            src: 'assets/icons/qassistant-logo.png',
+            alt: 'QAssistant logo'
+        },
+        description: {
+            en: 'QA handoffs died the same death every sprint: evidence in screenshots, context in someone\'s head, tickets somewhere else. QAssistant is a <strong>VS Code extension</strong> that turns selected commits into <strong>traceable validation packages</strong> — AI-written summaries, test prompts, OpenProject tasks, and <em>agent-ready context docs</em>.',
+            pt: 'Os handoffs de QA morriam da mesma forma a cada sprint: evidência em screenshots, contexto na cabeça de alguém, tarefas em outro lugar. O QAssistant é uma <strong>extensão do VS Code</strong> que transforma commits selecionados em <strong>pacotes rastreáveis de validação</strong> — resumos escritos por IA, prompts de teste, tarefas no OpenProject e <em>docs de contexto prontos para agentes</em>.'
+        },
+        narrative: {
+            en: {
+                problem: 'Commits, evidence, and tickets lived in separate places, so every QA handoff was a back-and-forth thread.',
+                decision: 'Generate agent-ready context, not just human summaries — the same package feeds the QA analyst and the automation that pre-checks the build.',
+                outcome: 'A handoff that took a thread now takes one command, with traceability for free.'
+            },
+            pt: {
+                problem: 'Commits, evidências e tarefas viviam em lugares separados — cada handoff de QA virava uma thread de ida e volta.',
+                decision: 'Gerar contexto pronto para agentes, não só resumos humanos — o mesmo pacote alimenta o analista de QA e a automação que pré-valida a build.',
+                outcome: 'Um handoff que custava uma thread agora custa um comando, com rastreabilidade de graça.'
+            }
+        },
+        technologies: ['TypeScript', 'VS Code API', 'React', 'Vite', 'OpenProject', 'AI'],
+        images: [
+            {
+                src: 'assets/projectCovers/qassistant/qassistant0.jpeg',
+                alt: 'QAssistant dashboard with telemetry and validation actions',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Dashboard: telemetry and validation actions inside the editor — not another browser tab.',
+                    pt: 'Dashboard: telemetria e ações de validação dentro do editor — não em mais uma aba do navegador.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/qassistant/QASSISTANT1.jpeg',
+                alt: 'QAssistant guided onboarding setup screen',
+                fit: 'contain',
+                position: 'center top',
+                caption: {
+                    en: 'Guided onboarding — zero-config start, built for QA folks who don\'t live in settings files.',
+                    pt: 'Onboarding guiado — começa sem configuração, feito para quem não vive em arquivos de settings.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/qassistant/qassistant2.jpeg',
+                alt: 'QAssistant commit selection workflow for validation packages',
+                fit: 'contain',
+                position: 'center top',
+                caption: {
+                    en: 'Pick commits, get a traceable validation package — the core loop in one screen.',
+                    pt: 'Selecione commits, receba um pacote de validação rastreável — o loop central em uma tela.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/qassistant/qassistant3.jpeg',
+                alt: 'QAssistant tests and artifacts runner screen',
+                fit: 'contain',
+                position: 'center top',
+                caption: {
+                    en: 'Test runner with artifacts attached straight to the evidence trail.',
+                    pt: 'Runner de testes com artefatos anexados direto à trilha de evidências.'
+                }
+            }
+        ],
+        links: {
+            github: 'https://github.com/ensinho/QAssistant'
+        }
+    },
+    {
+        id: 'medical-platform',
+        title: 'AI Medical Platform',
+        logo: null,
+        locked: true,
+        status: {
+            en: 'NDA · In active development',
+            pt: 'NDA · Em desenvolvimento ativo'
+        },
+        description: {
+            en: 'The project I lead at Colégio Christus: an <strong>AI-assisted medical platform</strong> that supports doctors before, during, and after consultations. Under NDA — so no screenshots — but here\'s what I can tell you.',
+            pt: 'O projeto que eu lidero no Colégio Christus: uma <strong>plataforma médica assistida por IA</strong> que apoia médicos antes, durante e depois das consultas. Sob NDA — então sem screenshots — mas aqui está o que posso contar.'
+        },
+        narrative: {
+            en: {
+                problem: 'Clinical decision-making runs on scattered records and zero tooling built for the consultation itself.',
+                decision: 'Own the whole surface — design system, React front-end, Node/PostgreSQL back-end, AI automations — so the product speaks one language.',
+                outcome: 'Promoted to project lead to run it: team, architecture, and delivery from vision to deployment.'
+            },
+            pt: {
+                problem: 'A decisão clínica roda sobre registros espalhados e zero ferramentas pensadas para a própria consulta.',
+                decision: 'Assumir a superfície inteira — design system, front-end em React, back-end em Node/PostgreSQL, automações com IA — para o produto falar uma língua só.',
+                outcome: 'Promovido a líder de projeto para tocá-lo: time, arquitetura e entrega da visão ao deploy.'
+            }
+        },
+        technologies: ['React', 'Node.js', 'PostgreSQL', 'AI Automation'],
+        images: [],
+        links: {}
+    },
     {
         id: 'pokemon-team-builder',
         title: 'Pokémon Team Builder',
@@ -758,52 +916,62 @@ const featuredProjects = [
             alt: 'Pokémon Team Builder logo'
         },
         description: {
-            en: 'A competitive Pokémon workspace for <strong>building smarter teams</strong>, combining <strong>Pokédex search</strong>, <strong>type coverage analysis</strong>, saved teams, quick generators, and <em>Showdown-ready export</em>.',
-            pt: 'Um workspace competitivo de Pokémon para <strong>montar equipes mais inteligentes</strong>, combinando <strong>busca na Pokédex</strong>, <strong>análise de cobertura de tipos</strong>, times salvos, geradores rápidos e <em>exportação pronta para o Showdown</em>.'
+            en: 'Competitive team building lives across five tabs — a Pokédex site, a coverage calculator, Showdown, a spreadsheet, Discord. This workspace <strong>collapses it into one</strong>: a trainer dashboard, <strong>type-coverage analysis</strong>, a full Pokédex, memory quizzes, and <em>Showdown-ready export</em>.',
+            pt: 'Montar times competitivos vive espalhado em cinco abas — um site de Pokédex, uma calculadora de cobertura, o Showdown, uma planilha, o Discord. Este workspace <strong>colapsa tudo em um</strong>: dashboard de treinador, <strong>análise de cobertura de tipos</strong>, Pokédex completa, quizzes de memória e <em>exportação pronta para o Showdown</em>.'
         },
         narrative: {
             en: {
-                why: 'Built to turn a fan workflow into a polished product surface with clear decisions and fast iteration.',
-                does: 'Lets players search, filter, save, share, analyze coverage, and export teams for battle planning.',
-                problem: 'Team building often gets split across tools; this brings discovery, strategy, and persistence together.'
+                problem: 'The flow from "team idea" to "importable team" was scattered across tools that don\'t talk to each other.',
+                decision: 'Team analysis lives beside the builder, always on — coverage is the question players are actually asking, so it never hides in a tab.',
+                outcome: 'Zero-tab-switch flow from idea to battle-ready export.'
             },
             pt: {
-                why: 'Criado para transformar um fluxo de fã em uma experiência de produto polida, com decisões claras e iteração rápida.',
-                does: 'Permite buscar, filtrar, salvar, compartilhar, analisar cobertura e exportar times para planejamento de batalha.',
-                problem: 'A montagem de times costuma ficar espalhada em várias ferramentas; aqui descoberta, estratégia e persistência ficam juntas.'
+                problem: 'O caminho de "ideia de time" até "time importável" estava espalhado em ferramentas que não conversam entre si.',
+                decision: 'A análise do time vive ao lado do builder, sempre visível — cobertura é a pergunta que os jogadores realmente fazem, então ela nunca se esconde em uma aba.',
+                outcome: 'Fluxo sem troca de aba, da ideia à exportação pronta para batalha.'
             }
         },
         technologies: ['React', 'JavaScript', 'Tailwind', 'Firebase', 'PokéAPI'],
         images: [
             {
-                src: 'assets/projectCovers/pokemon/home.png',
-                alt: 'Pokemon Team Builder home dashboard',
+                src: 'assets/projectCovers/pokemon/PokeHome.png',
+                alt: 'Pokemon Team Builder home dashboard greeting the trainer with their active team',
                 fit: 'cover',
-                position: 'center top'
+                position: 'center top',
+                caption: {
+                    en: 'Trainer dashboard — your active team and its identity greet you, not a menu.',
+                    pt: 'Dashboard do treinador — seu time ativo e a identidade dele te recebem, não um menu.'
+                }
             },
             {
-                src: 'assets/projectCovers/pokemon/team-builder.png',
-                alt: 'Pokemon Team Builder roster builder screen',
+                src: 'assets/projectCovers/pokemon/PokeTeamBuilder.png',
+                alt: 'Team Builder screen with live offensive and defensive type analysis',
                 fit: 'cover',
-                position: 'center top'
+                position: 'center top',
+                caption: {
+                    en: 'Builder with always-on team analysis — coverage and defensive gaps update as you slot each Pokémon.',
+                    pt: 'Builder com análise sempre visível — cobertura e brechas defensivas atualizam a cada Pokémon no slot.'
+                }
             },
             {
-                src: 'assets/projectCovers/pokemon/pokedex.png',
-                alt: 'Pokemon Team Builder Pokedex screen',
+                src: 'assets/projectCovers/pokemon/Pokedex.png',
+                alt: 'Pokedex screen with base stats, evolution line, and type defenses',
                 fit: 'cover',
-                position: 'center top'
+                position: 'center top',
+                caption: {
+                    en: 'Pokédex detail: base stats, evolution line, and type defenses in one panel — no tab-hopping.',
+                    pt: 'Detalhe da Pokédex: stats base, linha evolutiva e defesas de tipo em um painel — sem pular de aba.'
+                }
             },
             {
-                src: 'assets/projectCovers/pokemon/generator.png',
-                alt: 'Pokemon Team Builder round generator screen',
+                src: 'assets/projectCovers/pokemon/PokeQuiz.png',
+                alt: 'Generation Quiz screen where players name every Pokemon from memory',
                 fit: 'cover',
-                position: 'center top'
-            },
-            {
-                src: 'assets/projectCovers/pokemon/detail-charizard.png',
-                alt: 'Pokemon Team Builder detail modal',
-                fit: 'contain',
-                position: 'center'
+                position: 'center top',
+                caption: {
+                    en: 'Generation Quiz — name every Pokémon from memory, generation by generation, against the clock.',
+                    pt: 'Generation Quiz — nomeie cada Pokémon de memória, geração por geração, contra o relógio.'
+                }
             }
         ],
         links: {
@@ -819,19 +987,19 @@ const featuredProjects = [
             alt: 'Dino Library logo'
         },
         description: {
-            en: 'An immersive learning platform for <strong>dinosaur research</strong>, combining a <strong>scientific catalog</strong>, fossil maps, timelines, multilingual content, Firebase data, and external image enrichment into an <em>editorial exploration experience</em>.',
-            pt: 'Uma plataforma imersiva de aprendizado sobre <strong>pesquisa em dinossauros</strong>, combinando <strong>catálogo científico</strong>, mapas fósseis, linhas do tempo, conteúdo multilíngue, dados no Firebase e enriquecimento externo de imagens em uma <em>experiência editorial de exploração</em>.'
+            en: 'Paleontology online is either academic PDFs or kids\' content. <strong>Dino Library is the in-between</strong>: a scientific catalog with <strong>fossil maps, timelines, and quizzes</strong>, in two languages, with imagery enriched from external APIs — an <em>editorial exploration experience</em>.',
+            pt: 'Paleontologia online é ou PDF acadêmico ou conteúdo infantil. A <strong>Dino Library é o meio-termo</strong>: um catálogo científico com <strong>mapas fósseis, linhas do tempo e quizzes</strong>, em dois idiomas, com imagens enriquecidas por APIs externas — uma <em>experiência editorial de exploração</em>.'
         },
         narrative: {
             en: {
-                why: 'Built to make educational research feel visual, navigable, and alive instead of buried in static lists.',
-                does: 'Organizes species, maps, timelines, quizzes, multilingual content, and enriched imagery into one learning flow.',
-                problem: 'Prehistoric data can feel fragmented; the interface gives it context, pacing, and a reason to keep exploring.'
+                problem: 'Prehistoric data is fragmented and flat — built to be queried, not explored.',
+                decision: 'An editorial layout (read, explore, drift) instead of a database UI (filter, sort, leave). The content is the retention mechanic.',
+                outcome: 'A catalog people browse like a magazine — and keep browsing.'
             },
             pt: {
-                why: 'Criado para fazer pesquisa educacional parecer visual, navegável e viva em vez de presa em listas estáticas.',
-                does: 'Organiza espécies, mapas, linhas do tempo, quizzes, conteúdo multilíngue e imagens enriquecidas em um fluxo de aprendizado.',
-                problem: 'Dados pré-históricos podem parecer fragmentados; a interface dá contexto, ritmo e motivo para continuar explorando.'
+                problem: 'Dados pré-históricos são fragmentados e planos — feitos para consultar, não para explorar.',
+                decision: 'Um layout editorial (ler, explorar, vagar) em vez de UI de banco de dados (filtrar, ordenar, sair). O conteúdo é a mecânica de retenção.',
+                outcome: 'Um catálogo que as pessoas folheiam como revista — e continuam folheando.'
             }
         },
         technologies: ['React', 'TypeScript', 'Tailwind', 'Firebase', 'Leaflet', 'i18next'],
@@ -839,91 +1007,61 @@ const featuredProjects = [
             {
                 src: 'assets/projectCovers/dino/Home1.png',
                 alt: 'Dino Library home screen',
-                fit: 'cover'
+                fit: 'cover',
+                caption: {
+                    en: 'Editorial home — the layout invites drift, not queries.',
+                    pt: 'Home editorial — o layout convida a vagar, não a consultar.'
+                }
             },
             {
                 src: 'assets/projectCovers/dino/DinoCatalog.png',
                 alt: 'Dino Library catalog screen',
-                fit: 'cover'
+                fit: 'cover',
+                caption: {
+                    en: 'Catalog with scientific filters that stay readable for non-scientists.',
+                    pt: 'Catálogo com filtros científicos que continuam legíveis para não-cientistas.'
+                }
             },
             {
                 src: 'assets/projectCovers/dino/DinoDetail1.png',
-                alt: 'Dino Library detail screen containing layered content and interactive elements',
-                fit: 'cover'
+                alt: 'Dino Library species detail screen',
+                fit: 'cover',
+                caption: {
+                    en: 'Species pages layer facts, era, and habitat into one scroll.',
+                    pt: 'Páginas de espécies sobrepõem fatos, era e habitat em um único scroll.'
+                }
             },
             {
                 src: 'assets/projectCovers/dino/DinoDetail2.png',
-                alt: 'Dino Library detail screen containing layered content and interactive elements',
-                fit: 'cover'
+                alt: 'Dino Library species detail screen, second view',
+                fit: 'cover',
+                caption: {
+                    en: 'Detail continues: imagery enriched from external APIs keeps pages alive.',
+                    pt: 'O detalhe continua: imagens enriquecidas por APIs externas mantêm as páginas vivas.'
+                }
             },
             {
                 src: 'assets/projectCovers/dino/DinoMap.png',
-                alt: 'Dino Library map screen with motion and layered content',
-                fit: 'cover'
+                alt: 'Dino Library fossil map screen',
+                fit: 'cover',
+                caption: {
+                    en: 'Fossil map — discoveries plotted where they were actually dug up.',
+                    pt: 'Mapa fóssil — descobertas plotadas onde foram realmente escavadas.'
+                }
             },
             {
                 src: 'assets/projectCovers/dino/Quiz.png',
                 alt: 'Dino Library quiz screen',
-                fit: 'cover'
+                fit: 'cover',
+                caption: {
+                    en: 'Quizzes close the loop from reading to remembering.',
+                    pt: 'Quizzes fecham o ciclo entre ler e lembrar.'
+                }
             }
         ],
         links: {
             demo: 'https://dino-library.vercel.app/',
             github: 'https://github.com/ensinho/dino-library'
-        }
-    },
-    {
-        id: 'qassistant',
-        title: 'QAssistant',
-        logo: {
-            src: 'assets/icons/qassistant-logo.png',
-            alt: 'QAssistant logo'
-        },
-        description: {
-            en: 'A VS Code extension for QA operations that turns selected commits into <strong>traceable validation packages</strong>, <strong>AI-assisted summaries</strong>, OpenProject tasks, testing prompts, and <em>reusable agent-ready project context</em>.',
-            pt: 'Uma extensão do VS Code para operação de QA que transforma commits selecionados em <strong>pacotes rastreáveis de validação</strong>, <strong>resumos assistidos por IA</strong>, tarefas no OpenProject, prompts de teste e <em>contexto reutilizável pronto para agentes</em>.'
-        },
-        narrative: {
-            en: {
-                why: 'Built from a real QA handoff pain: commits need context, traceability, and repeatable validation.',
-                does: 'Generates summaries, validation packages, testing context, OpenProject tasks, and agent-ready docs from selected commits.',
-                problem: 'QA workflows lose time when evidence, tickets, and technical context live in separate places.'
-            },
-            pt: {
-                why: 'Criado a partir de uma dor real de handoff de QA: commits precisam de contexto, rastreabilidade e validação repetível.',
-                does: 'Gera resumos, pacotes de validação, contexto de testes, tarefas no OpenProject e docs para agentes a partir de commits selecionados.',
-                problem: 'Fluxos de QA perdem tempo quando evidências, tarefas e contexto técnico ficam em lugares separados.'
-            }
-        },
-        technologies: ['TypeScript', 'VS Code API', 'React', 'Vite', 'OpenProject', 'AI'],
-        images: [
-            {
-                src: 'assets/projectCovers/qassistant/qassistant0.jpeg',
-                alt: 'QAssistant dashboard with telemetry and validation actions',
-                fit: 'contain',
-                position: 'center top'
-            },
-            {
-                src: 'assets/projectCovers/qassistant/QASSISTANT1.jpeg',
-                alt: 'QAssistant guided onboarding setup screen',
-                fit: 'contain',
-                position: 'center top'
-            },
-            {
-                src: 'assets/projectCovers/qassistant/qassistant2.jpeg',
-                alt: 'QAssistant commit selection workflow for validation packages',
-                fit: 'contain',
-                position: 'center top'
-            },
-            {
-                src: 'assets/projectCovers/qassistant/qassistant3.jpeg',
-                alt: 'QAssistant tests and artifacts runner screen',
-                fit: 'contain',
-                position: 'center top'
-            }
-        ],
-        links: {
-            github: 'https://github.com/ensinho/QAssistant'
         }
     },
     {
@@ -934,19 +1072,19 @@ const featuredProjects = [
             alt: 'AquaCensus logo'
         },
         description: {
-            en: 'A marine research platform for <strong>cataloging field collections</strong>, managing researchers, labs and vessels, tracking specimen metadata, and surfacing <em>collection trends through operational dashboards</em>.',
-            pt: 'Uma plataforma de pesquisa marinha para <strong>catalogar coletas de campo</strong>, gerenciar pesquisadores, laboratórios e embarcações, rastrear metadados de espécimes e revelar <em>tendências de coleta em dashboards operacionais</em>.'
+            en: 'Marine field research runs on paper forms and personal spreadsheets, so specimen metadata gets orphaned from the people, vessels, and labs that produced it. <strong>AquaCensus connects all of it</strong> — collections, researchers, permissions, and <em>operational dashboards</em>.',
+            pt: 'Pesquisa marinha de campo roda em formulários de papel e planilhas pessoais — os metadados de espécimes ficam órfãos das pessoas, embarcações e laboratórios que os produziram. O <strong>AquaCensus conecta tudo</strong> — coletas, pesquisadores, permissões e <em>dashboards operacionais</em>.'
         },
         narrative: {
             en: {
-                why: 'Built to support scientific collection work with structure, permissions, and clearer research visibility.',
-                does: 'Catalogs collections, specimens, photos, laboratories, vessels, researchers, favorites, and dashboard metrics.',
-                problem: 'Research records become harder to trust when metadata, people, and collection context are not connected.'
+                problem: 'Research records lose trust when metadata, people, and collection context are disconnected.',
+                decision: 'Model provenance as first-class data — who collected what, from which vessel, for which lab.',
+                outcome: 'Field records a lab can actually audit, favorite, and report on.'
             },
             pt: {
-                why: 'Criado para apoiar coletas científicas com estrutura, permissões e mais visibilidade para pesquisa.',
-                does: 'Cataloga coletas, espécimes, fotos, laboratórios, embarcações, pesquisadores, favoritos e métricas em dashboards.',
-                problem: 'Registros de pesquisa ficam difíceis de confiar quando metadados, pessoas e contexto da coleta não estão conectados.'
+                problem: 'Registros de pesquisa perdem confiança quando metadados, pessoas e contexto da coleta estão desconectados.',
+                decision: 'Modelar proveniência como dado de primeira classe — quem coletou o quê, de qual embarcação, para qual laboratório.',
+                outcome: 'Registros de campo que um laboratório consegue auditar, favoritar e reportar de verdade.'
             }
         },
         technologies: ['React', 'TypeScript', 'Node.js', 'Express', 'Supabase', 'Tailwind'],
@@ -955,7 +1093,11 @@ const featuredProjects = [
                 src: 'assets/projectCovers/aqua/defaultCoverAqua.jpeg',
                 alt: 'AquaCensus marine research dashboard cover',
                 fit: 'contain',
-                position: 'center'
+                position: 'center',
+                caption: {
+                    en: 'Operational dashboard — collections, people, and vessels in one ledger.',
+                    pt: 'Dashboard operacional — coletas, pessoas e embarcações em um único registro.'
+                }
             }
         ],
         links: {
@@ -985,8 +1127,7 @@ const featuredProjectLinks = {
 
 const featuredProjectState = {
     activeProjectIndex: 0,
-    activeImageIndex: 0,
-    rotationTimer: null
+    activeImageIndex: 0
 };
 
 function getFeaturedProjectElements() {
@@ -1021,9 +1162,18 @@ function getFeaturedProjectNarrative(project) {
 }
 
 function getFeaturedProjectLogoMarkup(project, variant) {
+    const wrapperClass = variant === 'switcher' ? 'featured-project-switch-icon' : 'featured-project-logo-wrap';
+
+    if (project && project.locked) {
+        return `
+            <span class="${wrapperClass} is-locked">
+                <i class="fas fa-lock"></i>
+            </span>
+        `;
+    }
+
     if (!project || !project.logo || !project.logo.src) return '';
 
-    const wrapperClass = variant === 'switcher' ? 'featured-project-switch-icon' : 'featured-project-logo-wrap';
     const imageClass = variant === 'switcher' ? 'featured-project-switch-logo' : 'featured-project-logo';
 
     return `
@@ -1109,9 +1259,9 @@ function buildFeaturedProjectNarrative(project) {
 
     const activeTranslations = translations[currentLang] || translations.en;
     const items = [
-        { label: activeTranslations['featuredWork.why'], text: narrative.why },
-        { label: activeTranslations['featuredWork.does'], text: narrative.does },
-        { label: activeTranslations['featuredWork.problem'], text: narrative.problem }
+        { label: activeTranslations['featuredWork.problem'], text: narrative.problem },
+        { label: activeTranslations['featuredWork.decision'], text: narrative.decision },
+        { label: activeTranslations['featuredWork.outcome'], text: narrative.outcome }
     ].filter(item => item.text);
 
     if (!items.length) return '';
@@ -1194,52 +1344,92 @@ function closeFeaturedImageModal() {
     document.body.classList.remove('modal-open');
 }
 
-function renderFeaturedProjectStage() {
-    const { stage } = getFeaturedProjectElements();
-    if (!stage) return;
+function buildFeaturedProjectMedia(project) {
+    const activeTranslations = translations[currentLang] || translations.en;
 
-    const project = featuredProjects[featuredProjectState.activeProjectIndex];
-    if (!project || !project.images || !project.images.length) {
-        stage.innerHTML = '';
-        return;
+    if (project.locked) {
+        return `
+            <div class="featured-project-media-shell is-single-image">
+                <div class="featured-project-primary featured-project-locked" aria-label="${activeTranslations['featuredWork.lockedTitle']}">
+                    <div class="featured-locked-bars" aria-hidden="true">
+                        <span style="--w: 72%"></span>
+                        <span style="--w: 54%"></span>
+                        <span style="--w: 84%"></span>
+                        <span style="--w: 38%"></span>
+                        <span style="--w: 64%"></span>
+                    </div>
+                    <div class="featured-locked-inner">
+                        <i class="fas fa-lock"></i>
+                        <p class="featured-locked-title">${activeTranslations['featuredWork.lockedTitle']}</p>
+                        <p class="featured-locked-sub">${activeTranslations['featuredWork.lockedSub']}</p>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     featuredProjectState.activeImageIndex = Math.min(featuredProjectState.activeImageIndex, project.images.length - 1);
 
     const activeImage = project.images[featuredProjectState.activeImageIndex];
     const hasMultipleImages = project.images.length > 1;
+    const featuredPosition = activeImage.position || 'center';
+    const caption = activeImage.caption ? (activeImage.caption[currentLang] || activeImage.caption.en) : '';
+
+    return `
+        <div class="featured-project-media-shell ${hasMultipleImages ? '' : 'is-single-image'}">
+            <div class="featured-project-primary">
+                <img class="featured-project-primary-image" src="${activeImage.src}" alt="${activeImage.alt}" style="--featured-fit: cover; --featured-position: ${featuredPosition};">
+                <button type="button" class="featured-project-expand-btn" data-featured-expand aria-label="${activeTranslations['featuredWork.expandImage'] || 'Expand image'}">
+                    <i class="fas fa-up-right-and-down-left-from-center"></i>
+                    <span>${activeTranslations['featuredWork.expandImage'] || 'Expand'}</span>
+                </button>
+            </div>
+
+            ${caption ? `
+                <p class="featured-project-caption">
+                    <span class="featured-project-caption-index">${String(featuredProjectState.activeImageIndex + 1).padStart(2, '0')}</span>
+                    <span>${caption}</span>
+                </p>
+            ` : ''}
+
+            ${hasMultipleImages ? `
+                <div class="featured-project-thumbs">
+                    ${project.images.map((image, index) => `
+                        <button
+                            type="button"
+                            class="featured-project-thumb ${index === featuredProjectState.activeImageIndex ? 'is-active' : ''}"
+                            data-featured-image-index="${index}"
+                            aria-pressed="${index === featuredProjectState.activeImageIndex}"
+                        >
+                            <span class="featured-project-thumb-index">${String(index + 1).padStart(2, '0')}</span>
+                        </button>
+                    `).join('')}
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+function renderFeaturedProjectStage() {
+    const { stage } = getFeaturedProjectElements();
+    if (!stage) return;
+
+    const project = featuredProjects[featuredProjectState.activeProjectIndex];
+    if (!project || (!project.locked && (!project.images || !project.images.length))) {
+        stage.innerHTML = '';
+        return;
+    }
+
     const copy = getFeaturedProjectCopy();
     const linkMarkup = buildFeaturedProjectLinks(project);
     const narrativeMarkup = buildFeaturedProjectNarrative(project);
-    const featuredFit = 'contain';
-    const featuredPosition = activeImage.position || 'center';
+    const statusMarkup = project.status
+        ? `<span class="featured-project-stat">${project.status[currentLang] || project.status.en}</span>`
+        : '';
 
     stage.innerHTML = `
         <div class="featured-project-layout">
-            <div class="featured-project-media-shell ${hasMultipleImages ? '' : 'is-single-image'}">
-                <div class="featured-project-primary">
-                    <img class="featured-project-primary-image" src="${activeImage.src}" alt="${activeImage.alt}" style="--featured-fit: ${featuredFit}; --featured-position: ${featuredPosition};">
-                    <button type="button" class="featured-project-expand-btn" data-featured-expand aria-label="${translations[currentLang]['featuredWork.expandImage'] || 'Expand image'}">
-                        <i class="fas fa-up-right-and-down-left-from-center"></i>
-                        <span>${translations[currentLang]['featuredWork.expandImage'] || 'Expand'}</span>
-                    </button>
-                </div>
-
-                ${hasMultipleImages ? `
-                    <div class="featured-project-thumbs">
-                        ${project.images.map((image, index) => `
-                            <button
-                                type="button"
-                                class="featured-project-thumb ${index === featuredProjectState.activeImageIndex ? 'is-active' : ''}"
-                                data-featured-image-index="${index}"
-                                aria-pressed="${index === featuredProjectState.activeImageIndex}"
-                            >
-                                <span class="featured-project-thumb-index">${String(index + 1).padStart(2, '0')}</span>
-                            </button>
-                        `).join('')}
-                    </div>
-                ` : ''}
-            </div>
+            ${buildFeaturedProjectMedia(project)}
 
             <div class="featured-project-panel">
                 <div class="featured-project-panel-top">
@@ -1250,6 +1440,7 @@ function renderFeaturedProjectStage() {
                             <h3 class="featured-project-title">${project.title}</h3>
                         </div>
                     </div>
+                    ${statusMarkup}
                 </div>
 
                 <p class="featured-project-description">${getFeaturedProjectDescription(project)}</p>
@@ -1288,19 +1479,14 @@ function renderFeaturedProjects() {
     renderFeaturedProjectStage();
 }
 
-function selectFeaturedProject(index, options = {}) {
+function selectFeaturedProject(index) {
     if (!featuredProjects.length) return;
 
-    const { resetTimer = true } = options;
     const normalizedIndex = (index + featuredProjects.length) % featuredProjects.length;
 
     featuredProjectState.activeProjectIndex = normalizedIndex;
     featuredProjectState.activeImageIndex = 0;
     renderFeaturedProjects();
-
-    if (resetTimer) {
-        scheduleFeaturedProjectRotation();
-    }
 }
 
 function selectFeaturedImage(index) {
@@ -1311,23 +1497,11 @@ function selectFeaturedImage(index) {
     renderFeaturedProjectStage();
 }
 
-function scheduleFeaturedProjectRotation() {
-    window.clearTimeout(featuredProjectState.rotationTimer);
-
-    if (featuredProjects.length <= 1) return;
-
-    featuredProjectState.rotationTimer = window.setTimeout(() => {
-        selectFeaturedProject(featuredProjectState.activeProjectIndex + 1, { resetTimer: false });
-        scheduleFeaturedProjectRotation();
-    }, FEATURED_PROJECT_ROTATION_INTERVAL);
-}
-
 function initFeaturedProjects() {
     const { switcher, stage } = getFeaturedProjectElements();
     if (!switcher || !stage) return;
 
     renderFeaturedProjects();
-    scheduleFeaturedProjectRotation();
 }
 
 // ── Translation System ──
@@ -1337,53 +1511,53 @@ const translations = {
         "nav.about": "About",
         "nav.projects": "Work",
         "nav.journey": "Trajectory",
-        "nav.skills": "Toolkit",
         "nav.contact": "Contact",
         // Hero
-        "hero.available": "Available for Work",
-        "hero.location": "Fortaleza, Brazil",
-        "hero.description": "I architect <span class=\"text-accent font-medium\">scalable interfaces</span> and design systems that bridge engineering precision with creative expression. Specialized in <span class=\"text-accent font-medium\">Angular, React & Spring Boot</span>.",
+        "hero.available": "Open to work",
+        "hero.location": "Fortaleza, BR",
+        "hero.headline1": "I build interfaces",
+        "hero.headline2": "for messy work.",
+        "hero.description": "Doctors deciding under pressure. QA teams chasing commits. Researchers drowning in field data. I turn workflows like these into <span class=\"text-accent font-medium\">software people actually want to open</span> — frontend-led, fullstack, AI in the loop. <span class=\"text-text\">Started as the intern in 2024; leading the project in 2026.</span>",
         "hero.viewProjects": "VIEW SELECTED WORK",
         "hero.resume": "DOWNLOAD CV",
         "hero.scroll": "Scroll",
-        "hero.role": "Fullstack Developer & Frontend enthusiast",
+        "hero.role": "Project Lead · AI Medical Platform",
+        "hero.subrole": "Project Lead @ Colégio Christus",
+        "hero.tl1": "2024 · Intern",
+        "hero.tl2": "2025 · Fullstack Dev",
+        "hero.tl3": "2026 · Project Lead",
+        // Jukebox
+        "jukebox.kicker": "ENZO.DEV — THE JUKEBOX",
+        "jukebox.title1": "Pick a record.",
+        "jukebox.title2": "The record is the theme.",
+        "jukebox.moodA": "deep blue",
+        "jukebox.moodB": "ink on bone",
+        "jukebox.skip": "skip — keep it quiet",
         // About
-        "about.label": "About Me",
-        "about.title1": "Who I",
-        "about.title2": "am.",
+        "about.label": "About",
+        "about.title1": "The interface is",
+        "about.title2": "the product.",
         "about.offCode": "About the Developer",
         "about.title": "Enzo Esmeraldo",
-        "about.description": "Fullstack Developer and Frontend enthusiast focused on <strong>front-end architecture</strong>, <strong>design systems</strong>, and interfaces that make complex workflows easier to use. I like building products where UI decisions, technical structure, and product value point in the same direction.",
-        "about.bio2": "My current work connects product delivery with <strong>AI automation</strong>, agile routines, and tools that help teams move with more context and less friction.",
+        "about.description": "I went from <strong>intern to project leader in 21 months</strong>, and I think the reason is simple: I treat the interface as the product, not the paint. Whether it's an AI platform helping doctors make clinical decisions or a VS Code extension that packages commits into QA evidence, the job is the same — <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.",
+        "about.bio2": "I lead a team now — architecture, design system, Git strategy, mentoring. I still <strong>ship UI every week</strong>, because a lead who stops shipping stops being trusted.",
         "about.avatarJoke": "btw, that's me",
         "about.interests.label": "Interests",
         "about.interests.title": "Outside the editor",
         "about.funfact.label": "Fun Fact",
         "about.funfact.title": "Fav. Pokémon is Lugia",
         "about.funfact.desc": "Psychic-type elegance, legendary rarity — basically my design philosophy wrapped in a Pokémon.",
-        "about.numbers.label": "By the Numbers",
         "about.current.label": "Currently Building",
-        "about.current.desc": "An AI-powered medical platform that helps doctors make better clinical decisions — leading the team, owning the architecture, creating <strong>AI automations</strong>, and shaping <strong>agile development tools</strong> for the workflow around medical consultations.",
+        "about.current.desc": "An AI-powered medical platform that helps doctors make better clinical decisions — team, architecture, design system, <strong>AI automations</strong>, all of it. Full detail in <a href=\"#work\" class=\"text-accent underline underline-offset-4\">Work</a>, minus what the NDA eats.",
         "about.current.status": "In active development",
-        "about.stat1.label": "Years",
-        "about.stat1.value": "2+",
-        "about.stat2.label": "Projects",
-        "about.stat2.value": "10+",
-        "about.stat3.label": "Focus",
-        "about.stat3.value": "Frontend",
-        "about.stat4.label": "Graduation",
-        "about.stat4.value": "2027",
-        "about.stat5.label": "Fav. Pokémon",
-        "about.stat5.value": "Lugia",
         "about.downloadCV": "DOWNLOAD CV",
         // Work
         "work.label": "Portfolio",
         "work.title1": "My",
         "work.title2": "Work.",
-        "work.subtitle": "Projects focused on turning complex workflows into usable products: QA traceability, scientific catalogs, interactive learning tools, and role-based mobile apps.",
+        "work.subtitle": "Every project here is the same move: take work scattered across tabs, spreadsheets, and tribal knowledge — and give it one legible interface.",
         "featuredWork.label": "Featured Project",
         "featuredWork.subtitle": "A spotlighted case study with a presentation-style gallery, longer project context, and quick switching between featured builds.",
-        "featuredWork.rotation": "Auto-rotates every 30 minutes",
         "featuredWork.stack": "Tech Stack",
         "featuredWork.links": "Project Links",
         "featuredWork.preview": "Project Preview",
@@ -1393,13 +1567,11 @@ const translations = {
         "featuredWork.viewDemo": "Website",
         "featuredWork.viewCaseStudy": "Case Study",
         "featuredWork.expandImage": "Expand",
-        "featuredWork.why": "Why",
-        "featuredWork.does": "What it does",
         "featuredWork.problem": "Problem",
-        "projects.dino.description": "Immersive dinosaur learning platform with a scientific catalog, fossil maps, timelines, multilingual content, Firebase data, and external image enrichment.",
-        "projects.teambuilder.description": "Competitive Pokémon workspace with team persistence, Pokédex filters, type analysis, share links, favorites, generators, and Showdown export.",
-        "projects.uniforgym.description": "Native Android gym platform for student and professor workflows, Firebase auth, workout assignment, QR-guided exercise videos, and training history.",
-        "projects.aquacensus.description": "Marine research platform for field collections, researchers, laboratories, vessels, specimen metadata, and operational dashboards.",
+        "featuredWork.decision": "Decision that mattered",
+        "featuredWork.outcome": "Outcome",
+        "featuredWork.lockedTitle": "NDA — screenshots withheld",
+        "featuredWork.lockedSub": "The work is real; the pixels are classified.",
         "projects.visitGithub": "Explore more on GitHub",
         // Journey
         "journey.subtitle": "Career Path",
@@ -1438,17 +1610,11 @@ const translations = {
         "journey.role2.item3": "<strong>Participated in front-end development</strong> using Angular, TypeScript, and CSS, and supported the back-end with Spring Boot",
         "journey.role2.item4": "<strong>Gained hands-on experience</strong> with full-stack development in a professional environment",
         "journey.role2.item5": "Learned Agile development methodologies and team collaboration practices",
-        // Skills
-        "skills.subtitle": "What I Work With",
-        "skills.title1": "Tech",
-        "skills.title2": "Arsenal.",
-        "skills.frontend": "Frontend Architecture",
-        "skills.backend": "Backend & Data",
         // Footer
         "footer.label": "Get In Touch",
-        "footer.title1": "Let's build",
-        "footer.title2": "something awsome.",
-        "footer.copyright": "&copy; 2025 Enzo Esmeraldo",
+        "footer.title1": "Let's build something",
+        "footer.title2": "people actually use.",
+        "footer.copyright": "&copy; 2026 Enzo Esmeraldo",
         "footer.credits": "Crafted with <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> in Brazil",
         // Heatmap / Tech
         "contrib.label": "Contribution Activity",
@@ -1456,60 +1622,60 @@ const translations = {
         "contrib.more": "More",
         "tech.label": "Core Stack",
         // Music
-        "music.hint": "Change song to switch theme"
+        "music.hint": "Flip the record — the theme follows"
     },
     pt: {
         // Nav
         "nav.about": "Sobre",
         "nav.projects": "Trabalhos",
         "nav.journey": "Trajetória",
-        "nav.skills": "Ferramentas",
         "nav.contact": "Contato",
         // Hero
-        "hero.available": "Disponível para Trabalho",
-        "hero.location": "Fortaleza, Brasil",
-        "hero.description": "Eu projeto <span class=\"text-accent font-medium\">interfaces escaláveis</span> e design systems que unem precisão técnica com expressão criativa. Especializado em <span class=\"text-accent font-medium\">Angular, React & Spring Boot</span>.",
+        "hero.available": "Aberto a trabalho",
+        "hero.location": "Fortaleza, BR",
+        "hero.headline1": "Eu construo interfaces",
+        "hero.headline2": "para trabalho bagunçado.",
+        "hero.description": "Médicos decidindo sob pressão. Times de QA caçando commits. Pesquisadores afogados em dados de campo. Eu transformo fluxos assim em <span class=\"text-accent font-medium\">software que as pessoas realmente querem abrir</span> — frontend na frente, fullstack por inteiro, IA no circuito. <span class=\"text-text\">Entrei como estagiário em 2024; lidero o projeto em 2026.</span>",
         "hero.viewProjects": "VER TRABALHOS",
         "hero.resume": "BAIXAR CV",
         "hero.scroll": "Role",
-        "hero.role": "Arquiteto Frontend & Desenvolvedor Criativo",
+        "hero.role": "Líder de Projeto · Plataforma Médica com IA",
+        "hero.subrole": "Líder de Projeto @ Colégio Christus",
+        "hero.tl1": "2024 · Estágio",
+        "hero.tl2": "2025 · Dev Fullstack",
+        "hero.tl3": "2026 · Líder de Projeto",
+        // Jukebox
+        "jukebox.kicker": "ENZO.DEV — A JUKEBOX",
+        "jukebox.title1": "Escolha um disco.",
+        "jukebox.title2": "O disco é o tema.",
+        "jukebox.moodA": "azul profundo",
+        "jukebox.moodB": "tinta no osso",
+        "jukebox.skip": "pular — sem som",
         // About
-        "about.label": "Sobre Mim",
-        "about.title1": "Quem eu",
-        "about.title2": "sou.",
+        "about.label": "Sobre",
+        "about.title1": "A interface é",
+        "about.title2": "o produto.",
         "about.offCode": "Sobre o Desenvolvedor",
         "about.title": "Enzo Esmeraldo",
-        "about.description": "Desenvolvedor Fullstack e entusiasta de Frontend com foco em <strong>arquitetura front-end</strong>, <strong>design systems</strong> e interfaces que tornam fluxos complexos mais fáceis de usar. Gosto de construir produtos onde UI, estrutura técnica e valor de negócio apontam para a mesma direção.",
-        "about.bio2": "Meu trabalho atual conecta entrega de produto com <strong>automação com IA</strong>, rotinas ágeis e ferramentas que ajudam equipes a trabalhar com mais contexto e menos atrito.",
+        "about.description": "Fui de <strong>estagiário a líder de projeto em 21 meses</strong>, e acho que o motivo é simples: trato a interface como o produto, não como a pintura. Seja uma plataforma de IA ajudando médicos em decisões clínicas ou uma extensão do VS Code que empacota commits em evidências de QA, o trabalho é o mesmo — <strong>encontrar a parte do fluxo que todo mundo odeia em silêncio e torná-la óbvia</strong>.",
+        "about.bio2": "Hoje lidero um time — arquitetura, design system, estratégia de Git, mentoria. E continuo <strong>entregando UI toda semana</strong>, porque líder que para de entregar para de ser confiável.",
         "about.avatarJoke": "e sim, esse sou eu",
         "about.interests.label": "Interesses",
         "about.interests.title": "Fora do editor",
         "about.funfact.label": "Curiosidade",
         "about.funfact.title": "Pokémon Fav. é Lugia",
         "about.funfact.desc": "Elegância do tipo Psíquico, raridade lendária — basicamente minha filosofia de design em forma de Pokémon.",
-        "about.numbers.label": "Em Números",
         "about.current.label": "Em Desenvolvimento",
-        "about.current.desc": "Uma plataforma médica com IA que ajuda médicos a tomar melhores decisões clínicas — liderando a equipe, definindo a arquitetura, criando <strong>automações com IA</strong> e moldando <strong>ferramentas para desenvolvimento ágil</strong> no fluxo de consultas médicas.",
+        "about.current.desc": "Uma plataforma médica com IA que ajuda médicos a tomar melhores decisões clínicas — time, arquitetura, design system, <strong>automações com IA</strong>, tudo. Detalhes em <a href=\"#work\" class=\"text-accent underline underline-offset-4\">Trabalhos</a>, menos o que o NDA come.",
         "about.current.status": "Em desenvolvimento ativo",
-        "about.stat1.label": "Anos",
-        "about.stat1.value": "2+",
-        "about.stat2.label": "Projetos",
-        "about.stat2.value": "10+",
-        "about.stat3.label": "Foco",
-        "about.stat3.value": "Front-End",
-        "about.stat4.label": "Graduação",
-        "about.stat4.value": "2027",
-        "about.stat5.label": "Pokémon Fav.",
-        "about.stat5.value": "Lugia",
         "about.downloadCV": "BAIXAR CV",
         // Work
         "work.label": "Portfólio",
         "work.title1": "Meu",
         "work.title2": "Trabalho.",
-        "work.subtitle": "Projetos focados em transformar fluxos complexos em produtos utilizáveis: rastreabilidade de QA, catálogos científicos, ferramentas interativas de aprendizado e apps mobile com papéis claros.",
+        "work.subtitle": "Todo projeto aqui é o mesmo movimento: pegar trabalho espalhado em abas, planilhas e conhecimento tribal — e dar a ele uma interface legível.",
         "featuredWork.label": "Projeto em Destaque",
         "featuredWork.subtitle": "Um destaque com galeria em estilo apresentação, contexto maior do projeto e troca rápida entre projetos em destaque.",
-        "featuredWork.rotation": "Troca automaticamente a cada 30 minutos",
         "featuredWork.stack": "Tecnologias",
         "featuredWork.links": "Links do Projeto",
         "featuredWork.preview": "Preview do Projeto",
@@ -1519,13 +1685,11 @@ const translations = {
         "featuredWork.viewDemo": "Website",
         "featuredWork.viewCaseStudy": "Case Study",
         "featuredWork.expandImage": "Expandir",
-        "featuredWork.why": "Por quê",
-        "featuredWork.does": "O que faz",
         "featuredWork.problem": "Problema",
-        "projects.dino.description": "Plataforma imersiva de aprendizado sobre dinossauros com catálogo científico, mapas fósseis, linhas do tempo, conteúdo multilíngue, Firebase e enriquecimento externo de imagens.",
-        "projects.teambuilder.description": "Workspace competitivo de Pokémon com persistência de times, filtros de Pokédex, análise de tipos, links de compartilhamento, favoritos, geradores e exportação para Showdown.",
-        "projects.uniforgym.description": "Plataforma Android nativa para fluxos de alunos e professores, autenticação Firebase, atribuição de treinos, vídeos por QR code e histórico de treino.",
-        "projects.aquacensus.description": "Plataforma de pesquisa marinha para coletas de campo, pesquisadores, laboratórios, embarcações, metadados de espécimes e dashboards operacionais.",
+        "featuredWork.decision": "Decisão que importou",
+        "featuredWork.outcome": "Resultado",
+        "featuredWork.lockedTitle": "NDA — screenshots retidos",
+        "featuredWork.lockedSub": "O trabalho é real; os pixels são confidenciais.",
         "projects.visitGithub": "Explore mais no GitHub",
         // Journey
         "journey.subtitle": "Trajetória Profissional",
@@ -1564,17 +1728,11 @@ const translations = {
         "journey.role2.item3": "<strong>Participei do desenvolvimento front-end</strong> usando Angular, TypeScript e CSS, e apoiei o back-end com Spring Boot",
         "journey.role2.item4": "<strong>Ganhei experiência prática</strong> com desenvolvimento full-stack em um ambiente profissional",
         "journey.role2.item5": "Aprendi metodologias de desenvolvimento Ágil e práticas de colaboração em equipe",
-        // Skills
-        "skills.subtitle": "Com o que trabalho",
-        "skills.title1": "Arsenal",
-        "skills.title2": "Tecnológico.",
-        "skills.frontend": "Arquitetura Frontend",
-        "skills.backend": "Backend & Dados",
         // Footer
         "footer.label": "Entre em Contato",
-        "footer.title1": "Vamos construir",
-        "footer.title2": "algo incrível.",
-        "footer.copyright": "&copy; 2025 Enzo Esmeraldo",
+        "footer.title1": "Vamos construir algo",
+        "footer.title2": "que as pessoas realmente usem.",
+        "footer.copyright": "&copy; 2026 Enzo Esmeraldo",
         "footer.credits": "Criado com <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> no Brasil",
         // Heatmap / Tech
         "contrib.label": "Atividade de Contribuição",
@@ -1582,7 +1740,7 @@ const translations = {
         "contrib.more": "Mais",
         "tech.label": "Stack Principal",
         // Music
-        "music.hint": "Mude a música para trocar o tema"
+        "music.hint": "Vire o disco — o tema acompanha"
     }
 };
 
@@ -1646,5 +1804,9 @@ document.addEventListener('DOMContentLoaded', renderAboutInterests);
 document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
         closeFeaturedImageModal();
+        // Escape on the jukebox = the quiet skip
+        if (document.getElementById('jukebox')) {
+            chooseRecord(0, { withMusic: false });
+        }
     }
 });
