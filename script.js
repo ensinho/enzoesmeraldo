@@ -916,66 +916,86 @@ const featuredProjects = [
             alt: 'Pokémon Team Builder logo'
         },
         description: {
-            en: 'Competitive team building lives across five tabs — a Pokédex site, a coverage calculator, Showdown, a spreadsheet, Discord. This workspace <strong>collapses it into one</strong>: a trainer dashboard, <strong>type-coverage analysis</strong>, a full Pokédex, memory quizzes, and <em>Showdown-ready export</em>.',
-            pt: 'Montar times competitivos vive espalhado em cinco abas — um site de Pokédex, uma calculadora de cobertura, o Showdown, uma planilha, o Discord. Este workspace <strong>colapsa tudo em um</strong>: dashboard de treinador, <strong>análise de cobertura de tipos</strong>, Pokédex completa, quizzes de memória e <em>exportação pronta para o Showdown</em>.'
+            en: 'Competitive team building lives across five tabs — Pikalytics, a damage calc, Showdown, a spreadsheet, Discord. <strong>pokemonbuilder.app collapses it into one product</strong>: a builder with live analysis, <strong>real ladder usage from 1M+ games</strong> (Smogon, VGCPastes, Pikalytics), tournament-winning teams, a full <strong>damage calculator</strong>, speed tiers, and a <em>forum where shared teams import in one click</em>.',
+            pt: 'Montar times competitivos vive espalhado em cinco abas — Pikalytics, uma calc de dano, o Showdown, uma planilha, o Discord. O <strong>pokemonbuilder.app colapsa tudo em um produto</strong>: builder com análise ao vivo, <strong>uso real de ladder de 1M+ de partidas</strong> (Smogon, VGCPastes, Pikalytics), times campeões de torneios, <strong>calculadora de dano</strong> completa, speed tiers e um <em>fórum onde times compartilhados importam em um clique</em>.'
         },
         narrative: {
             en: {
-                problem: 'The flow from "team idea" to "importable team" was scattered across tools that don\'t talk to each other.',
-                decision: 'Team analysis lives beside the builder, always on — coverage is the question players are actually asking, so it never hides in a tab.',
-                outcome: 'Zero-tab-switch flow from idea to battle-ready export.'
+                problem: 'The flow from "team idea" to "importable team" was scattered across tools that don\'t talk to each other — and none of them know what the meta is actually running.',
+                decision: 'Make real data the spine, not a feature: monthly ladder usage, Smogon sets, and tournament teams feed the builder, so every suggestion is one click from a slot.',
+                outcome: 'A live product — 15+ sections, EN/PT, light/dark, guest-to-cloud accounts, installable as a PWA — where a tournament team becomes your editable draft in one click.'
             },
             pt: {
-                problem: 'O caminho de "ideia de time" até "time importável" estava espalhado em ferramentas que não conversam entre si.',
-                decision: 'A análise do time vive ao lado do builder, sempre visível — cobertura é a pergunta que os jogadores realmente fazem, então ela nunca se esconde em uma aba.',
-                outcome: 'Fluxo sem troca de aba, da ideia à exportação pronta para batalha.'
+                problem: 'O caminho de "ideia de time" até "time importável" estava espalhado em ferramentas que não conversam entre si — e nenhuma delas sabe o que o meta está realmente jogando.',
+                decision: 'Fazer dados reais serem a espinha, não uma feature: uso mensal de ladder, sets do Smogon e times de torneio alimentam o builder — cada sugestão está a um clique de um slot.',
+                outcome: 'Um produto vivo — 15+ seções, EN/PT, claro/escuro, contas guest-para-nuvem, instalável como PWA — onde um time de torneio vira seu rascunho editável em um clique.'
             }
         },
-        technologies: ['React', 'JavaScript', 'Tailwind', 'Firebase', 'PokéAPI'],
+        technologies: ['React', 'TypeScript', 'Vite', 'PWA', 'PokéAPI', 'Smogon Data'],
         images: [
             {
-                src: 'assets/projectCovers/pokemon/PokeHome.png',
-                alt: 'Pokemon Team Builder home dashboard greeting the trainer with their active team',
+                src: 'assets/projectCovers/pokemon/live-home.png',
+                alt: 'pokemonbuilder.app home dashboard with partner Pokemon, streaks, daily guess, meta teams, and live community timeline',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Trainer dashboard — your active team and its identity greet you, not a menu.',
-                    pt: 'Dashboard do treinador — seu time ativo e a identidade dele te recebem, não um menu.'
+                    en: 'Home: partner Pokémon, streaks, the daily guess, current VGC meta — and the community timeline, live.',
+                    pt: 'Home: Pokémon parceiro, streaks, o palpite diário, o meta VGC atual — e a timeline da comunidade, ao vivo.'
                 }
             },
             {
-                src: 'assets/projectCovers/pokemon/PokeTeamBuilder.png',
-                alt: 'Team Builder screen with live offensive and defensive type analysis',
+                src: 'assets/projectCovers/pokemon/live-builder.png',
+                alt: 'Team Builder with meta core suggestions, top meta picks, and always-on team analysis',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Builder with always-on team analysis — coverage and defensive gaps update as you slot each Pokémon.',
-                    pt: 'Builder com análise sempre visível — cobertura e brechas defensivas atualizam a cada Pokémon no slot.'
+                    en: 'Builder: top meta picks ranked by real usage, with offensive and defensive analysis always in view.',
+                    pt: 'Builder: top picks do meta ranqueados por uso real, com análise ofensiva e defensiva sempre à vista.'
                 }
             },
             {
-                src: 'assets/projectCovers/pokemon/Pokedex.png',
-                alt: 'Pokedex screen with base stats, evolution line, and type defenses',
+                src: 'assets/projectCovers/pokemon/live-meta-usage.png',
+                alt: 'Meta and Usage screen with ladder usage stats from over one million games, common pairs and trios',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Pokédex detail: base stats, evolution line, and type defenses in one panel — no tab-hopping.',
-                    pt: 'Detalhe da Pokédex: stats base, linha evolutiva e defesas de tipo em um painel — sem pular de aba.'
+                    en: 'Meta & Usage: 1,163,315 ladder games distilled into usage ranks, common pairs, and trios — sourced from Smogon, VGCPastes, and Pikalytics.',
+                    pt: 'Meta & Uso: 1.163.315 partidas de ladder destiladas em ranks de uso, duplas e trios comuns — fontes: Smogon, VGCPastes e Pikalytics.'
                 }
             },
             {
-                src: 'assets/projectCovers/pokemon/PokeQuiz.png',
-                alt: 'Generation Quiz screen where players name every Pokemon from memory',
+                src: 'assets/projectCovers/pokemon/live-tournaments.png',
+                alt: 'Tournaments screen with featured winning teams from real 2026 events and open-in-builder buttons',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Generation Quiz — name every Pokémon from memory, generation by generation, against the clock.',
-                    pt: 'Generation Quiz — nomeie cada Pokémon de memória, geração por geração, contra o relógio.'
+                    en: 'Tournaments: real winning teams from PJCS, regionals, and majors — "Open in Builder" turns any of them into your draft.',
+                    pt: 'Torneios: times campeões reais de PJCS, regionais e majors — "Abrir no Builder" transforma qualquer um em rascunho seu.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/pokemon/live-damage-calc.png',
+                alt: 'Damage calculator with attacker and defender panels, field conditions, weather, terrain, and stat spreads',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Damage Calculator: full field state — weather, terrain, side modifiers, natures, IV/EV spreads, Tera.',
+                    pt: 'Calculadora de Dano: estado de campo completo — clima, terreno, modificadores, natures, spreads de IV/EV, Tera.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/pokemon/live-forum.png',
+                alt: 'Forum feed with topics and shared teams that can be imported into the builder in one click',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Forum: teams attach to posts as living objects — anyone can import one straight into their builder.',
+                    pt: 'Fórum: times são anexados aos posts como objetos vivos — qualquer um importa direto para o próprio builder.'
                 }
             }
         ],
         links: {
-            demo: 'https://ensinho.github.io/pokemonTeamBuilder/',
+            demo: 'https://pokemonbuilder.app/',
             github: 'https://github.com/ensinho/pokemonTeamBuilder'
         }
     },
