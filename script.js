@@ -5,6 +5,8 @@
 gsap.registerPlugin(ScrollTrigger);
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Phones and touch devices get lighter motion: no parallax scrub, one-shot reveals.
+const isLightMotion = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
 
 // ── Site start (called once the jukebox is dismissed) ──
 let siteStarted = false;
@@ -21,21 +23,23 @@ function initScrollAnimations() {
         gsap.set(".gs-fade-in, .gs-reveal", { y: 0, opacity: 1 });
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
-        });
+        }, { passive: true });
         return;
     }
 
-    // Parallax Hero
-    gsap.to("#hero-bg", {
-        yPercent: 25,
-        ease: "none",
-        scrollTrigger: {
-            trigger: "body",
-            start: "top top",
-            end: "bottom top",
-            scrub: true
-        }
-    });
+    // Parallax Hero (desktop only: a scrubbed full-bleed background is the priciest effect on phones)
+    if (!isLightMotion) {
+        gsap.to("#hero-bg", {
+            yPercent: 25,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+    }
 
     // Hero Text Stagger
     gsap.to(".hero-text-anim", {
@@ -60,16 +64,18 @@ function initScrollAnimations() {
     // Reveal Sections
     gsap.utils.toArray('.gs-reveal').forEach(element => {
         gsap.fromTo(element,
-            { y: 60, opacity: 0 },
+            { y: isLightMotion ? 28 : 60, opacity: 0 },
             {
                 y: 0,
                 opacity: 1,
-                duration: 1,
+                duration: isLightMotion ? 0.7 : 1,
                 ease: "power3.out",
                 scrollTrigger: {
                     trigger: element,
                     start: "top 88%",
-                    toggleActions: "play none none reverse"
+                    // On phones, reveal once and stop tracking instead of replaying on every scroll back
+                    once: isLightMotion,
+                    toggleActions: isLightMotion ? "play none none none" : "play none none reverse"
                 }
             }
         );
@@ -88,12 +94,10 @@ function initScrollAnimations() {
 const backToTopBtn = document.getElementById('back-to-top');
 if (backToTopBtn) {
     window.addEventListener('scroll', () => {
-        if (window.scrollY > window.innerHeight * 0.5) {
-            backToTopBtn.classList.remove('translate-y-20', 'opacity-0');
-        } else {
-            backToTopBtn.classList.add('translate-y-20', 'opacity-0');
-        }
-    });
+        const show = window.scrollY > window.innerHeight * 0.5;
+        backToTopBtn.classList.toggle('translate-y-20', !show);
+        backToTopBtn.classList.toggle('opacity-0', !show);
+    }, { passive: true });
     backToTopBtn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -201,6 +205,8 @@ const songs = [
 let currentSongIndex = 0;
 let isPlaying = false;
 const audioPlayer = new Audio();
+// Don't pull a 4–7 MB track on page load; fetch it when the visitor actually hits play.
+audioPlayer.preload = 'none';
 
 const musicCard = document.getElementById('music-card');
 const albumArt = document.getElementById('album-art');
@@ -648,7 +654,7 @@ function renderHeatmap() {
                     cell.classList.add('is-peak');
                 }
 
-                cell.title = formatContributionText(day.iso, day.count) + (cell.dataset.story ? ` — ${cell.dataset.story}` : '');
+                cell.title = formatContributionText(day.iso, day.count) + (cell.dataset.story ? ` · ${cell.dataset.story}` : '');
             } else {
                 cell.dataset.empty = '1';
             }
@@ -684,7 +690,7 @@ function initHeatmapTooltip() {
     const show = (cell) => {
         if (!cell || !cell.dataset.date) return;
         const rect = cell.getBoundingClientRect();
-        const storySuffix = cell.dataset.story ? ` — ${cell.dataset.story}` : '';
+        const storySuffix = cell.dataset.story ? ` · ${cell.dataset.story}` : '';
         heatTooltip.textContent = formatContributionText(cell.dataset.date, cell.dataset.count) + storySuffix;
         heatTooltip.style.left = `${Math.min(window.innerWidth - 80, Math.max(80, rect.left + rect.width / 2))}px`;
         heatTooltip.style.top = `${Math.max(48, rect.top - 8)}px`;
@@ -807,8 +813,109 @@ function toggleJourney(id, btn) {
 }
 
 // ── Featured Projects Spotlight ──
-// Order is deliberate: lead with the most professional artifact, then the NDA flagship.
+// Order is deliberate: lead with the live product (and its demo reel), then the most professional artifact, then the NDA flagship.
 const featuredProjects = [
+    {
+        id: 'pokemon-team-builder',
+        title: 'Pokémon Team Builder',
+        logo: {
+            src: 'assets/icons/teamBuilderLogo.png',
+            alt: 'Pokémon Team Builder logo'
+        },
+        description: {
+            en: 'Competitive team building usually lives across five tabs: Pikalytics, a damage calc, Showdown, a spreadsheet and Discord. <strong>pokemonbuilder.app puts all of it in one place</strong>. You get a builder with live analysis, <strong>real ladder usage from 1M+ games</strong> (Smogon, VGCPastes, Pikalytics), tournament-winning teams, a full <strong>damage calculator</strong>, speed tiers, and a <em>forum where shared teams import in one click</em>.',
+            pt: 'Montar time competitivo normalmente fica espalhado em cinco abas: Pikalytics, uma calc de dano, o Showdown, uma planilha e o Discord. O <strong>pokemonbuilder.app junta tudo num lugar só</strong>. Tem builder com análise ao vivo, <strong>uso real de ladder de mais de 1M de partidas</strong> (Smogon, VGCPastes, Pikalytics), times campeões de torneios, <strong>calculadora de dano</strong> completa, speed tiers e um <em>fórum onde qualquer time compartilhado importa em um clique</em>.'
+        },
+        narrative: {
+            en: {
+                problem: 'Going from "team idea" to "importable team" meant jumping between tools that don\'t talk to each other, and none of them knew what the meta was actually running.',
+                decision: 'Make real data the spine, not a feature: monthly ladder usage, Smogon sets, and tournament teams feed the builder, so every suggestion is one click from a slot.',
+                outcome: 'A live product with 15+ sections, EN/PT, light and dark themes, guest-to-cloud accounts and PWA install, where a tournament team becomes your editable draft in one click.'
+            },
+            pt: {
+                problem: 'Sair da "ideia de time" até um "time importável" era pular entre ferramentas que não conversam entre si, e nenhuma delas sabia o que o meta estava jogando de verdade.',
+                decision: 'Fazer dos dados reais a base, não uma feature: uso mensal de ladder, sets do Smogon e times de torneio alimentam o builder, então toda sugestão está a um clique de virar slot.',
+                outcome: 'Um produto no ar com 15+ seções, EN/PT, tema claro e escuro, contas de convidado que sobem pra nuvem e instalação como PWA, onde um time de torneio vira seu rascunho editável em um clique.'
+            }
+        },
+        technologies: ['React', 'TypeScript', 'Vite', 'PWA', 'PokéAPI', 'Smogon Data'],
+        images: [
+            {
+                type: 'video',
+                src: 'assets/projectCovers/pokemon/demo.mp4',
+                poster: 'assets/projectCovers/pokemon/demo-poster.jpg',
+                alt: 'pokemonbuilder.app demo reel: building a team, live analysis, meta usage, and the damage calculator',
+                caption: {
+                    en: 'Demo reel: from an empty slot to a tournament-ready team, with live analysis, real usage data and the calc all in one product.',
+                    pt: 'Demo reel: de um slot vazio a um time pronto pra torneio, com análise ao vivo, dados reais de uso e a calc tudo num produto só.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/pokemon/live-home.webp',
+                alt: 'pokemonbuilder.app home dashboard with partner Pokemon, streaks, daily guess, meta teams, and live community timeline',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Home: your partner Pokémon, streaks, the daily guess, the current VGC meta and a live community timeline.',
+                    pt: 'Home: seu Pokémon parceiro, streaks, o palpite diário, o meta VGC atual e a timeline da comunidade ao vivo.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/pokemon/live-builder.webp',
+                alt: 'Team Builder with meta core suggestions, top meta picks, and always-on team analysis',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Builder: top meta picks ranked by real usage, with offensive and defensive analysis always in view.',
+                    pt: 'Builder: top picks do meta ranqueados por uso real, com análise ofensiva e defensiva sempre à vista.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/pokemon/live-meta-usage.webp',
+                alt: 'Meta and Usage screen with ladder usage stats from over one million games, common pairs and trios',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Meta & Usage: 1,163,315 ladder games turned into usage ranks, common pairs and trios, pulled from Smogon, VGCPastes and Pikalytics.',
+                    pt: 'Meta & Uso: 1.163.315 partidas de ladder viram ranks de uso, duplas e trios comuns, com dados do Smogon, VGCPastes e Pikalytics.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/pokemon/live-tournaments.webp',
+                alt: 'Tournaments screen with featured winning teams from real 2026 events and open-in-builder buttons',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Tournaments: real winning teams from PJCS, regionals and majors. Hit "Open in Builder" and any of them becomes your draft.',
+                    pt: 'Torneios: times campeões de verdade do PJCS, regionais e majors. Clica em "Abrir no Builder" e qualquer um vira rascunho seu.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/pokemon/live-damage-calc.webp',
+                alt: 'Damage calculator with attacker and defender panels, field conditions, weather, terrain, and stat spreads',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Damage Calculator: the full field state, including weather, terrain, side modifiers, natures, IV/EV spreads and Tera.',
+                    pt: 'Calculadora de Dano: o estado de campo completo, com clima, terreno, modificadores, natures, spreads de IV/EV e Tera.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/pokemon/live-forum.webp',
+                alt: 'Forum feed with topics and shared teams that can be imported into the builder in one click',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Forum: teams live inside posts, so anyone can import one straight into their builder.',
+                    pt: 'Fórum: os times ficam dentro dos posts, então qualquer um importa direto pro próprio builder.'
+                }
+            }
+        ],
+        links: {
+            demo: 'https://pokemonbuilder.app/',
+            github: 'https://github.com/ensinho/pokemonTeamBuilder'
+        }
+    },
     {
         id: 'qassistant',
         title: 'QAssistant',
@@ -817,41 +924,41 @@ const featuredProjects = [
             alt: 'QAssistant logo'
         },
         description: {
-            en: 'QA handoffs died the same death every sprint: evidence in screenshots, context in someone\'s head, tickets somewhere else. QAssistant is a <strong>VS Code extension</strong> that turns selected commits into <strong>traceable validation packages</strong> — AI-written summaries, test prompts, OpenProject tasks, and <em>agent-ready context docs</em>.',
-            pt: 'Os handoffs de QA morriam da mesma forma a cada sprint: evidência em screenshots, contexto na cabeça de alguém, tarefas em outro lugar. O QAssistant é uma <strong>extensão do VS Code</strong> que transforma commits selecionados em <strong>pacotes rastreáveis de validação</strong> — resumos escritos por IA, prompts de teste, tarefas no OpenProject e <em>docs de contexto prontos para agentes</em>.'
+            en: 'QA handoffs died the same death every sprint: evidence in screenshots, context in someone\'s head, tickets somewhere else. QAssistant is a <strong>VS Code extension</strong> that turns selected commits into <strong>traceable validation packages</strong> with AI-written summaries, test prompts, OpenProject tasks and <em>agent-ready context docs</em>.',
+            pt: 'Os handoffs de QA morriam da mesma forma a cada sprint: evidência em screenshots, contexto na cabeça de alguém, tarefas em outro lugar. O QAssistant é uma <strong>extensão do VS Code</strong> que transforma commits selecionados em <strong>pacotes rastreáveis de validação</strong>, com resumos escritos por IA, prompts de teste, tarefas no OpenProject e <em>docs de contexto prontos pra agentes</em>.'
         },
         narrative: {
             en: {
                 problem: 'Commits, evidence, and tickets lived in separate places, so every QA handoff was a back-and-forth thread.',
-                decision: 'Generate agent-ready context, not just human summaries — the same package feeds the QA analyst and the automation that pre-checks the build.',
+                decision: 'Generate context agents can use, not just summaries for humans. The same package feeds the QA analyst and the automation that pre-checks the build.',
                 outcome: 'A handoff that took a thread now takes one command, with traceability for free.'
             },
             pt: {
-                problem: 'Commits, evidências e tarefas viviam em lugares separados — cada handoff de QA virava uma thread de ida e volta.',
-                decision: 'Gerar contexto pronto para agentes, não só resumos humanos — o mesmo pacote alimenta o analista de QA e a automação que pré-valida a build.',
+                problem: 'Commits, evidências e tarefas viviam em lugares separados, então todo handoff de QA virava uma thread de ida e volta.',
+                decision: 'Gerar contexto que agentes conseguem usar, não só resumo pra humano. O mesmo pacote alimenta o analista de QA e a automação que pré-valida a build.',
                 outcome: 'Um handoff que custava uma thread agora custa um comando, com rastreabilidade de graça.'
             }
         },
         technologies: ['TypeScript', 'VS Code API', 'React', 'Vite', 'OpenProject', 'AI'],
         images: [
             {
-                src: 'assets/projectCovers/qassistant/qassistant0.jpeg',
+                src: 'assets/projectCovers/qassistant/QASSISTANT1.jpeg',
                 alt: 'QAssistant dashboard with telemetry and validation actions',
-                fit: 'cover',
+                fit: 'contain',
                 position: 'center top',
                 caption: {
-                    en: 'Dashboard: telemetry and validation actions inside the editor — not another browser tab.',
-                    pt: 'Dashboard: telemetria e ações de validação dentro do editor — não em mais uma aba do navegador.'
+                    en: 'Dashboard: telemetry and validation actions right inside the editor, not in yet another browser tab.',
+                    pt: 'Dashboard: telemetria e ações de validação direto no editor, não em mais uma aba do navegador.'
                 }
             },
             {
-                src: 'assets/projectCovers/qassistant/QASSISTANT1.jpeg',
+                src: 'assets/projectCovers/qassistant/qassistant0.jpeg',
                 alt: 'QAssistant guided onboarding setup screen',
                 fit: 'contain',
                 position: 'center top',
                 caption: {
-                    en: 'Guided onboarding — zero-config start, built for QA folks who don\'t live in settings files.',
-                    pt: 'Onboarding guiado — começa sem configuração, feito para quem não vive em arquivos de settings.'
+                    en: 'Guided onboarding with zero config, made for QA folks who don\'t live in settings files.',
+                    pt: 'Onboarding guiado e sem configuração, feito pra quem não vive em arquivo de settings.'
                 }
             },
             {
@@ -860,8 +967,8 @@ const featuredProjects = [
                 fit: 'contain',
                 position: 'center top',
                 caption: {
-                    en: 'Pick commits, get a traceable validation package — the core loop in one screen.',
-                    pt: 'Selecione commits, receba um pacote de validação rastreável — o loop central em uma tela.'
+                    en: 'Pick your commits and get a traceable validation package. The whole core loop fits in one screen.',
+                    pt: 'Escolhe os commits e recebe um pacote de validação rastreável. O loop principal inteiro cabe numa tela.'
                 }
             },
             {
@@ -885,119 +992,28 @@ const featuredProjects = [
         logo: null,
         locked: true,
         status: {
-            en: 'NDA · In active development',
-            pt: 'NDA · Em desenvolvimento ativo'
+            en: 'NDA · Led Jan.–Jun. 2026',
+            pt: 'NDA · Liderado jan.–jun. 2026'
         },
         description: {
-            en: 'The project I lead at Colégio Christus: an <strong>AI-assisted medical platform</strong> that supports doctors before, during, and after consultations. Under NDA — so no screenshots — but here\'s what I can tell you.',
-            pt: 'O projeto que eu lidero no Colégio Christus: uma <strong>plataforma médica assistida por IA</strong> que apoia médicos antes, durante e depois das consultas. Sob NDA — então sem screenshots — mas aqui está o que posso contar.'
+            en: 'The project I led at Colégio Christus: an <strong>AI-assisted medical platform</strong> that supports doctors before, during, and after consultations. It\'s under NDA, so no screenshots, but here\'s what I can tell you.',
+            pt: 'O projeto que liderei no Colégio Christus: uma <strong>plataforma médica assistida por IA</strong> que apoia médicos antes, durante e depois das consultas. Tá sob NDA, então sem screenshots, mas dá pra contar isso aqui.'
         },
         narrative: {
             en: {
                 problem: 'Clinical decision-making runs on scattered records and zero tooling built for the consultation itself.',
-                decision: 'Own the whole surface — design system, React front-end, Node/PostgreSQL back-end, AI automations — so the product speaks one language.',
+                decision: 'Own the whole surface (design system, React front-end, Node/PostgreSQL back-end and AI automations) so the product speaks one language.',
                 outcome: 'Promoted to project lead to run it: team, architecture, and delivery from vision to deployment.'
             },
             pt: {
                 problem: 'A decisão clínica roda sobre registros espalhados e zero ferramentas pensadas para a própria consulta.',
-                decision: 'Assumir a superfície inteira — design system, front-end em React, back-end em Node/PostgreSQL, automações com IA — para o produto falar uma língua só.',
+                decision: 'Cuidar da superfície inteira (design system, front-end em React, back-end em Node/PostgreSQL e automações com IA) pra que o produto fale uma língua só.',
                 outcome: 'Promovido a líder de projeto para tocá-lo: time, arquitetura e entrega da visão ao deploy.'
             }
         },
         technologies: ['React', 'Node.js', 'PostgreSQL', 'AI Automation'],
         images: [],
         links: {}
-    },
-    {
-        id: 'pokemon-team-builder',
-        title: 'Pokémon Team Builder',
-        logo: {
-            src: 'assets/icons/teamBuilderLogo.png',
-            alt: 'Pokémon Team Builder logo'
-        },
-        description: {
-            en: 'Competitive team building lives across five tabs — Pikalytics, a damage calc, Showdown, a spreadsheet, Discord. <strong>pokemonbuilder.app collapses it into one product</strong>: a builder with live analysis, <strong>real ladder usage from 1M+ games</strong> (Smogon, VGCPastes, Pikalytics), tournament-winning teams, a full <strong>damage calculator</strong>, speed tiers, and a <em>forum where shared teams import in one click</em>.',
-            pt: 'Montar times competitivos vive espalhado em cinco abas — Pikalytics, uma calc de dano, o Showdown, uma planilha, o Discord. O <strong>pokemonbuilder.app colapsa tudo em um produto</strong>: builder com análise ao vivo, <strong>uso real de ladder de 1M+ de partidas</strong> (Smogon, VGCPastes, Pikalytics), times campeões de torneios, <strong>calculadora de dano</strong> completa, speed tiers e um <em>fórum onde times compartilhados importam em um clique</em>.'
-        },
-        narrative: {
-            en: {
-                problem: 'The flow from "team idea" to "importable team" was scattered across tools that don\'t talk to each other — and none of them know what the meta is actually running.',
-                decision: 'Make real data the spine, not a feature: monthly ladder usage, Smogon sets, and tournament teams feed the builder, so every suggestion is one click from a slot.',
-                outcome: 'A live product — 15+ sections, EN/PT, light/dark, guest-to-cloud accounts, installable as a PWA — where a tournament team becomes your editable draft in one click.'
-            },
-            pt: {
-                problem: 'O caminho de "ideia de time" até "time importável" estava espalhado em ferramentas que não conversam entre si — e nenhuma delas sabe o que o meta está realmente jogando.',
-                decision: 'Fazer dados reais serem a espinha, não uma feature: uso mensal de ladder, sets do Smogon e times de torneio alimentam o builder — cada sugestão está a um clique de um slot.',
-                outcome: 'Um produto vivo — 15+ seções, EN/PT, claro/escuro, contas guest-para-nuvem, instalável como PWA — onde um time de torneio vira seu rascunho editável em um clique.'
-            }
-        },
-        technologies: ['React', 'TypeScript', 'Vite', 'PWA', 'PokéAPI', 'Smogon Data'],
-        images: [
-            {
-                src: 'assets/projectCovers/pokemon/live-home.png',
-                alt: 'pokemonbuilder.app home dashboard with partner Pokemon, streaks, daily guess, meta teams, and live community timeline',
-                fit: 'cover',
-                position: 'center top',
-                caption: {
-                    en: 'Home: partner Pokémon, streaks, the daily guess, current VGC meta — and the community timeline, live.',
-                    pt: 'Home: Pokémon parceiro, streaks, o palpite diário, o meta VGC atual — e a timeline da comunidade, ao vivo.'
-                }
-            },
-            {
-                src: 'assets/projectCovers/pokemon/live-builder.png',
-                alt: 'Team Builder with meta core suggestions, top meta picks, and always-on team analysis',
-                fit: 'cover',
-                position: 'center top',
-                caption: {
-                    en: 'Builder: top meta picks ranked by real usage, with offensive and defensive analysis always in view.',
-                    pt: 'Builder: top picks do meta ranqueados por uso real, com análise ofensiva e defensiva sempre à vista.'
-                }
-            },
-            {
-                src: 'assets/projectCovers/pokemon/live-meta-usage.png',
-                alt: 'Meta and Usage screen with ladder usage stats from over one million games, common pairs and trios',
-                fit: 'cover',
-                position: 'center top',
-                caption: {
-                    en: 'Meta & Usage: 1,163,315 ladder games distilled into usage ranks, common pairs, and trios — sourced from Smogon, VGCPastes, and Pikalytics.',
-                    pt: 'Meta & Uso: 1.163.315 partidas de ladder destiladas em ranks de uso, duplas e trios comuns — fontes: Smogon, VGCPastes e Pikalytics.'
-                }
-            },
-            {
-                src: 'assets/projectCovers/pokemon/live-tournaments.png',
-                alt: 'Tournaments screen with featured winning teams from real 2026 events and open-in-builder buttons',
-                fit: 'cover',
-                position: 'center top',
-                caption: {
-                    en: 'Tournaments: real winning teams from PJCS, regionals, and majors — "Open in Builder" turns any of them into your draft.',
-                    pt: 'Torneios: times campeões reais de PJCS, regionais e majors — "Abrir no Builder" transforma qualquer um em rascunho seu.'
-                }
-            },
-            {
-                src: 'assets/projectCovers/pokemon/live-damage-calc.png',
-                alt: 'Damage calculator with attacker and defender panels, field conditions, weather, terrain, and stat spreads',
-                fit: 'cover',
-                position: 'center top',
-                caption: {
-                    en: 'Damage Calculator: full field state — weather, terrain, side modifiers, natures, IV/EV spreads, Tera.',
-                    pt: 'Calculadora de Dano: estado de campo completo — clima, terreno, modificadores, natures, spreads de IV/EV, Tera.'
-                }
-            },
-            {
-                src: 'assets/projectCovers/pokemon/live-forum.png',
-                alt: 'Forum feed with topics and shared teams that can be imported into the builder in one click',
-                fit: 'cover',
-                position: 'center top',
-                caption: {
-                    en: 'Forum: teams attach to posts as living objects — anyone can import one straight into their builder.',
-                    pt: 'Fórum: times são anexados aos posts como objetos vivos — qualquer um importa direto para o próprio builder.'
-                }
-            }
-        ],
-        links: {
-            demo: 'https://pokemonbuilder.app/',
-            github: 'https://github.com/ensinho/pokemonTeamBuilder'
-        }
     },
     {
         id: 'dino-library',
@@ -1007,72 +1023,72 @@ const featuredProjects = [
             alt: 'Dino Library logo'
         },
         description: {
-            en: 'Paleontology online is either academic PDFs or kids\' content. <strong>Dino Library is the in-between</strong>: a scientific catalog with <strong>fossil maps, timelines, and quizzes</strong>, in two languages, with imagery enriched from external APIs — an <em>editorial exploration experience</em>.',
-            pt: 'Paleontologia online é ou PDF acadêmico ou conteúdo infantil. A <strong>Dino Library é o meio-termo</strong>: um catálogo científico com <strong>mapas fósseis, linhas do tempo e quizzes</strong>, em dois idiomas, com imagens enriquecidas por APIs externas — uma <em>experiência editorial de exploração</em>.'
+            en: 'Paleontology online is either academic PDFs or kids\' content. <strong>Dino Library is the in-between</strong>: a scientific catalog with <strong>fossil maps, timelines, and quizzes</strong>, in two languages, with imagery pulled in from external APIs. It\'s meant to feel like an <em>editorial you explore</em>, not a database.',
+            pt: 'Paleontologia online é ou PDF acadêmico ou conteúdo infantil. A <strong>Dino Library é o meio-termo</strong>: um catálogo científico com <strong>mapas fósseis, linhas do tempo e quizzes</strong>, em dois idiomas, com imagens puxadas de APIs externas. A ideia é parecer uma <em>revista pra explorar</em>, não um banco de dados.'
         },
         narrative: {
             en: {
-                problem: 'Prehistoric data is fragmented and flat — built to be queried, not explored.',
+                problem: 'Prehistoric data is fragmented and flat. It\'s built to be queried, not explored.',
                 decision: 'An editorial layout (read, explore, drift) instead of a database UI (filter, sort, leave). The content is the retention mechanic.',
-                outcome: 'A catalog people browse like a magazine — and keep browsing.'
+                outcome: 'A catalog people flip through like a magazine, and keep flipping.'
             },
             pt: {
-                problem: 'Dados pré-históricos são fragmentados e planos — feitos para consultar, não para explorar.',
+                problem: 'Dados pré-históricos são fragmentados e sem graça. Foram feitos pra consultar, não pra explorar.',
                 decision: 'Um layout editorial (ler, explorar, vagar) em vez de UI de banco de dados (filtrar, ordenar, sair). O conteúdo é a mecânica de retenção.',
-                outcome: 'Um catálogo que as pessoas folheiam como revista — e continuam folheando.'
+                outcome: 'Um catálogo que as pessoas folheiam como revista, e continuam folheando.'
             }
         },
         technologies: ['React', 'TypeScript', 'Tailwind', 'Firebase', 'Leaflet', 'i18next'],
         images: [
             {
-                src: 'assets/projectCovers/dino/Home1.png',
+                src: 'assets/projectCovers/dino/Home1.webp',
                 alt: 'Dino Library home screen',
-                fit: 'cover',
+                fit: 'contain',
                 caption: {
-                    en: 'Editorial home — the layout invites drift, not queries.',
-                    pt: 'Home editorial — o layout convida a vagar, não a consultar.'
+                    en: 'Editorial home. The layout makes you want to wander, not search.',
+                    pt: 'Home editorial. O layout dá vontade de passear, não de pesquisar.'
                 }
             },
             {
-                src: 'assets/projectCovers/dino/DinoCatalog.png',
+                src: 'assets/projectCovers/dino/DinoCatalog.webp',
                 alt: 'Dino Library catalog screen',
-                fit: 'cover',
+                fit: 'contain',
                 caption: {
                     en: 'Catalog with scientific filters that stay readable for non-scientists.',
                     pt: 'Catálogo com filtros científicos que continuam legíveis para não-cientistas.'
                 }
             },
             {
-                src: 'assets/projectCovers/dino/DinoDetail1.png',
+                src: 'assets/projectCovers/dino/DinoDetail1.webp',
                 alt: 'Dino Library species detail screen',
-                fit: 'cover',
+                fit: 'contain',
                 caption: {
                     en: 'Species pages layer facts, era, and habitat into one scroll.',
                     pt: 'Páginas de espécies sobrepõem fatos, era e habitat em um único scroll.'
                 }
             },
             {
-                src: 'assets/projectCovers/dino/DinoDetail2.png',
+                src: 'assets/projectCovers/dino/DinoDetail2.webp',
                 alt: 'Dino Library species detail screen, second view',
-                fit: 'cover',
+                fit: 'contain',
                 caption: {
                     en: 'Detail continues: imagery enriched from external APIs keeps pages alive.',
                     pt: 'O detalhe continua: imagens enriquecidas por APIs externas mantêm as páginas vivas.'
                 }
             },
             {
-                src: 'assets/projectCovers/dino/DinoMap.png',
+                src: 'assets/projectCovers/dino/DinoMap.webp',
                 alt: 'Dino Library fossil map screen',
-                fit: 'cover',
+                fit: 'contain',
                 caption: {
-                    en: 'Fossil map — discoveries plotted where they were actually dug up.',
-                    pt: 'Mapa fóssil — descobertas plotadas onde foram realmente escavadas.'
+                    en: 'Fossil map with discoveries plotted where they were actually dug up.',
+                    pt: 'Mapa fóssil com as descobertas marcadas onde foram escavadas de verdade.'
                 }
             },
             {
-                src: 'assets/projectCovers/dino/Quiz.png',
+                src: 'assets/projectCovers/dino/Quiz.webp',
                 alt: 'Dino Library quiz screen',
-                fit: 'cover',
+                fit: 'contain',
                 caption: {
                     en: 'Quizzes close the loop from reading to remembering.',
                     pt: 'Quizzes fecham o ciclo entre ler e lembrar.'
@@ -1092,18 +1108,18 @@ const featuredProjects = [
             alt: 'AquaCensus logo'
         },
         description: {
-            en: 'Marine field research runs on paper forms and personal spreadsheets, so specimen metadata gets orphaned from the people, vessels, and labs that produced it. <strong>AquaCensus connects all of it</strong> — collections, researchers, permissions, and <em>operational dashboards</em>.',
-            pt: 'Pesquisa marinha de campo roda em formulários de papel e planilhas pessoais — os metadados de espécimes ficam órfãos das pessoas, embarcações e laboratórios que os produziram. O <strong>AquaCensus conecta tudo</strong> — coletas, pesquisadores, permissões e <em>dashboards operacionais</em>.'
+            en: 'Marine field research runs on paper forms and personal spreadsheets, so specimen metadata gets orphaned from the people, vessels, and labs that produced it. <strong>AquaCensus connects all of it</strong>: collections, researchers, permissions and <em>operational dashboards</em>.',
+            pt: 'Pesquisa marinha de campo roda em formulário de papel e planilha pessoal, e os metadados dos espécimes ficam órfãos das pessoas, embarcações e laboratórios que os produziram. O <strong>AquaCensus conecta tudo</strong>: coletas, pesquisadores, permissões e <em>dashboards operacionais</em>.'
         },
         narrative: {
             en: {
                 problem: 'Research records lose trust when metadata, people, and collection context are disconnected.',
-                decision: 'Model provenance as first-class data — who collected what, from which vessel, for which lab.',
+                decision: 'Treat provenance as first-class data: who collected what, from which vessel, for which lab.',
                 outcome: 'Field records a lab can actually audit, favorite, and report on.'
             },
             pt: {
                 problem: 'Registros de pesquisa perdem confiança quando metadados, pessoas e contexto da coleta estão desconectados.',
-                decision: 'Modelar proveniência como dado de primeira classe — quem coletou o quê, de qual embarcação, para qual laboratório.',
+                decision: 'Tratar a proveniência como dado de primeira classe: quem coletou o quê, de qual embarcação, pra qual laboratório.',
                 outcome: 'Registros de campo que um laboratório consegue auditar, favoritar e reportar de verdade.'
             }
         },
@@ -1111,12 +1127,12 @@ const featuredProjects = [
         images: [
             {
                 src: 'assets/projectCovers/aqua/defaultCoverAqua.jpeg',
-                alt: 'AquaCensus marine research dashboard cover',
+                alt: 'AquaCensus login screen introducing the marine species catalog',
                 fit: 'contain',
                 position: 'center',
                 caption: {
-                    en: 'Operational dashboard — collections, people, and vessels in one ledger.',
-                    pt: 'Dashboard operacional — coletas, pessoas e embarcações em um único registro.'
+                    en: 'The front door: a clean login for a platform where collections, people and vessels share one ledger.',
+                    pt: 'A porta de entrada: um login limpo pra uma plataforma onde coletas, pessoas e embarcações dividem um registro só.'
                 }
             }
         ],
@@ -1198,7 +1214,7 @@ function getFeaturedProjectLogoMarkup(project, variant) {
 
     return `
         <span class="${wrapperClass}">
-            <img class="${imageClass}" src="${project.logo.src}" alt="${project.logo.alt}">
+            <img class="${imageClass}" src="${project.logo.src}" alt="${project.logo.alt}" decoding="async">
         </span>
     `;
 }
@@ -1320,6 +1336,7 @@ function ensureFeaturedImageModal() {
             </div>
             <div class="featured-image-modal-media">
                 <img id="featured-image-modal-img" src="" alt="">
+                <video id="featured-image-modal-video" controls playsinline hidden></video>
             </div>
         </div>
     `;
@@ -1340,12 +1357,24 @@ function openFeaturedImageModal() {
 
     const modal = ensureFeaturedImageModal();
     const imageElement = modal.querySelector('#featured-image-modal-img');
+    const videoElement = modal.querySelector('#featured-image-modal-video');
     const titleElement = modal.querySelector('#featured-image-modal-title');
     const kickerElement = modal.querySelector('#featured-image-modal-kicker');
     const closeButton = modal.querySelector('.featured-image-modal-close');
+    const isVideo = image.type === 'video';
 
-    imageElement.src = image.src;
-    imageElement.alt = image.alt;
+    imageElement.hidden = isVideo;
+    videoElement.hidden = !isVideo;
+    if (isVideo) {
+        imageElement.removeAttribute('src');
+        videoElement.src = image.src;
+        videoElement.poster = image.poster || '';
+        videoElement.setAttribute('aria-label', image.alt);
+        videoElement.play().catch(() => {});
+    } else {
+        imageElement.src = image.src;
+        imageElement.alt = image.alt;
+    }
     titleElement.textContent = project.title;
     kickerElement.textContent = `${String(featuredProjectState.activeImageIndex + 1).padStart(2, '0')} / ${String(project.images.length).padStart(2, '0')}`;
 
@@ -1358,6 +1387,9 @@ function openFeaturedImageModal() {
 function closeFeaturedImageModal() {
     const modal = document.getElementById('featured-image-modal');
     if (!modal) return;
+
+    const videoElement = modal.querySelector('#featured-image-modal-video');
+    if (videoElement) videoElement.pause();
 
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
@@ -1393,12 +1425,25 @@ function buildFeaturedProjectMedia(project) {
     const activeImage = project.images[featuredProjectState.activeImageIndex];
     const hasMultipleImages = project.images.length > 1;
     const featuredPosition = activeImage.position || 'center';
+    const featuredFit = activeImage.fit === 'contain' ? 'contain' : 'cover';
     const caption = activeImage.caption ? (activeImage.caption[currentLang] || activeImage.caption.en) : '';
+    const isVideo = activeImage.type === 'video';
+
+    // Reduced motion: no autoplay loop — the visitor starts the reel themselves.
+    const primaryMedia = isVideo
+        ? `<video class="featured-project-primary-image" src="${activeImage.src}" poster="${activeImage.poster || ''}" aria-label="${activeImage.alt}" ${prefersReducedMotion ? 'controls' : 'loop'} muted playsinline preload="none"></video>`
+        : `<img class="featured-project-primary-image" src="${activeImage.src}" alt="${activeImage.alt}" decoding="async" style="--featured-fit: ${featuredFit}; --featured-position: ${featuredPosition};">`;
+
+    // Screens that aren't 16:9 sit whole inside the frame, over a blurred copy of themselves
+    const backdrop = !isVideo && featuredFit === 'contain'
+        ? `<img class="featured-project-backdrop" src="${activeImage.src}" alt="" aria-hidden="true" decoding="async">`
+        : '';
 
     return `
         <div class="featured-project-media-shell ${hasMultipleImages ? '' : 'is-single-image'}">
-            <div class="featured-project-primary">
-                <img class="featured-project-primary-image" src="${activeImage.src}" alt="${activeImage.alt}" style="--featured-fit: cover; --featured-position: ${featuredPosition};">
+            <div class="featured-project-primary ${isVideo ? 'is-video' : ''} ${backdrop ? 'is-contained' : ''}">
+                ${backdrop}
+                ${primaryMedia}
                 <button type="button" class="featured-project-expand-btn" data-featured-expand aria-label="${activeTranslations['featuredWork.expandImage'] || 'Expand image'}">
                     <i class="fas fa-up-right-and-down-left-from-center"></i>
                     <span>${activeTranslations['featuredWork.expandImage'] || 'Expand'}</span>
@@ -1420,8 +1465,9 @@ function buildFeaturedProjectMedia(project) {
                             class="featured-project-thumb ${index === featuredProjectState.activeImageIndex ? 'is-active' : ''}"
                             data-featured-image-index="${index}"
                             aria-pressed="${index === featuredProjectState.activeImageIndex}"
+                            aria-label="${image.type === 'video' ? (currentLang === 'pt' ? 'Vídeo demo' : 'Demo video') : `${currentLang === 'pt' ? 'Tela' : 'Screen'} ${index + 1}`}"
                         >
-                            <span class="featured-project-thumb-index">${String(index + 1).padStart(2, '0')}</span>
+                            <span class="featured-project-thumb-index">${image.type === 'video' ? '<i class="fas fa-play"></i>' : String(index + 1).padStart(2, '0')}</span>
                         </button>
                     `).join('')}
                 </div>
@@ -1489,6 +1535,34 @@ function renderFeaturedProjectStage() {
     if (expandButton) {
         expandButton.addEventListener('click', openFeaturedImageModal);
     }
+
+    watchFeaturedVideo(stage.querySelector('video.featured-project-primary-image'));
+}
+
+// The demo reel only downloads and plays while it's actually on screen
+let featuredVideoObserver = null;
+function watchFeaturedVideo(video) {
+    if (featuredVideoObserver) {
+        featuredVideoObserver.disconnect();
+        featuredVideoObserver = null;
+    }
+    if (!video || prefersReducedMotion) return;
+
+    if (!('IntersectionObserver' in window)) {
+        video.play().catch(() => {});
+        return;
+    }
+
+    featuredVideoObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
+        });
+    }, { threshold: 0.35 });
+    featuredVideoObserver.observe(video);
 }
 
 function renderFeaturedProjects() {
@@ -1537,45 +1611,46 @@ const translations = {
         "hero.location": "Fortaleza, BR",
         "hero.headline1": "I build interfaces",
         "hero.headline2": "for messy work.",
-        "hero.description": "Doctors deciding under pressure. QA teams chasing commits. Researchers drowning in field data. I turn workflows like these into <span class=\"text-accent font-medium\">software people actually want to open</span> — frontend-led, fullstack, AI in the loop. <span class=\"text-text\">Started as the intern in 2024; leading the project in 2026.</span>",
+        "hero.description": "Doctors making calls under pressure. QA teams chasing commits. Researchers buried in field data. I like taking messy workflows like these and turning them into <span class=\"text-accent font-medium\">software people actually want to open</span>, from the database all the way to the screen, with AI helping along the way. <span class=\"text-text\">I started as an intern in 2024 and was leading a project by 2026.</span>",
         "hero.viewProjects": "VIEW SELECTED WORK",
         "hero.resume": "DOWNLOAD CV",
         "hero.scroll": "Scroll",
-        "hero.role": "Project Lead · AI Medical Platform",
-        "hero.subrole": "Project Lead @ Colégio Christus",
+        "hero.role": "Fullstack Engineer · Tech Lead",
+        "hero.subrole": "Fullstack Engineer @ Colégio Christus",
         "hero.tl1": "2024 · Intern",
         "hero.tl2": "2025 · Fullstack Dev",
         "hero.tl3": "2026 · Project Lead",
+        "hero.tl4": "Now · Fullstack Engineer",
         // Jukebox
-        "jukebox.kicker": "ENZO.DEV — THE JUKEBOX",
+        "jukebox.kicker": "ENZO.DEV · THE JUKEBOX",
         "jukebox.title1": "Pick a record.",
         "jukebox.title2": "The record is the theme.",
         "jukebox.moodA": "deep blue",
         "jukebox.moodB": "ink on bone",
-        "jukebox.skip": "skip — keep it quiet",
+        "jukebox.skip": "skip, keep it quiet",
         // About
         "about.label": "About",
         "about.title1": "The interface is",
         "about.title2": "the product.",
         "about.offCode": "About the Developer",
         "about.title": "Enzo Esmeraldo",
-        "about.description": "I went from <strong>intern to project leader in 21 months</strong>, and I think the reason is simple: I treat the interface as the product, not the paint. Whether it's an AI platform helping doctors make clinical decisions or a VS Code extension that packages commits into QA evidence, the job is the same — <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.",
-        "about.bio2": "I lead a team now — architecture, design system, Git strategy, mentoring. I still <strong>ship UI every week</strong>, because a lead who stops shipping stops being trusted.",
+        "about.description": "I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.",
+        "about.bio2": "I've led a team, handling architecture, the design system, Git strategy and mentoring, and I never stopped <strong>shipping every week</strong>. My workflow is <strong>AI-native</strong>: Claude Code, custom agents and skills that take me from spec to tests to pull request review.",
         "about.avatarJoke": "btw, that's me",
         "about.interests.label": "Interests",
         "about.interests.title": "Outside the editor",
         "about.funfact.label": "Fun Fact",
         "about.funfact.title": "Fav. Pokémon is Lugia",
-        "about.funfact.desc": "Psychic-type elegance, legendary rarity — basically my design philosophy wrapped in a Pokémon.",
+        "about.funfact.desc": "Psychic-type elegance and legendary rarity. Basically my design philosophy, but as a Pokémon.",
         "about.current.label": "Currently Building",
-        "about.current.desc": "An AI-powered medical platform that helps doctors make better clinical decisions — team, architecture, design system, <strong>AI automations</strong>, all of it. Full detail in <a href=\"#work\" class=\"text-accent underline underline-offset-4\">Work</a>, minus what the NDA eats.",
+        "about.current.desc": "<strong>Exitus Gestor</strong>, across the whole stack. That means a PostgreSQL data model, a Spring Boot domain layer split with Domain-Driven Design and Angular on the front, with TDD, Flyway migrations and <strong>Claude Code agents</strong> helping out.",
         "about.current.status": "In active development",
         "about.downloadCV": "DOWNLOAD CV",
         // Work
         "work.label": "Portfolio",
         "work.title1": "My",
         "work.title2": "Work.",
-        "work.subtitle": "Every project here is the same move: take work scattered across tabs, spreadsheets, and tribal knowledge — and give it one legible interface.",
+        "work.subtitle": "Every project here does the same thing: it takes work scattered across tabs, spreadsheets and stuff only one person knows, and gives it one clear interface.",
         "featuredWork.label": "Featured Project",
         "featuredWork.subtitle": "A spotlighted case study with a presentation-style gallery, longer project context, and quick switching between featured builds.",
         "featuredWork.stack": "Tech Stack",
@@ -1590,46 +1665,42 @@ const translations = {
         "featuredWork.problem": "Problem",
         "featuredWork.decision": "Decision that mattered",
         "featuredWork.outcome": "Outcome",
-        "featuredWork.lockedTitle": "NDA — screenshots withheld",
+        "featuredWork.lockedTitle": "Under NDA, so no screenshots",
         "featuredWork.lockedSub": "The work is real; the pixels are classified.",
         "projects.visitGithub": "Explore more on GitHub",
         // Journey
         "journey.subtitle": "Career Path",
         "journey.the": "Professional",
         "journey.title": "Journey.",
-        "journey.role0": "Project Leader",
-        "journey.date0": "Jan. 2026 — Present",
-        "journey.status0": "Current · React + Node.js + PostgreSQL",
-        "journey.desc0": "Promoted <strong>within the same company</strong> to <strong>Project Leader</strong>, evolving from hands-on delivery into <strong>team leadership</strong>, architecture direction, and product ownership from vision to deployment.",
-        "journey.role0.item1": "<strong>Leading the end-to-end development</strong> of an AI-assisted medical platform that powers clinical decision-making for doctors",
-        "journey.role0.item2": "<strong>Designing and owning</strong> the entire visual identity, component library, and UI/UX of the platform from scratch",
-        "journey.role0.item3": "<strong>Architecting the full-stack solution</strong> with React, Node.js, and PostgreSQL, ensuring scalability and maintainability",
-        "journey.role0.item4": "Managing version control strategy, Git workflows, and technical documentation across the team",
-        "journey.role0.item5": "Mentoring team members on best practices, code quality standards, and modern development patterns",
-        "journey.role0.item6": "Responsible for all project deliverables — from interface design to system architecture to deployment pipeline",
-        "journey.role0.item7": "<strong>Creating and participating in AI automations and workflow design</strong> for medical consultations and agile development routines",
-        "journey.role1": "FullStack Developer",
-        "journey.date1": "Jan. 2025 — Dec. 2025",
-        "journey.status1": "Completed · Angular + Spring",
-        "journey.desc1": "Advanced <strong>within the same company</strong> to a <strong>FullStack Developer</strong> role, expanding that earlier foundation into <strong>system architecture</strong>, UI/UX decisions, and growing technical leadership.",
         "journey.readMore": "Read More",
         "journey.achievements": "Key Achievements",
-        "journey.role1.item1": "<strong>Developed the Exitus system end-to-end</strong>, working on front-end, back-end, and databases, focusing on scalability and performance",
-        "journey.role1.item2": "Designed the system's visual identity and created user interfaces, ensuring consistency in the user experience (UI/UX)",
-        "journey.role1.item3": "<strong>Architected and implemented the front-end</strong> using Angular and TypeScript, applying best practices for componentization and responsiveness",
-        "journey.role1.item4": "Assisted in defining and building the back-end architecture with Spring Boot, including database integrations and external services",
-        "journey.role1.item5": "<strong>Implemented AI integrations</strong>, automating question validation and improving the educational experience",
-        "journey.role1.item6": "Integrated webhooks and deployed cloud-based solutions (Source Cloud) for continuous system deployment and maintenance",
-        "journey.role1.item7": "Worked under Agile Scrum methodology, actively participating in planning, reviews, and retrospectives",
-        "journey.role2": "FullStack Intern",
-        "journey.date2": "Apr. 2024 — Dec. 2024",
-        "journey.status2": "Completed · Angular + Spring",
-        "journey.desc2": "Started my professional journey as a <strong>FullStack Intern</strong>, contributing to system development and building the base that later evolved into broader engineering ownership.",
-        "journey.role2.item1": "<strong>Contributed to the development and improvement</strong> of Exitus system interfaces, focusing on usability and accessibility",
-        "journey.role2.item2": "Assisted in creating user flows and interface design, collaborating closely with the UI/UX team",
-        "journey.role2.item3": "<strong>Participated in front-end development</strong> using Angular, TypeScript, and CSS, and supported the back-end with Spring Boot",
-        "journey.role2.item4": "<strong>Gained hands-on experience</strong> with full-stack development in a professional environment",
-        "journey.role2.item5": "Learned Agile development methodologies and team collaboration practices",
+        "journey.role0": "Fullstack Engineer",
+        "journey.date0": "Jul. 2026 to Present",
+        "journey.status0": "Current · Angular + Spring Boot",
+        "journey.desc0": "Structuring <strong>Exitus Gestor</strong> end to end, so the data model, back-end and interface are all <strong>speaking the same domain language</strong>. Domain-Driven Design, TDD and an <strong>AI-native workflow</strong> keep it that way.",
+        "journey.role0.item1": "<strong>Structure Exitus Gestor across the whole stack</strong>: PostgreSQL data model, Spring Boot domain layer, and Angular applications integrated with its RESTful APIs",
+        "journey.role0.item2": "<strong>Apply Domain-Driven Design</strong> to split the platform into services with explicit boundaries and contracts, so each one evolves and deploys without coupling",
+        "journey.role0.item3": "<strong>Drive Test-Driven Development</strong>, with business rules explicit and covered by tests from day one",
+        "journey.role0.item4": "Version every schema change with <strong>Flyway migrations</strong>, making database evolution reproducible across environments",
+        "journey.role0.item5": "<strong>Build agentic development workflows with Claude Code</strong>, with custom agents, skills and automated flows from spec to tests, and automate pull request review with AI",
+        "journey.role1": "Project Leader",
+        "journey.date1": "Jan. 2026 to Jun. 2026",
+        "journey.status1": "Completed · React + Node.js + PostgreSQL",
+        "journey.desc1": "Promoted <strong>within the same company</strong> to <strong>Project Leader</strong>, owning an AI-assisted medical platform end to end: <strong>team, architecture and delivery</strong>, from vision to deployment.",
+        "journey.role1.item1": "<strong>Led the end-to-end development</strong> of an AI-assisted medical platform for clinical decision support, including AI automations for consultations and development routines",
+        "journey.role1.item2": "<strong>Architected the fullstack solution</strong> (data model, Node.js services and React front-end) for scalability, performance and maintainability",
+        "journey.role1.item3": "<strong>Mentored the team</strong> on Git workflows, code reviews, clean code, and design patterns",
+        "journey.role2": "FullStack Developer",
+        "journey.date2": "Jan. 2025 to Dec. 2025",
+        "journey.status2": "Completed · Angular + Spring Boot",
+        "journey.desc2": "Advanced <strong>within the same company</strong> to a <strong>FullStack Developer</strong> role, owning the Exitus educational system across front-end, back-end, and database.",
+        "journey.role2.item1": "<strong>Developed the Exitus educational system end-to-end</strong>, across front-end, back-end, and database",
+        "journey.role2.item2": "<strong>Integrated AI services</strong> for automated question validation and built webhook integrations with cloud deployment management",
+        "journey.role3": "FullStack Intern",
+        "journey.date3": "Apr. 2024 to Dec. 2024",
+        "journey.status3": "Completed · Angular + Spring Boot",
+        "journey.desc3": "Started out as a <strong>FullStack Intern</strong>. That's the base that turned into project leadership 21 months later.",
+        "journey.role3.item1": "<strong>Built Exitus features</strong> with Angular and TypeScript on the front and Spring Boot on the back, focusing on usability and accessibility",
         // Footer
         "footer.label": "Get In Touch",
         "footer.title1": "Let's build something",
@@ -1642,7 +1713,7 @@ const translations = {
         "contrib.more": "More",
         "tech.label": "Core Stack",
         // Music
-        "music.hint": "Flip the record — the theme follows"
+        "music.hint": "Flip the record and the theme follows"
     },
     pt: {
         // Nav
@@ -1655,45 +1726,46 @@ const translations = {
         "hero.location": "Fortaleza, BR",
         "hero.headline1": "Eu construo interfaces",
         "hero.headline2": "para trabalho bagunçado.",
-        "hero.description": "Médicos decidindo sob pressão. Times de QA caçando commits. Pesquisadores afogados em dados de campo. Eu transformo fluxos assim em <span class=\"text-accent font-medium\">software que as pessoas realmente querem abrir</span> — frontend na frente, fullstack por inteiro, IA no circuito. <span class=\"text-text\">Entrei como estagiário em 2024; lidero o projeto em 2026.</span>",
+        "hero.description": "Médicos decidindo sob pressão. Times de QA correndo atrás de commits. Pesquisadores soterrados em dados de campo. Eu curto pegar fluxos bagunçados assim e transformar em <span class=\"text-accent font-medium\">software que as pessoas realmente querem abrir</span>, do banco de dados até a tela, com IA ajudando no caminho. <span class=\"text-text\">Entrei como estagiário em 2024 e em 2026 já estava liderando um projeto.</span>",
         "hero.viewProjects": "VER TRABALHOS",
         "hero.resume": "BAIXAR CV",
         "hero.scroll": "Role",
-        "hero.role": "Líder de Projeto · Plataforma Médica com IA",
-        "hero.subrole": "Líder de Projeto @ Colégio Christus",
+        "hero.role": "Engenheiro Fullstack · Tech Lead",
+        "hero.subrole": "Engenheiro Fullstack @ Colégio Christus",
         "hero.tl1": "2024 · Estágio",
         "hero.tl2": "2025 · Dev Fullstack",
         "hero.tl3": "2026 · Líder de Projeto",
+        "hero.tl4": "Hoje · Engenheiro Fullstack",
         // Jukebox
-        "jukebox.kicker": "ENZO.DEV — A JUKEBOX",
+        "jukebox.kicker": "ENZO.DEV · A JUKEBOX",
         "jukebox.title1": "Escolha um disco.",
         "jukebox.title2": "O disco é o tema.",
         "jukebox.moodA": "azul profundo",
         "jukebox.moodB": "tinta no osso",
-        "jukebox.skip": "pular — sem som",
+        "jukebox.skip": "pular, sem som",
         // About
         "about.label": "Sobre",
         "about.title1": "A interface é",
         "about.title2": "o produto.",
         "about.offCode": "Sobre o Desenvolvedor",
         "about.title": "Enzo Esmeraldo",
-        "about.description": "Fui de <strong>estagiário a líder de projeto em 21 meses</strong>, e acho que o motivo é simples: trato a interface como o produto, não como a pintura. Seja uma plataforma de IA ajudando médicos em decisões clínicas ou uma extensão do VS Code que empacota commits em evidências de QA, o trabalho é o mesmo — <strong>encontrar a parte do fluxo que todo mundo odeia em silêncio e torná-la óbvia</strong>.",
-        "about.bio2": "Hoje lidero um time — arquitetura, design system, estratégia de Git, mentoria. E continuo <strong>entregando UI toda semana</strong>, porque líder que para de entregar para de ser confiável.",
+        "about.description": "Fui de <strong>estagiário a líder de projeto em 21 meses</strong>, e sinceramente acho que é porque trato a interface como o produto, não como a pintura. Seja uma plataforma de IA ajudando médicos em decisões clínicas ou uma extensão do VS Code que empacota commits em evidência de QA, o trabalho é o mesmo: <strong>achar a parte do fluxo que todo mundo odeia em silêncio e deixar ela óbvia</strong>.",
+        "about.bio2": "Já liderei um time, cuidando de arquitetura, design system, estratégia de Git e mentoria, e nunca parei de <strong>entregar toda semana</strong>. Meu workflow é <strong>AI-native</strong>: Claude Code, agentes customizados e skills que me levam da spec aos testes até a revisão de pull request.",
         "about.avatarJoke": "e sim, esse sou eu",
         "about.interests.label": "Interesses",
         "about.interests.title": "Fora do editor",
         "about.funfact.label": "Curiosidade",
         "about.funfact.title": "Pokémon Fav. é Lugia",
-        "about.funfact.desc": "Elegância do tipo Psíquico, raridade lendária — basicamente minha filosofia de design em forma de Pokémon.",
+        "about.funfact.desc": "Elegância de tipo Psíquico e raridade lendária. Basicamente minha filosofia de design, só que em forma de Pokémon.",
         "about.current.label": "Em Desenvolvimento",
-        "about.current.desc": "Uma plataforma médica com IA que ajuda médicos a tomar melhores decisões clínicas — time, arquitetura, design system, <strong>automações com IA</strong>, tudo. Detalhes em <a href=\"#work\" class=\"text-accent underline underline-offset-4\">Trabalhos</a>, menos o que o NDA come.",
+        "about.current.desc": "<strong>Exitus Gestor</strong>, na stack inteira. Isso inclui modelo de dados em PostgreSQL, camada de domínio em Spring Boot dividida com Domain-Driven Design e Angular no front, com TDD, migrations Flyway e <strong>agentes do Claude Code</strong> ajudando no caminho.",
         "about.current.status": "Em desenvolvimento ativo",
         "about.downloadCV": "BAIXAR CV",
         // Work
         "work.label": "Portfólio",
         "work.title1": "Meu",
         "work.title2": "Trabalho.",
-        "work.subtitle": "Todo projeto aqui é o mesmo movimento: pegar trabalho espalhado em abas, planilhas e conhecimento tribal — e dar a ele uma interface legível.",
+        "work.subtitle": "Todo projeto aqui faz a mesma coisa: pega um trabalho espalhado em abas, planilhas e coisas que só uma pessoa sabe, e dá a ele uma interface clara.",
         "featuredWork.label": "Projeto em Destaque",
         "featuredWork.subtitle": "Um destaque com galeria em estilo apresentação, contexto maior do projeto e troca rápida entre projetos em destaque.",
         "featuredWork.stack": "Tecnologias",
@@ -1708,46 +1780,42 @@ const translations = {
         "featuredWork.problem": "Problema",
         "featuredWork.decision": "Decisão que importou",
         "featuredWork.outcome": "Resultado",
-        "featuredWork.lockedTitle": "NDA — screenshots retidos",
+        "featuredWork.lockedTitle": "Sob NDA, então sem screenshots",
         "featuredWork.lockedSub": "O trabalho é real; os pixels são confidenciais.",
         "projects.visitGithub": "Explore mais no GitHub",
         // Journey
         "journey.subtitle": "Trajetória Profissional",
         "journey.the": "Jornada",
         "journey.title": "Profissional.",
-        "journey.role0": "Líder de Projeto",
-        "journey.date0": "Jan. 2026 — Presente",
-        "journey.status0": "Atual · React + Node.js + PostgreSQL",
-        "journey.desc0": "Promovido <strong>dentro da mesma empresa</strong> a <strong>Líder de Projeto</strong>, evoluindo da entrega hands-on para <strong>liderança de time</strong>, direção de arquitetura e responsabilidade pelo produto da visão até a entrega.",
-        "journey.role0.item1": "<strong>Liderando o desenvolvimento completo</strong> de uma plataforma médica assistida por IA que apoia a tomada de decisões clínicas para médicos",
-        "journey.role0.item2": "<strong>Projetando e sendo responsável</strong> por toda a identidade visual, biblioteca de componentes e UI/UX da plataforma do zero",
-        "journey.role0.item3": "<strong>Arquitetando a solução full-stack</strong> com React, Node.js e PostgreSQL, garantindo escalabilidade e manutenibilidade",
-        "journey.role0.item4": "Gerenciando a estratégia de versionamento, fluxos Git e documentação técnica da equipe",
-        "journey.role0.item5": "Mentorando membros da equipe em boas práticas, padrões de qualidade de código e padrões modernos de desenvolvimento",
-        "journey.role0.item6": "Responsável por todas as entregas do projeto — do design de interface à arquitetura do sistema ao pipeline de deploy",
-        "journey.role0.item7": "<strong>Criando e participando de automações com IA e desenho de workflows</strong> para consultas médicas e rotinas de desenvolvimento ágil",
-        "journey.role1": "Desenvolvedor FullStack",
-        "journey.date1": "Jan. 2025 — Dez. 2025",
-        "journey.status1": "Concluído · Angular + Spring",
-        "journey.desc1": "Avancei <strong>dentro da mesma empresa</strong> para o papel de <strong>Desenvolvedor FullStack</strong>, ampliando aquela base inicial para <strong>arquitetura de sistema</strong>, decisões de UI/UX e liderança técnica crescente.",
         "journey.readMore": "Ler Mais",
         "journey.achievements": "Principais Conquistas",
-        "journey.role1.item1": "<strong>Desenvolvi o sistema Exitus de ponta a ponta</strong>, trabalhando no front-end, back-end e bancos de dados, focando em escalabilidade e desempenho",
-        "journey.role1.item2": "Projetei a identidade visual do sistema e criei interfaces de usuário, garantindo consistência na experiência do usuário (UI/UX)",
-        "journey.role1.item3": "<strong>Arquitetei e implementei o front-end</strong> usando Angular e TypeScript, aplicando melhores práticas de componentização e responsividade",
-        "journey.role1.item4": "Auxiliei na definição e construção da arquitetura back-end com Spring Boot, incluindo integrações de banco de dados e serviços externos",
-        "journey.role1.item5": "<strong>Implementei integrações com IA</strong>, automatizando a validação de questões e melhorando a experiência educacional",
-        "journey.role1.item6": "Integrei webhooks e implantei soluções baseadas em nuvem (Source Cloud) para implantação e manutenção contínua do sistema",
-        "journey.role1.item7": "Trabalhei sob a metodologia Agile Scrum, participando ativamente de planejamentos, revisões e retrospectivas",
-        "journey.role2": "Estagiário FullStack",
-        "journey.date2": "Abr. 2024 — Dez. 2024",
-        "journey.status2": "Concluído · Angular + Spring",
-        "journey.desc2": "Iniciei minha jornada profissional como <strong>Estagiário FullStack</strong>, contribuindo para o desenvolvimento de sistemas e construindo a base que depois evoluiu para uma atuação técnica mais ampla.",
-        "journey.role2.item1": "<strong>Contribuí para o desenvolvimento e melhoria</strong> das interfaces do sistema Exitus, focando em usabilidade e acessibilidade",
-        "journey.role2.item2": "Auxiliei na criação de fluxos de usuário e design de interface, colaborando estreitamente com a equipe de UI/UX",
-        "journey.role2.item3": "<strong>Participei do desenvolvimento front-end</strong> usando Angular, TypeScript e CSS, e apoiei o back-end com Spring Boot",
-        "journey.role2.item4": "<strong>Ganhei experiência prática</strong> com desenvolvimento full-stack em um ambiente profissional",
-        "journey.role2.item5": "Aprendi metodologias de desenvolvimento Ágil e práticas de colaboração em equipe",
+        "journey.role0": "Engenheiro Fullstack",
+        "journey.date0": "Jul. 2026 até hoje",
+        "journey.status0": "Atual · Angular + Spring Boot",
+        "journey.desc0": "Estruturando o <strong>Exitus Gestor</strong> de ponta a ponta, pra que modelo de dados, back-end e interface <strong>falem a mesma língua de domínio</strong>. Domain-Driven Design, TDD e um <strong>workflow AI-native</strong> mantêm tudo assim.",
+        "journey.role0.item1": "<strong>Estruturo o Exitus Gestor na stack inteira</strong>: modelo de dados em PostgreSQL, camada de domínio em Spring Boot e aplicações Angular integradas às suas APIs RESTful",
+        "journey.role0.item2": "<strong>Aplico Domain-Driven Design</strong> para dividir a plataforma em serviços com fronteiras e contratos explícitos, para que cada um evolua e faça deploy sem acoplamento",
+        "journey.role0.item3": "<strong>Conduzo Test-Driven Development</strong>, com regras de negócio explícitas e cobertas por testes desde o primeiro dia",
+        "journey.role0.item4": "Versiono cada mudança de schema com <strong>migrations Flyway</strong>, tornando a evolução do banco reproduzível entre ambientes",
+        "journey.role0.item5": "<strong>Construo workflows agênticos de desenvolvimento com Claude Code</strong>, com agentes customizados, skills e fluxos automatizados da spec aos testes, e automatizo a revisão de pull requests com IA",
+        "journey.role1": "Líder de Projeto",
+        "journey.date1": "Jan. 2026 a Jun. 2026",
+        "journey.status1": "Concluído · React + Node.js + PostgreSQL",
+        "journey.desc1": "Promovido <strong>dentro da mesma empresa</strong> a <strong>Líder de Projeto</strong>, responsável por uma plataforma médica assistida por IA de ponta a ponta: <strong>time, arquitetura e entrega</strong>, da visão ao deploy.",
+        "journey.role1.item1": "<strong>Liderei o desenvolvimento completo</strong> de uma plataforma médica assistida por IA para apoio à decisão clínica, incluindo automações com IA para consultas e rotinas de desenvolvimento",
+        "journey.role1.item2": "<strong>Arquitetei a solução fullstack</strong> (modelo de dados, serviços em Node.js e front-end em React) com foco em escalabilidade, desempenho e manutenibilidade",
+        "journey.role1.item3": "<strong>Mentorei o time</strong> em fluxos Git, code review, clean code e design patterns",
+        "journey.role2": "Desenvolvedor FullStack",
+        "journey.date2": "Jan. 2025 a Dez. 2025",
+        "journey.status2": "Concluído · Angular + Spring Boot",
+        "journey.desc2": "Avancei <strong>dentro da mesma empresa</strong> para o papel de <strong>Desenvolvedor FullStack</strong>, responsável pelo sistema educacional Exitus no front-end, back-end e banco de dados.",
+        "journey.role2.item1": "<strong>Desenvolvi o sistema educacional Exitus de ponta a ponta</strong>, no front-end, back-end e banco de dados",
+        "journey.role2.item2": "<strong>Integrei serviços de IA</strong> para validação automática de questões e construí integrações via webhooks com gerenciamento de deploy em nuvem",
+        "journey.role3": "Estagiário FullStack",
+        "journey.date3": "Abr. 2024 a Dez. 2024",
+        "journey.status3": "Concluído · Angular + Spring Boot",
+        "journey.desc3": "Comecei como <strong>Estagiário FullStack</strong>. Foi essa base que virou liderança de projeto 21 meses depois.",
+        "journey.role3.item1": "<strong>Construí funcionalidades do Exitus</strong> com Angular e TypeScript no front e Spring Boot no back, com foco em usabilidade e acessibilidade",
         // Footer
         "footer.label": "Entre em Contato",
         "footer.title1": "Vamos construir algo",
@@ -1760,7 +1828,7 @@ const translations = {
         "contrib.more": "Mais",
         "tech.label": "Stack Principal",
         // Music
-        "music.hint": "Vire o disco — o tema acompanha"
+        "music.hint": "Vire o disco e o tema acompanha"
     }
 };
 
@@ -1779,7 +1847,7 @@ function setLanguage(lang) {
 
     // Update CV links
     const cvLinks = document.querySelectorAll('a[href*="cv"]');
-    const cvFile = lang === 'pt' ? 'assets/cv/CV_ENZO_ESMERALDO_LÍDER_FULLSTACK_PT.pdf' : 'assets/cv/CV_ENZO_ESMERALDO_LEAD_FULLSTACK_EN.pdf';
+    const cvFile = lang === 'pt' ? 'assets/cv/CV_ENZO_ESMERALDO_LÍDER_FULLSTACK_PT.pdf' : 'assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf';
     cvLinks.forEach(link => {
         link.href = cvFile;
     });

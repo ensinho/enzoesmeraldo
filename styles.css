@@ -603,19 +603,25 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     min-height: 0;
 }
 
+/* Each project gets the full stage: media spans the width as the spotlight,
+   the case study sits underneath in two columns (pitch | narrative). */
 .featured-project-layout {
     display: grid;
-    grid-template-columns: minmax(280px, 0.82fr) minmax(430px, 1.18fr);
-    gap: 18px;
-    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+    align-items: start;
     animation: featured-project-enter 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+/* The frame is always a true 16:9, capped by viewport height and centered,
+   so every project's media reads at the same size and nothing is cropped oddly. */
 .featured-project-media-shell {
     display: flex;
     flex-direction: column;
     gap: 12px;
     min-height: 0;
+    width: min(100%, calc(min(50vh, 500px) * 16 / 9));
+    margin-inline: auto;
 }
 
 .featured-project-media-shell.is-single-image {
@@ -625,6 +631,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 .featured-project-primary {
     position: relative;
     min-height: 0;
+    width: 100%;
     aspect-ratio: 16 / 9;
     overflow: hidden;
     border-radius: 18px;
@@ -680,6 +687,40 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     filter: none;
 }
 
+/* Blurred copy of the screen fills the frame behind a contained screenshot */
+.featured-project-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(20px) brightness(0.38) saturate(1.1);
+    transform: scale(1.15);
+    pointer-events: none;
+}
+
+.featured-project-primary.is-contained .featured-project-primary-image {
+    padding: 14px;
+    filter: drop-shadow(0 10px 28px rgb(0 0 0 / 0.45)) grayscale(0.6) contrast(1.02);
+}
+
+.featured-project-primary.is-contained:hover .featured-project-primary-image,
+.featured-project-primary.is-contained:focus-within .featured-project-primary-image {
+    filter: drop-shadow(0 10px 28px rgb(0 0 0 / 0.45));
+}
+
+/* The demo reel is the showcase: true color, never cropped. */
+.featured-project-primary.is-video::after {
+    content: none;
+}
+
+.featured-project-primary.is-video .featured-project-primary-image {
+    object-fit: contain;
+    background: #07070c;
+    filter: none;
+}
+
 .featured-project-expand-btn {
     position: absolute;
     right: 14px;
@@ -727,8 +768,12 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 .featured-project-thumb {
     position: relative;
     flex: 0 0 auto;
+    display: grid;
+    place-items: center;
     width: 42px;
     height: 24px;
+    padding: 0;
+    line-height: 1;
     border-radius: 999px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -763,7 +808,10 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     border: 0;
     font-family: var(--font-mono);
     font-size: 9px;
+    line-height: 1;
     letter-spacing: 0.08em;
+    /* letter-spacing trails the last glyph; pad the start so digits sit centered */
+    padding-left: 0.08em;
     text-transform: uppercase;
     color: rgb(var(--gray-rgb) / 0.62);
 }
@@ -772,12 +820,27 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     color: rgb(var(--text-rgb));
 }
 
+/* Play glyph for the demo-reel thumb: sized to the digits, nudged right
+   because a triangle's visual center sits left of its box center. */
+.featured-project-thumb-index .fa-play {
+    display: block;
+    font-size: 7px;
+    line-height: 1;
+    transform: translateX(1px);
+    color: rgb(var(--accent-rgb) / 0.8);
+}
+
+.featured-project-thumb.is-active .featured-project-thumb-index .fa-play {
+    color: var(--accent-color);
+}
+
 .featured-project-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-height: 100%;
-    padding: 8px 6px 8px 2px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    column-gap: 40px;
+    row-gap: 14px;
+    align-content: start;
+    padding: 4px 6px 8px 2px;
     border-radius: 0;
     border: 0;
     background: transparent;
@@ -787,6 +850,26 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 .featured-project-spotlight:hover .featured-project-panel,
 .featured-project-panel:focus-within {
     background: transparent;
+}
+
+/* Left column: heading, pitch, stack, links. Right column: the narrative. */
+.featured-project-panel > * {
+    grid-column: 1;
+}
+
+.featured-project-panel > .featured-project-narrative {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 14px;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.featured-project-panel > .featured-project-narrative .featured-project-narrative-item:first-child {
+    border-top: 0;
+    padding-top: 4px;
 }
 
 .featured-project-panel-top {
@@ -1061,12 +1144,17 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     background: #050505;
 }
 
-.featured-image-modal-media img {
+.featured-image-modal-media img,
+.featured-image-modal-media video {
     display: block;
     width: 100%;
     height: auto;
     max-height: calc(100vh - 160px);
     object-fit: contain;
+}
+
+.featured-image-modal-media [hidden] {
+    display: none;
 }
 
 @keyframes featured-project-enter {
@@ -1091,7 +1179,7 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
     }
 
     .featured-project-layout {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .about-interest-panel {
@@ -1107,6 +1195,26 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 @media (max-width: 900px) {
     .featured-project-primary {
         aspect-ratio: 16 / 10;
+    }
+
+    .featured-project-primary.is-video {
+        aspect-ratio: 16 / 9;
+    }
+
+    .featured-project-panel {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .featured-project-panel > .featured-project-narrative {
+        grid-column: 1;
+        grid-row: auto;
+        padding-top: 4px;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .featured-project-panel > .featured-project-narrative .featured-project-narrative-item:first-child {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding-top: 12px;
     }
 
     .featured-project-narrative {
@@ -2081,6 +2189,17 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
         rgb(var(--panel-rgb) / 0.55);
 }
 
+/* Nothing to show under NDA — a full 16:9 blank would just be empty stage. */
+.featured-project-primary.featured-project-locked {
+    aspect-ratio: 21 / 9;
+}
+
+@media (max-width: 900px) {
+    .featured-project-primary.featured-project-locked {
+        aspect-ratio: 16 / 10;
+    }
+}
+
 .featured-locked-inner {
     position: relative;
     z-index: 2;
@@ -2161,6 +2280,41 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
 ::selection {
     background: var(--accent-color);
     color: #0a0a0a;
+}
+
+/* ── Mobile performance: live backdrop blurs repaint on every scroll frame,
+      so phones get solid surfaces and cheaper filters instead. ── */
+@media (max-width: 768px), (pointer: coarse) {
+    #navbar.scrolled {
+        background: rgb(var(--bg-rgb) / 0.96);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+    .music-card {
+        background: rgb(var(--panel-rgb) / 0.97);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+    .featured-project-expand-btn {
+        background: rgb(var(--panel-rgb) / 0.92);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+    .featured-project-backdrop {
+        filter: blur(10px) brightness(0.38);
+    }
+
+    .featured-project-primary.is-contained .featured-project-primary-image {
+        filter: grayscale(0.6);
+    }
+
+    .featured-project-primary-image,
+    .featured-project-primary::after {
+        transition: none;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
