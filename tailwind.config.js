@@ -6,8 +6,8 @@ module.exports = {
             fontFamily: {
                 display: ['"Bricolage Grotesque"', 'sans-serif'],
                 heading: ['"Bricolage Grotesque"', 'sans-serif'],
-                body: ['"Bricolage Grotesque"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
-                mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
+                body: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
                 serif: ['"Instrument Serif"', 'Georgia', 'serif'],
             },
             colors: {

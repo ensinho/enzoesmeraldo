@@ -6,8 +6,8 @@
 :root {
     --font-display: 'Bricolage Grotesque', sans-serif;
     --font-heading: 'Bricolage Grotesque', sans-serif;
-    --font-body: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-mono: 'Geist Mono', ui-monospace, monospace;
+    --font-body: 'JetBrains Mono', ui-monospace, monospace;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     --font-serif: 'Instrument Serif', Georgia, serif;
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -2412,10 +2412,6 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
 /* ═══════════════════════════════════════════════════
    Calmer layout pass (inspired by plain, text-first résumés)
    ═══════════════════════════════════════════════════ */
-body {
-    font-feature-settings: "ss01", "cv11";
-    letter-spacing: -0.005em;
-}
 
 .font-display,
 .font-heading {
@@ -2487,14 +2483,20 @@ body .font-mono[class*="tracking-"] {
     pointer-events: none;
 }
 
-/* Running text: Bricolage at its text optical size, a touch looser */
+/* Running text is mono (text-first résumé feel); mono runs wide, so body copy
+   steps down a hair and gets extra leading */
 body {
-    font-variation-settings: "opsz" 14;
-    letter-spacing: 0;
+    letter-spacing: -0.01em;
+    font-feature-settings: "calt" 0;
 }
 
-.font-display, .font-heading, h1, h2, h3 {
-    font-variation-settings: normal;
+:where(.font-body) :where(p) {
+    line-height: 1.75;
+}
+
+.deep-dive-intro, .deep-dive-step-text, .featured-project-description {
+    font-size: 0.94em;
+    line-height: 1.75;
 }
 
 /* ═══════════════════════════════════════════════════
