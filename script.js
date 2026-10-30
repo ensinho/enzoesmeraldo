@@ -1,89 +1,28 @@
 // ═══════════════════════════════════════════════════
-// ENZO.DEV — Script v2.0
+// ENZO.DEV — Script v3.0 (streaming-app shell)
+// The portfolio reads like an artist page: projects are the Popular
+// tracks, the career is the Discography, and the record that's
+// playing tints the whole app.
 // ═══════════════════════════════════════════════════
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const supportsScrollTimeline = window.CSS && CSS.supports('animation-timeline: view()');
+const mobileQuery = window.matchMedia('(max-width: 767px)');
+const wideQuery = window.matchMedia('(min-width: 1280px)');
+const DEFAULT_TITLE = document.title;
 
-// ── Site start (called once the jukebox is dismissed) ──
-// All motion is native CSS (see "Native motion" in styles.css). JS only flips a class
-// and, on browsers without scroll-driven animations, falls back to a one-shot observer.
-let siteStarted = false;
-function startSite() {
-    if (siteStarted) return;
-    siteStarted = true;
-    document.querySelectorAll('.hero-text-anim').forEach((el, i) => el.style.setProperty('--i', i));
-    document.body.classList.add('site-started');
-    initRevealFallback();
+function t(key) {
+    const active = translations[currentLang] || translations.en;
+    return active[key] !== undefined ? active[key] : (translations.en[key] || '');
 }
 
-function initRevealFallback() {
-    if (prefersReducedMotion || supportsScrollTimeline || !('IntersectionObserver' in window)) return;
-    document.body.classList.add('reveal-fallback');
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            entry.target.classList.add('is-revealed');
-            observer.unobserve(entry.target);
-        });
-    }, { rootMargin: '0px 0px -12% 0px' });
-    document.querySelectorAll('.gs-reveal').forEach(el => observer.observe(el));
+function pick(value) {
+    if (!value) return '';
+    return value[currentLang] || value.en || '';
 }
 
-// ── Navbar state + Back to Top (one rAF-throttled passive listener) ──
-const navbar = document.getElementById('navbar');
-const backToTopBtn = document.getElementById('back-to-top');
-let scrollTicking = false;
-function syncScrollState() {
-    scrollTicking = false;
-    const y = window.scrollY;
-    navbar.classList.toggle('scrolled', y > 60);
-    if (backToTopBtn) backToTopBtn.classList.toggle('is-visible', y > window.innerHeight * 0.5);
+function stripTags(html) {
+    return String(html || '').replace(/<[^>]*>/g, '');
 }
-window.addEventListener('scroll', () => {
-    if (scrollTicking) return;
-    scrollTicking = true;
-    requestAnimationFrame(syncScrollState);
-}, { passive: true });
-syncScrollState();
-if (backToTopBtn) {
-    backToTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-    });
-}
-
-// ── Mobile Menu ──
-const menuBtn = document.getElementById('menu-btn');
-const mobileMenu = document.getElementById('mobile-menu');
-const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
-const mobileLinks = document.querySelectorAll('.mobile-link');
-let mobileMenuOpen = false;
-
-function toggleMobileMenu() {
-    mobileMenuOpen = !mobileMenuOpen;
-    if (mobileMenuOpen) {
-        mobileMenu.classList.remove('translate-x-full');
-        mobileMenu.classList.add('translate-x-0');
-        mobileMenuBackdrop.classList.remove('opacity-0', 'pointer-events-none');
-        mobileMenuBackdrop.classList.add('opacity-100', 'pointer-events-auto');
-        document.body.style.overflow = 'hidden';
-        menuBtn.innerHTML = '<i class="fas fa-times text-xl"></i>';
-    } else {
-        mobileMenu.classList.remove('translate-x-0');
-        mobileMenu.classList.add('translate-x-full');
-        mobileMenuBackdrop.classList.remove('opacity-100', 'pointer-events-auto');
-        mobileMenuBackdrop.classList.add('opacity-0', 'pointer-events-none');
-        document.body.style.overflow = '';
-        menuBtn.innerHTML = '<i class="fas fa-bars text-xl"></i>';
-    }
-}
-
-window.closeMobileMenu = function () {
-    if (mobileMenuOpen) toggleMobileMenu();
-};
-
-if (menuBtn) menuBtn.addEventListener('click', toggleMobileMenu);
-mobileLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
 
 // ── CV Download Feedback ──
 function checkCV(e) {
@@ -93,59 +32,67 @@ function checkCV(e) {
     setTimeout(() => btn.innerHTML = originalText, 2000);
 }
 
-// ── Music Card ──
+// ── Toast: the little white confirmation above the player ──
+const toast = document.getElementById('sp-toast');
+let toastTimer = null;
+
+function showToast(message) {
+    if (!toast || !message) return;
+    toast.textContent = message;
+    toast.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 3200);
+}
+
+// ── Records: what's playing is also the theme ──
 const songs = [
     {
+        id: 'oxygen',
         title: "Oxygen",
         artist: "Porch Light",
         file: "assets/songs/Porch_light_-_Oxygen_(SkySound.cc).mp3",
-        cover: "url('assets/albumCovers/oxygenPorchLight.jpg')",
+        cover: "assets/albumCovers/oxygenPorchLight.jpg",
         heroBg: "assets/backgrounds/catwhaleshark.jpg",
+        mood: { en: 'deep blue', pt: 'azul profundo' },
         easterEgg: {
             en: "Oxygen mode: quiet blue focus.",
             pt: "Modo Oxygen: foco azul e tranquilo."
         },
         consoleMsg: ["color: #7aa9d8; font-size: 13px; font-weight: bold;", "Porch Light / Oxygen theme loaded."],
         theme: {
-            bg: "5 13 25",
-            text: "239 247 255",
             accent: "122 169 216",
-            secondary: "71 102 139",
-            panel: "10 22 39",
-            gray: "147 166 188",
+            tint: "45 74 112",
             heat: [
-                "rgba(255,255,255,0.055)",
-                "rgba(122,169,216,0.18)",
-                "rgba(122,169,216,0.34)",
-                "rgba(122,169,216,0.58)",
+                "rgba(255,255,255,0.06)",
+                "rgba(122,169,216,0.22)",
+                "rgba(122,169,216,0.4)",
+                "rgba(122,169,216,0.66)",
                 "rgba(235,247,255,0.95)"
             ]
         }
     },
     {
+        id: 'deftones',
         title: "Change (In the House of Flies)",
         artist: "Deftones",
         file: "assets/songs/Deftones - Change (In the House of Flies).mp3",
-        cover: "url('assets/albumCovers/DeftonesCover.jpg')",
+        cover: "assets/albumCovers/DeftonesCover.jpg",
         heroBg: "assets/backgrounds/black_and_white.jpg",
+        mood: { en: 'ink on bone', pt: 'tinta no osso' },
         easterEgg: {
             en: "Change mode: clean lines, no noise.",
             pt: "Modo Change: linhas limpas, sem ruído."
         },
         consoleMsg: ["color: #111111; font-size: 13px; font-weight: bold;", "Deftones / Change theme loaded."],
         theme: {
-            bg: "244 244 241",
-            text: "10 10 10",
-            accent: "10 10 10",
-            secondary: "96 96 92",
-            panel: "255 255 255",
-            gray: "96 96 92",
+            accent: "236 236 230",
+            tint: "92 92 88",
             heat: [
-                "rgba(10,10,10,0.055)",
-                "rgba(10,10,10,0.16)",
-                "rgba(10,10,10,0.34)",
-                "rgba(10,10,10,0.62)",
-                "rgba(10,10,10,0.94)"
+                "rgba(255,255,255,0.06)",
+                "rgba(255,255,255,0.18)",
+                "rgba(255,255,255,0.36)",
+                "rgba(255,255,255,0.62)",
+                "rgba(255,255,255,0.94)"
             ]
         }
     }
@@ -153,137 +100,193 @@ const songs = [
 
 let currentSongIndex = 0;
 let isPlaying = false;
+let isShuffle = false;
+let isSeeking = false;
 const audioPlayer = new Audio();
 // Don't pull a 4–7 MB track on page load; fetch it when the visitor actually hits play.
 audioPlayer.preload = 'none';
+audioPlayer.volume = 0.4;
 
-const musicCard = document.getElementById('music-card');
-const albumArt = document.getElementById('album-art');
-const songTitle = document.getElementById('song-title');
-const artistName = document.getElementById('artist-name');
 const playBtn = document.getElementById('play-btn');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
-const equalizer = document.getElementById('equalizer');
-const heroBg = document.getElementById('hero-bg');
-const progressContainer = document.getElementById('progress-container');
-const progressBar = document.getElementById('progress-bar');
-const musicCollapsible = document.getElementById('music-collapsible');
-const collapseIcon = document.getElementById('collapse-icon');
-const musicEasterEgg = document.getElementById('music-easter-egg');
+const shuffleBtn = document.getElementById('shuffle-btn');
+const repeatBtn = document.getElementById('repeat-btn');
+const albumArt = document.getElementById('album-art');
+const songTitle = document.getElementById('song-title');
+const artistName = document.getElementById('artist-name');
+const progressRange = document.getElementById('progress-range');
+const progressLine = document.getElementById('progress-bar');
+const timeCurrent = document.getElementById('time-current');
+const timeTotal = document.getElementById('time-total');
+const volumeRange = document.getElementById('volume-range');
+const muteBtn = document.getElementById('mute-btn');
+const npToggle = document.getElementById('np-toggle');
+const heroBg = document.getElementById('sp-hero-bg');
 
-let isMusicCollapsed = false;
-let easterEggTimeout = null;
+function formatTime(seconds) {
+    if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
+    const whole = Math.floor(seconds);
+    return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, '0')}`;
+}
 
-// ── Music Collapse ──
-function toggleMusicCollapse() {
-    isMusicCollapsed = !isMusicCollapsed;
-    if (isMusicCollapsed) {
-        musicCollapsible.style.maxHeight = '0px';
-        musicCollapsible.style.opacity = '0';
-        collapseIcon.style.transform = 'rotate(180deg)';
-        musicCard.classList.add('collapsed');
+function setRangeFill(range, ratio) {
+    if (range) range.style.setProperty('--fill', `${Math.max(0, Math.min(1, ratio)) * 100}%`);
+}
+
+function setPlayingState(playing) {
+    isPlaying = playing;
+    document.body.classList.toggle('is-playing', playing);
+    const label = playing ? t('sp.pause') : t('sp.play');
+    document.querySelectorAll('[data-sp-play], #play-btn').forEach(button => button.setAttribute('aria-label', label));
+    syncLibraryPlayback();
+}
+
+function playAudio() {
+    const playPromise = audioPlayer.play();
+    if (playPromise !== undefined) {
+        playPromise.then(() => setPlayingState(true)).catch(() => setPlayingState(false));
     } else {
-        musicCollapsible.style.maxHeight = '80px';
-        musicCollapsible.style.opacity = '1';
-        collapseIcon.style.transform = 'rotate(0deg)';
-        musicCard.classList.remove('collapsed');
+        setPlayingState(true);
     }
 }
 
-// ── Easter Egg: in-card message ──
-function showEasterEgg(msgObj) {
-    if (!musicEasterEgg) return;
-    if (easterEggTimeout) clearTimeout(easterEggTimeout);
-
-    const msg = msgObj[currentLang] || msgObj['en'];
-
-    // Reset
-    musicEasterEgg.style.maxHeight = '0';
-    musicEasterEgg.style.color = 'rgba(var(--accent-rgb), 0)';
-    musicEasterEgg.textContent = msg;
-
-    // Fade in after tiny delay
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-        musicEasterEgg.style.maxHeight = '30px';
-        musicEasterEgg.style.color = 'rgba(var(--accent-rgb), 0.5)';
-    }));
-
-    // Fade out after 4s
-    easterEggTimeout = setTimeout(() => {
-        musicEasterEgg.style.color = 'rgba(var(--accent-rgb), 0)';
-        setTimeout(() => { musicEasterEgg.style.maxHeight = '0'; }, 700);
-    }, 4000);
+function pauseAudio() {
+    audioPlayer.pause();
+    setPlayingState(false);
 }
 
-// ── Theme veil: a brief accent wash that makes the flip feel like a moment ──
+function togglePlay() {
+    if (isPlaying) pauseAudio();
+    else playAudio();
+}
+
+// ── Theme: accent + tint come from the record ──
 let themeLoadedOnce = false;
 let themeSwitchTimer = null;
-function flashThemeVeil() {
-    document.body.classList.add('theme-switching');
-    clearTimeout(themeSwitchTimer);
-    themeSwitchTimer = setTimeout(() => document.body.classList.remove('theme-switching'), 600);
-    if (prefersReducedMotion) return;
-    let veil = document.querySelector('.theme-veil');
-    if (!veil) {
-        veil = document.createElement('div');
-        veil.className = 'theme-veil';
-        document.body.appendChild(veil);
+
+function applyRecordTheme(song) {
+    if (themeLoadedOnce) {
+        document.body.classList.add('theme-switching');
+        clearTimeout(themeSwitchTimer);
+        themeSwitchTimer = setTimeout(() => document.body.classList.remove('theme-switching'), 600);
     }
-    veil.classList.remove('is-active');
-    void veil.offsetWidth;
-    veil.classList.add('is-active');
-}
-
-function loadSong(index) {
-    const song = songs[index];
-    const isThemeSwitch = themeLoadedOnce;
-    songTitle.innerText = song.title;
-    artistName.innerText = song.artist;
-    albumArt.style.backgroundImage = song.cover;
-    albumArt.style.backgroundSize = "cover";
-    audioPlayer.src = song.file;
-
-    if (heroBg) {
-        if (!isThemeSwitch || prefersReducedMotion) {
-            heroBg.style.backgroundImage = `url('${song.heroBg}')`;
-        } else {
-            // Crossfade: preload, fade out, swap, fade back to the class opacity
-            const swap = () => {
-                heroBg.style.backgroundImage = `url('${song.heroBg}')`;
-                heroBg.style.opacity = '';
-            };
-            const img = new Image();
-            heroBg.style.opacity = '0';
-            img.onload = () => setTimeout(swap, 420);
-            img.onerror = swap;
-            img.src = song.heroBg;
-        }
-    }
-
-    // Keep the nav flip control + storage in sync with whichever record is on
-    document.querySelectorAll('.theme-flip-side').forEach(el => {
-        el.textContent = index === 0 ? 'SIDE A' : 'SIDE B';
-    });
-    localStorage.setItem('jukebox-side', String(index));
-    if (themeLoadedOnce) flashThemeVeil();
     themeLoadedOnce = true;
 
     const root = document.documentElement;
-    root.style.setProperty('--bg-rgb', song.theme.bg);
-    root.style.setProperty('--text-rgb', song.theme.text);
     root.style.setProperty('--accent-rgb', song.theme.accent);
-    root.style.setProperty('--secondary-rgb', song.theme.secondary);
-    root.style.setProperty('--panel-rgb', song.theme.panel);
-    root.style.setProperty('--gray-rgb', song.theme.gray);
-    root.style.setProperty('--heat-0', song.theme.heat[0]);
-    root.style.setProperty('--heat-1', song.theme.heat[1]);
-    root.style.setProperty('--heat-2', song.theme.heat[2]);
-    root.style.setProperty('--heat-3', song.theme.heat[3]);
-    root.style.setProperty('--heat-4', song.theme.heat[4]);
-    document.body.dataset.musicTheme = song.artist === 'Deftones' ? 'deftones' : 'oxygen';
-
+    root.style.setProperty('--tint-rgb', song.theme.tint);
+    song.theme.heat.forEach((value, level) => root.style.setProperty(`--heat-${level}`, value));
+    document.body.dataset.musicTheme = song.id;
     updateFavicon(`rgb(${song.theme.accent})`);
+}
+
+function swapHeroBackground(src, animate) {
+    if (!heroBg) return;
+    if (!animate || prefersReducedMotion) {
+        heroBg.style.backgroundImage = `url('${src}')`;
+        return;
+    }
+    // Crossfade: preload, fade out, swap, fade back in
+    const swap = () => {
+        heroBg.style.backgroundImage = `url('${src}')`;
+        heroBg.style.opacity = '';
+    };
+    const img = new Image();
+    heroBg.style.opacity = '0';
+    img.onload = () => setTimeout(swap, 300);
+    img.onerror = swap;
+    img.src = src;
+}
+
+function renderNowPlaying() {
+    const song = songs[currentSongIndex];
+    const next = songs[(currentSongIndex + 1) % songs.length];
+
+    songTitle.textContent = song.title;
+    artistName.textContent = song.artist;
+    albumArt.style.backgroundImage = `url('${song.cover}')`;
+
+    const set = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    };
+    set('np-title', song.title);
+    set('np-artist', song.artist);
+    set('np-mood', pick(song.mood));
+    set('np-egg', pick(song.easterEgg));
+    set('np-next-title', next.title);
+    set('np-next-artist', next.artist);
+
+    const npCover = document.getElementById('np-cover');
+    if (npCover) {
+        npCover.src = song.cover;
+        npCover.alt = `${song.title} by ${song.artist}, album cover`;
+    }
+    const npNextCover = document.getElementById('np-next-cover');
+    if (npNextCover) npNextCover.src = next.cover;
+
+    syncLikeButtons();
+}
+
+function loadSong(index, { announce = false } = {}) {
+    currentSongIndex = (index + songs.length) % songs.length;
+    const song = songs[currentSongIndex];
+    const isSwitch = themeLoadedOnce;
+
+    audioPlayer.src = song.file;
+    progressRange.value = 0;
+    setRangeFill(progressRange, 0);
+    if (progressLine) progressLine.style.width = '0%';
+    timeCurrent.textContent = '0:00';
+    timeTotal.textContent = '0:00';
+
+    swapHeroBackground(song.heroBg, isSwitch);
+    applyRecordTheme(song);
+    renderNowPlaying();
+    localStorage.setItem('jukebox-side', String(currentSongIndex));
+    syncLibraryPlayback();
+
+    if (announce) {
+        showToast(pick(song.easterEgg));
+        console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
+    }
+}
+
+function playSong(index) {
+    loadSong(index, { announce: index !== currentSongIndex || !isPlaying });
+    playAudio();
+}
+
+function nextSong() {
+    const nextIndex = isShuffle
+        ? Math.floor(Math.random() * songs.length)
+        : currentSongIndex + 1;
+    playSong(nextIndex);
+}
+
+function prevSong() {
+    // Like any player: past the first few seconds, "previous" restarts the track
+    if (audioPlayer.currentTime > 3) {
+        audioPlayer.currentTime = 0;
+        return;
+    }
+    playSong(currentSongIndex - 1);
+}
+
+// Flip the record: swaps the theme, keeps the music state as-is
+function flipRecord() {
+    loadSong(currentSongIndex + 1, { announce: true });
+    if (isPlaying) playAudio();
+}
+
+// Library / queue clicks: same record toggles, another one starts playing
+function selectRecord(index) {
+    if (index === currentSongIndex) {
+        togglePlay();
+        return;
+    }
+    playSong(index);
 }
 
 function updateFavicon(color) {
@@ -297,172 +300,137 @@ function updateFavicon(color) {
     document.getElementsByTagName('head')[0].appendChild(link);
 }
 
-function togglePlay() {
-    const icon = playBtn.querySelector('i');
-    if (isPlaying) {
-        audioPlayer.pause();
-        isPlaying = false;
-        icon.classList.remove('fa-pause');
-        icon.classList.add('fa-play');
-        musicCard.classList.add('paused');
-    } else {
-        audioPlayer.play();
-        isPlaying = true;
-        icon.classList.remove('fa-play');
-        icon.classList.add('fa-pause');
-        musicCard.classList.remove('paused');
+// ── Progress + volume ──
+function updateProgress() {
+    const { duration, currentTime } = audioPlayer;
+    if (!Number.isFinite(duration) || duration <= 0) return;
+    const ratio = currentTime / duration;
+    if (!isSeeking) {
+        progressRange.value = Math.round(ratio * 1000);
+        setRangeFill(progressRange, ratio);
+        timeCurrent.textContent = formatTime(currentTime);
+    }
+    if (progressLine) progressLine.style.width = `${ratio * 100}%`;
+}
+
+function seekFromRange() {
+    const ratio = Number(progressRange.value) / 1000;
+    setRangeFill(progressRange, ratio);
+    if (Number.isFinite(audioPlayer.duration)) {
+        timeCurrent.textContent = formatTime(ratio * audioPlayer.duration);
     }
 }
 
-function nextSong() {
-    currentSongIndex = (currentSongIndex + 1) % songs.length;
-    loadSong(currentSongIndex);
-    audioPlayer.play();
-    isPlaying = true;
-    const icon = playBtn.querySelector('i');
-    icon.classList.remove('fa-play');
-    icon.classList.add('fa-pause');
-    musicCard.classList.remove('paused');
-
-    // Easter eggs
-    const song = songs[currentSongIndex];
-    showEasterEgg(song.easterEgg);
-    console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
+function commitSeek() {
+    isSeeking = false;
+    if (Number.isFinite(audioPlayer.duration)) {
+        audioPlayer.currentTime = (Number(progressRange.value) / 1000) * audioPlayer.duration;
+    }
 }
 
-function prevSong() {
-    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-    loadSong(currentSongIndex);
-    audioPlayer.play();
-    isPlaying = true;
-    const icon = playBtn.querySelector('i');
-    icon.classList.remove('fa-play');
-    icon.classList.add('fa-pause');
-    musicCard.classList.remove('paused');
+let volumeBeforeMute = 0.4;
 
-    // Easter eggs
-    const song = songs[currentSongIndex];
-    showEasterEgg(song.easterEgg);
-    console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
+function setVolume(volume) {
+    audioPlayer.volume = Math.max(0, Math.min(1, volume));
+    volumeRange.value = Math.round(audioPlayer.volume * 100);
+    setRangeFill(volumeRange, audioPlayer.volume);
+    const icon = muteBtn.querySelector('i');
+    icon.className = audioPlayer.volume === 0
+        ? 'fas fa-volume-xmark'
+        : audioPlayer.volume < 0.5 ? 'fas fa-volume-low' : 'fas fa-volume-high';
+    muteBtn.setAttribute('aria-label', audioPlayer.volume === 0 ? t('sp.unmute') : t('sp.mute'));
 }
 
-function updateProgress(e) {
-    const { duration, currentTime } = e.srcElement;
-    if (isNaN(duration)) return;
-    const progressPercent = (currentTime / duration) * 100;
-    progressBar.style.width = `${progressPercent}%`;
+function toggleMute() {
+    if (audioPlayer.volume > 0) {
+        volumeBeforeMute = audioPlayer.volume;
+        setVolume(0);
+    } else {
+        setVolume(volumeBeforeMute || 0.4);
+    }
 }
 
-function setProgress(e) {
-    const width = this.clientWidth;
-    const clickX = e.offsetX;
-    const duration = audioPlayer.duration;
-    audioPlayer.currentTime = (clickX / width) * duration;
-}
-
-audioPlayer.addEventListener('ended', nextSong);
 audioPlayer.addEventListener('timeupdate', updateProgress);
-progressContainer.addEventListener('click', setProgress);
-
-audioPlayer.addEventListener('error', (e) => {
-    console.error("Error loading audio:", audioPlayer.src);
-    const icon = playBtn.querySelector('i');
-    icon.className = 'fas fa-exclamation-triangle text-red-500';
+audioPlayer.addEventListener('loadedmetadata', () => {
+    timeTotal.textContent = formatTime(audioPlayer.duration);
 });
+audioPlayer.addEventListener('ended', nextSong);
+audioPlayer.addEventListener('error', () => {
+    if (!audioPlayer.getAttribute('src')) return;
+    console.error("Error loading audio:", audioPlayer.src);
+    setPlayingState(false);
+});
+
+progressRange.addEventListener('pointerdown', () => { isSeeking = true; });
+progressRange.addEventListener('input', () => { isSeeking = true; seekFromRange(); });
+progressRange.addEventListener('change', commitSeek);
+volumeRange.addEventListener('input', () => setVolume(Number(volumeRange.value) / 100));
+muteBtn.addEventListener('click', toggleMute);
 
 playBtn.addEventListener('click', togglePlay);
 nextBtn.addEventListener('click', nextSong);
 prevBtn.addEventListener('click', prevSong);
+document.getElementById('theme-flip').addEventListener('click', flipRecord);
+document.getElementById('np-next').addEventListener('click', () => playSong(currentSongIndex + 1));
 
-// ── The Jukebox: first visit picks a record; the record is the theme. ──
-// No autoplay — music only starts from the visitor's own click on a record.
-const jukebox = document.getElementById('jukebox');
+shuffleBtn.addEventListener('click', () => {
+    isShuffle = !isShuffle;
+    shuffleBtn.setAttribute('aria-pressed', String(isShuffle));
+});
 
-function setPlayingState(playing) {
-    isPlaying = playing;
-    const icon = playBtn.querySelector('i');
-    icon.classList.toggle('fa-pause', playing);
-    icon.classList.toggle('fa-play', !playing);
-    musicCard.classList.toggle('paused', !playing);
-}
+repeatBtn.addEventListener('click', () => {
+    audioPlayer.loop = !audioPlayer.loop;
+    repeatBtn.setAttribute('aria-pressed', String(audioPlayer.loop));
+});
 
-function dismissJukebox(immediate = false) {
-    if (!jukebox || !document.body.contains(jukebox)) {
-        startSite();
-        return;
-    }
-    if (immediate || prefersReducedMotion) {
-        jukebox.remove();
-        startSite();
-        return;
-    }
-    jukebox.classList.add('is-leaving');
-    setTimeout(() => {
-        jukebox.remove();
-        startSite();
-    }, 750);
-}
+// Every big round play button on the page drives the same player
+document.addEventListener('click', event => {
+    if (event.target.closest('[data-sp-play]')) togglePlay();
+});
 
-function chooseRecord(index, options = {}) {
-    const { withMusic = true } = options;
-    currentSongIndex = (index + songs.length) % songs.length;
-    loadSong(currentSongIndex);
+// ── Liked Records ──
+const likedRecords = new Set(JSON.parse(localStorage.getItem('sp-liked') || '[]'));
 
-    if (withMusic) {
-        audioPlayer.volume = 0.4;
-        const playPromise = audioPlayer.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => setPlayingState(true)).catch(() => setPlayingState(false));
-        }
-    }
-
-    dismissJukebox();
-}
-
-function initJukebox() {
-    const savedSide = localStorage.getItem('jukebox-side');
-
-    if (savedSide !== null) {
-        // Returning visitor: apply their record quietly, skip the ceremony
-        currentSongIndex = (Number(savedSide) || 0) % songs.length;
-        loadSong(currentSongIndex);
-        dismissJukebox(true);
-        return;
-    }
-
-    // First visit: the overlay is the loader
-    loadSong(currentSongIndex);
-    localStorage.removeItem('jukebox-side'); // loadSong persisted a default; first pick should be deliberate
-
-    if (!jukebox) {
-        startSite();
-        return;
-    }
-
-    jukebox.querySelectorAll('[data-jukebox-side]').forEach(button => {
-        button.addEventListener('click', () => chooseRecord(Number(button.dataset.jukeboxSide)));
+function syncLikeButtons() {
+    const liked = likedRecords.has(songs[currentSongIndex].id);
+    document.querySelectorAll('[data-sp-like]').forEach(button => {
+        button.setAttribute('aria-pressed', String(liked));
+        button.setAttribute('aria-label', liked ? t('sp.like.remove') : t('sp.like.add'));
     });
-
-    const skipBtn = document.getElementById('jukebox-skip');
-    if (skipBtn) skipBtn.addEventListener('click', () => chooseRecord(0, { withMusic: false }));
 }
 
-initJukebox();
-
-// ── Record flip (navbar): swaps theme, keeps the music state as-is ──
-function flipRecord() {
-    currentSongIndex = (currentSongIndex + 1) % songs.length;
-    loadSong(currentSongIndex);
-    if (isPlaying) audioPlayer.play();
-
-    const song = songs[currentSongIndex];
-    showEasterEgg(song.easterEgg);
-    console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
+function toggleLike() {
+    const id = songs[currentSongIndex].id;
+    if (likedRecords.has(id)) {
+        likedRecords.delete(id);
+        showToast(t('sp.like.removed'));
+    } else {
+        likedRecords.add(id);
+        showToast(t('sp.like.added'));
+    }
+    localStorage.setItem('sp-liked', JSON.stringify([...likedRecords]));
+    syncLikeButtons();
 }
 
-['theme-flip-desktop', 'theme-flip-mobile'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) btn.addEventListener('click', flipRecord);
+document.querySelectorAll('[data-sp-like]').forEach(button => button.addEventListener('click', toggleLike));
+
+// ── Now playing view ──
+function setNowPlayingOpen(open) {
+    document.body.classList.toggle('np-open', open);
+    npToggle.setAttribute('aria-pressed', String(open));
+    // Only the side-panel layout remembers the choice; the overlay/sheet always starts closed
+    if (wideQuery.matches) localStorage.setItem('sp-np-open', open ? '1' : '0');
+}
+
+function initNowPlaying() {
+    const saved = localStorage.getItem('sp-np-open');
+    setNowPlayingOpen(wideQuery.matches && saved !== '0');
+}
+
+npToggle.addEventListener('click', () => setNowPlayingOpen(!document.body.classList.contains('np-open')));
+document.getElementById('np-close').addEventListener('click', () => setNowPlayingOpen(false));
+['album-art', 'sp-player-meta'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => setNowPlayingOpen(!document.body.classList.contains('np-open')));
 });
 
 // ── GitHub Activity Heatmap ──
@@ -621,6 +589,7 @@ function renderHeatmap() {
 
     if (!contributions.length) {
         total.textContent = '-';
+        renderListeners(null);
         return;
     }
 
@@ -630,6 +599,7 @@ function renderHeatmap() {
         ? (currentLang === 'pt' ? 'contribuição' : 'contribution')
         : (currentLang === 'pt' ? 'contribuições' : 'contributions');
     total.textContent = `${totalCount} ${word} · ${getContributionRange(contributions)}`;
+    renderListeners(totalCount);
 }
 
 function initHeatmapTooltip() {
@@ -684,11 +654,23 @@ function renderTechStack() {
     `).join('');
 }
 
-// ── About Interest Chips ──
+// ── Also on repeat: interests as round "artist" cards ──
 const aboutInterests = [
     {
+        id: 'lugia',
+        art: { img: 'assets/icons/LugiaLittleIcon.png', rgb: '96 120 196' },
+        label: { en: 'Lugia', pt: 'Lugia' },
+        kind: { en: 'Fun fact', pt: 'Curiosidade' },
+        text: {
+            en: '<strong>Fav. Pokémon is Lugia.</strong> Psychic-type elegance and legendary rarity. Basically my design philosophy, but as a Pokémon.',
+            pt: '<strong>Pokémon favorito é o Lugia.</strong> Elegância de tipo Psíquico e raridade lendária. Basicamente minha filosofia de design, só que em forma de Pokémon.'
+        }
+    },
+    {
         id: 'hype-focus',
+        art: { img: 'assets/icons/fish.svg', rgb: '38 112 150' },
         label: { en: 'Hype Focus', pt: 'Hype Focus' },
+        kind: { en: 'Pokémon & sharks', pt: 'Pokémon e tubarões' },
         text: {
             en: '<strong>Pokemon and sharks</strong> are my main hype focus: <strong>Lugia</strong>, <strong>Gengar</strong>, and <strong>Arcanine</strong> for personality and style; <strong>whale sharks</strong> and <strong>hammerheads</strong> for calm scale, sharp silhouettes, and natural design energy.',
             pt: '<strong>Pokemon e tubarões</strong> são meu principal hype focus: <strong>Lugia</strong>, <strong>Gengar</strong> e <strong>Arcanine</strong> por personalidade e estilo; <strong>tubarões-baleia</strong> e <strong>tubarões-martelo</strong> por escala calma, silhuetas marcantes e energia de design natural.'
@@ -696,7 +678,9 @@ const aboutInterests = [
     },
     {
         id: 'interests',
-        label: { en: 'Interests', pt: 'Interesses' },
+        art: { icon: 'fas fa-gamepad', rgb: '160 58 92' },
+        label: { en: 'Games & anime', pt: 'Jogos e animes' },
+        kind: { en: 'Interests', pt: 'Interesses' },
         text: {
             en: '<strong>Games and anime</strong> keep me close to strategy, pacing, and memorable worlds: <strong>Valorant</strong>, <strong>Elden Ring</strong>, <strong>Attack on Titan</strong>, <strong>Hunter x Hunter</strong>, and <strong>Code Geass</strong>.',
             pt: '<strong>Jogos e animes</strong> me mantêm perto de estratégia, ritmo e mundos memoráveis: <strong>Valorant</strong>, <strong>Elden Ring</strong>, <strong>Attack on Titan</strong>, <strong>Hunter x Hunter</strong> e <strong>Code Geass</strong>.'
@@ -704,7 +688,9 @@ const aboutInterests = [
     },
     {
         id: 'learning',
-        label: { en: 'Learning', pt: 'Aprendizado' },
+        art: { icon: 'fas fa-language', rgb: '52 128 88' },
+        label: { en: 'AI & Mandarin', pt: 'IA e mandarim' },
+        kind: { en: 'Learning', pt: 'Aprendizado' },
         text: {
             en: '<strong>Current learning:</strong> building practical <strong>AI automations</strong> with <strong>Claude</strong> and <strong>Gemini</strong>, designing reusable skills, mapping workflow steps, and studying <strong>Chinese / Mandarin</strong> with consistency.',
             pt: '<strong>Aprendizado atual:</strong> criando <strong>automações práticas com IA</strong> usando <strong>Claude</strong> e <strong>Gemini</strong>, desenhando skills reutilizáveis, mapeando etapas de workflow e estudando <strong>chinês / mandarim</strong> com consistência.'
@@ -713,6 +699,13 @@ const aboutInterests = [
 ];
 
 let activeAboutInterestId = 'hype-focus';
+
+function roundArtMarkup(art) {
+    const inner = art.img
+        ? `<img src="${art.img}" alt="" loading="lazy" decoding="async">`
+        : `<i class="${art.icon}" aria-hidden="true"></i>`;
+    return `<span class="sp-round-art" style="--art: ${art.rgb};">${inner}</span>`;
+}
 
 function renderAboutInterests() {
     const buttons = document.getElementById('about-interest-buttons');
@@ -724,18 +717,15 @@ function renderAboutInterests() {
     buttons.innerHTML = aboutInterests.map(interest => {
         const isActive = interest.id === activeInterest.id;
         return `
-            <button
-                type="button"
-                class="about-interest-chip ${isActive ? 'is-active' : ''}"
-                data-about-interest="${interest.id}"
-                aria-pressed="${isActive}"
-            >
-                ${interest.label[currentLang] || interest.label.en}
+            <button type="button" class="sp-card is-round" role="tab" data-about-interest="${interest.id}" aria-selected="${isActive}">
+                <span class="sp-card-cover">${roundArtMarkup(interest.art)}</span>
+                <span class="sp-card-title">${pick(interest.label)}</span>
+                <span class="sp-card-sub">${pick(interest.kind)}</span>
             </button>
         `;
     }).join('');
 
-    text.innerHTML = activeInterest.text[currentLang] || activeInterest.text.en;
+    text.innerHTML = pick(activeInterest.text);
 
     buttons.querySelectorAll('[data-about-interest]').forEach(button => {
         button.addEventListener('click', () => {
@@ -745,24 +735,48 @@ function renderAboutInterests() {
     });
 }
 
-// ── Journey Expand/Collapse ──
-function toggleJourney(id, btn) {
-    const content = document.getElementById(id);
-    const icon = btn.querySelector('i');
-    const text = btn.querySelector('span');
-    const isClosed = content.classList.contains('grid-rows-[0fr]');
+// ── Discography: one release per role. Text lives in translations (journey.role{n}.*) ──
+// Release type follows the track count, like a real catalog: 1 = single, 2–3 = EP, 4+ = album.
+const careerRoles = [
+    { year: 2026, company: 'Colégio Christus', tracks: 5, mix: '80 155 245', short: { en: 'Engineer', pt: 'Engenheiro' }, current: true },
+    { year: 2026, company: 'Colégio Christus', tracks: 3, mix: '141 103 171', short: { en: 'Lead', pt: 'Líder' } },
+    { year: 2025, company: 'Colégio Christus', tracks: 2, mix: '232 17 91', short: { en: 'Fullstack', pt: 'Fullstack' } },
+    { year: 2024, company: 'Colégio Christus', tracks: 1, mix: '188 89 0', short: { en: 'Intern', pt: 'Estágio' } }
+];
 
-    if (isClosed) {
-        content.classList.remove('grid-rows-[0fr]', 'opacity-0');
-        content.classList.add('grid-rows-[1fr]', 'opacity-100');
-        text.textContent = currentLang === 'pt' ? 'Ler Menos' : 'Show Less';
-        icon.style.transform = 'rotate(180deg)';
-    } else {
-        content.classList.add('grid-rows-[0fr]', 'opacity-0');
-        content.classList.remove('grid-rows-[1fr]', 'opacity-100');
-        text.textContent = currentLang === 'pt' ? 'Ler Mais' : 'Read More';
-        icon.style.transform = 'rotate(0deg)';
-    }
+function releaseType(role) {
+    if (role.tracks >= 4) return t('sp.release.album');
+    if (role.tracks >= 2) return t('sp.release.ep');
+    return t('sp.release.single');
+}
+
+function mixCoverMarkup(role, extraClass = '') {
+    return `
+        <span class="sp-mix ${extraClass}" style="--mix: ${role.mix};">
+            <span class="sp-mix-top">Christus</span>
+            <span class="sp-mix-band"><span class="sp-mix-label">${pick(role.short)}</span><span class="sp-mix-num">${String(role.year).slice(2)}</span></span>
+        </span>
+    `;
+}
+
+function careerCardMarkup(role, index) {
+    const sub = `${role.current ? `${t('sp.latest')} • ` : ''}${role.year} • ${releaseType(role)}`;
+    return `
+        <a class="sp-card" href="#/career/${index}">
+            <span class="sp-card-cover">
+                ${mixCoverMarkup(role)}
+                <span class="sp-play-btn sp-card-play" aria-hidden="true"><i class="fas fa-play"></i></span>
+            </span>
+            <span class="sp-card-title">${t(`journey.role${index}`)}</span>
+            <span class="sp-card-sub">${sub}</span>
+        </a>
+    `;
+}
+
+function renderDiscography() {
+    const shelf = document.getElementById('sp-discography');
+    if (!shelf) return;
+    shelf.innerHTML = careerRoles.map(careerCardMarkup).join('');
 }
 
 // ── Featured Projects Spotlight ──
@@ -770,6 +784,7 @@ function toggleJourney(id, btn) {
 const featuredProjects = [
     {
         id: 'pokemon-team-builder',
+        tint: '176 52 64',
         title: 'Pokémon Team Builder',
         logo: {
             src: 'assets/icons/teamBuilderLogo.png',
@@ -912,6 +927,7 @@ const featuredProjects = [
     },
     {
         id: 'qassistant',
+        tint: '64 84 168',
         title: 'QAssistant',
         logo: {
             src: 'assets/icons/qassistant-logo.png',
@@ -977,6 +993,7 @@ const featuredProjects = [
     },
     {
         id: 'medical-platform',
+        tint: '36 110 100',
         title: 'AI Medical Platform',
         logo: null,
         locked: true,
@@ -1006,6 +1023,7 @@ const featuredProjects = [
     },
     {
         id: 'dino-library',
+        tint: '150 104 48',
         title: 'Dino Library',
         logo: {
             src: 'assets/icons/dinoLibraryLogo.png',
@@ -1091,6 +1109,7 @@ const featuredProjects = [
     },
     {
         id: 'aqua-census',
+        tint: '28 104 138',
         title: 'AquaCensus',
         logo: {
             src: 'assets/icons/fish.svg',
@@ -1160,21 +1179,11 @@ const featuredProjectState = {
     activeImageIndex: 0
 };
 
-function getFeaturedProjectElements() {
-    return {
-        switcher: document.getElementById('featured-project-switcher'),
-        stage: document.getElementById('featured-project-stage')
-    };
-}
-
 function getFeaturedProjectCopy() {
     const activeTranslations = translations[currentLang] || translations.en;
     return {
         stack: activeTranslations['featuredWork.stack'],
         links: activeTranslations['featuredWork.links'],
-        preview: activeTranslations['featuredWork.preview'],
-        screens: activeTranslations['featuredWork.screens'],
-        singleView: activeTranslations['featuredWork.singleView'],
         viewDemo: activeTranslations['featuredWork.viewDemo'],
         viewGithub: activeTranslations['featuredWork.viewGithub'],
         viewMarketplace: activeTranslations['featuredWork.viewMarketplace'],
@@ -1190,65 +1199,6 @@ function getFeaturedProjectDescription(project) {
 function getFeaturedProjectNarrative(project) {
     if (!project || !project.narrative) return null;
     return project.narrative[currentLang] || project.narrative.en || null;
-}
-
-function getFeaturedProjectLogoMarkup(project, variant) {
-    const wrapperClass = variant === 'switcher' ? 'featured-project-switch-icon' : 'featured-project-logo-wrap';
-
-    if (project && project.locked) {
-        return `
-            <span class="${wrapperClass} is-locked">
-                <i class="fas fa-lock"></i>
-            </span>
-        `;
-    }
-
-    if (!project || !project.logo || !project.logo.src) return '';
-
-    const imageClass = variant === 'switcher' ? 'featured-project-switch-logo' : 'featured-project-logo';
-
-    return `
-        <span class="${wrapperClass}">
-            <img class="${imageClass}" src="${project.logo.src}" alt="${project.logo.alt}" decoding="async">
-        </span>
-    `;
-}
-
-function buildFeaturedProjectSwitcher() {
-    return `
-        <div class="featured-project-switcher" role="tablist" aria-label="Featured projects">
-            ${featuredProjects.map((project, index) => {
-        const isActive = index === featuredProjectState.activeProjectIndex;
-
-        return `
-            <button
-                type="button"
-                class="featured-project-switch-btn ${isActive ? 'is-active' : ''}"
-                data-featured-project-index="${index}"
-                aria-pressed="${isActive}"
-            >
-                ${getFeaturedProjectLogoMarkup(project, 'switcher')}
-                <span class="featured-project-switch-copy">
-                    <span class="featured-project-switch-title">${project.title}</span>
-                </span>
-            </button>
-        `;
-    }).join('')}
-        </div>
-    `;
-}
-
-function renderFeaturedProjectSwitcher() {
-    const { switcher } = getFeaturedProjectElements();
-    if (!switcher) return;
-
-    switcher.innerHTML = buildFeaturedProjectSwitcher();
-
-    switcher.querySelectorAll('[data-featured-project-index]').forEach(button => {
-        button.addEventListener('click', () => {
-            selectFeaturedProject(Number(button.dataset.featuredProjectIndex));
-        });
-    });
 }
 
 function buildFeaturedProjectLinks(project) {
@@ -1533,8 +1483,9 @@ function buildFeaturedProjectMedia(project) {
     `;
 }
 
+// The case study body under a project page's header: gallery, narrative, stack, links, deep dive
 function renderFeaturedProjectStage() {
-    const { stage } = getFeaturedProjectElements();
+    const stage = document.getElementById('featured-project-stage');
     if (!stage) return;
 
     const project = featuredProjects[featuredProjectState.activeProjectIndex];
@@ -1544,31 +1495,15 @@ function renderFeaturedProjectStage() {
     }
 
     const copy = getFeaturedProjectCopy();
-    const linkMarkup = buildFeaturedProjectLinks(project);
-    const narrativeMarkup = buildFeaturedProjectNarrative(project);
-    const statusMarkup = project.status
-        ? `<span class="featured-project-stat">${project.status[currentLang] || project.status.en}</span>`
-        : '';
 
     stage.innerHTML = `
         <div class="featured-project-layout">
             ${buildFeaturedProjectMedia(project)}
 
             <div class="featured-project-panel">
-                <div class="featured-project-panel-top">
-                    <div class="featured-project-heading">
-                        ${getFeaturedProjectLogoMarkup(project, 'panel')}
-                        <div>
-                            <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-gray/65 mb-3">${String(featuredProjectState.activeProjectIndex + 1).padStart(2, '0')} / ${String(featuredProjects.length).padStart(2, '0')}</p>
-                            <h3 class="featured-project-title">${project.title}</h3>
-                        </div>
-                    </div>
-                    ${statusMarkup}
-                </div>
-
                 <p class="featured-project-description">${getFeaturedProjectDescription(project)}</p>
 
-                ${narrativeMarkup}
+                ${buildFeaturedProjectNarrative(project)}
 
                 <div class="featured-project-section">
                     <p class="featured-project-section-label">${copy.stack}</p>
@@ -1577,7 +1512,7 @@ function renderFeaturedProjectStage() {
                     </div>
                 </div>
 
-                ${linkMarkup}
+                ${buildFeaturedProjectLinks(project)}
             </div>
         </div>
         ${buildFeaturedProjectDeepDive(project)}
@@ -1623,24 +1558,6 @@ function watchFeaturedVideo(video) {
     featuredVideoObserver.observe(video);
 }
 
-function renderFeaturedProjects() {
-    const { switcher, stage } = getFeaturedProjectElements();
-    if (!switcher || !stage) return;
-
-    renderFeaturedProjectSwitcher();
-    renderFeaturedProjectStage();
-}
-
-function selectFeaturedProject(index) {
-    if (!featuredProjects.length) return;
-
-    const normalizedIndex = (index + featuredProjects.length) % featuredProjects.length;
-
-    featuredProjectState.activeProjectIndex = normalizedIndex;
-    featuredProjectState.activeImageIndex = 0;
-    renderFeaturedProjects();
-}
-
 function selectFeaturedImage(index) {
     const project = featuredProjects[featuredProjectState.activeProjectIndex];
     if (!project || !project.images || index < 0 || index >= project.images.length) return;
@@ -1649,73 +1566,29 @@ function selectFeaturedImage(index) {
     renderFeaturedProjectStage();
 }
 
-function initFeaturedProjects() {
-    const { switcher, stage } = getFeaturedProjectElements();
-    if (!switcher || !stage) return;
-
-    renderFeaturedProjects();
-}
-
 // ── Translation System ──
 const translations = {
     en: {
-        // Nav
-        "nav.about": "About",
-        "nav.projects": "Work",
-        "nav.journey": "Trajectory",
-        "nav.contact": "Contact",
         // Hero
         "hero.available": "Open to work",
         "hero.location": "Fortaleza, BR",
         "hero.headline1": "I build interfaces",
         "hero.headline2": "for messy work.",
-        "hero.description": "Doctors making calls under pressure. QA teams chasing commits. Researchers buried in field data. I like taking messy workflows like these and turning them into <span class=\"text-accent font-medium\">software people actually want to open</span>, from the database all the way to the screen, with AI helping along the way. <span class=\"text-text\">I started as an intern in 2024 and was leading a project by 2026.</span>",
-        "hero.viewProjects": "VIEW SELECTED WORK",
         "hero.resume": "DOWNLOAD CV",
-        "hero.scroll": "Scroll",
         "hero.role": "Fullstack Engineer · Tech Lead",
-        "hero.subrole": "Fullstack Engineer @ Colégio Christus",
-        "hero.tl1": "2024 · Intern",
-        "hero.tl2": "2025 · Fullstack Dev",
-        "hero.tl3": "2026 · Project Lead",
-        "hero.tl4": "Now · Fullstack Engineer",
-        // Jukebox
-        "jukebox.kicker": "ENZO.DEV · THE JUKEBOX",
-        "jukebox.title1": "Pick a record.",
-        "jukebox.title2": "The record is the theme.",
-        "jukebox.moodA": "deep blue",
-        "jukebox.moodB": "ink on bone",
-        "jukebox.skip": "skip, keep it quiet",
         // About
         "about.label": "About",
-        "about.title1": "The interface is",
-        "about.title2": "the product.",
-        "about.offCode": "About the Developer",
-        "about.title": "Enzo Esmeraldo",
         "about.description": "I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.",
         "about.bio2": "I've led a team, handling architecture, the design system, Git strategy and mentoring, and I never stopped <strong>shipping every week</strong>. My workflow is <strong>AI-native</strong>: Claude Code, custom agents and skills that take me from spec to tests to pull request review.",
         "about.avatarJoke": "btw, that's me",
-        "about.interests.label": "Interests",
         "about.interests.title": "Outside the editor",
-        "about.funfact.label": "Fun Fact",
-        "about.funfact.title": "Fav. Pokémon is Lugia",
-        "about.funfact.desc": "Psychic-type elegance and legendary rarity. Basically my design philosophy, but as a Pokémon.",
         "about.current.label": "Currently Building",
         "about.current.desc": "<strong>Exitus Gestor</strong>, across the whole stack. That means a PostgreSQL data model, a Spring Boot domain layer split with Domain-Driven Design and Angular on the front, with TDD, Flyway migrations and <strong>Claude Code agents</strong> helping out.",
         "about.current.status": "In active development",
-        "about.downloadCV": "DOWNLOAD CV",
         // Work
-        "work.label": "Portfolio",
-        "work.title1": "My",
-        "work.title2": "Work.",
-        "work.subtitle": "Every project here does the same thing: it takes work scattered across tabs, spreadsheets and stuff only one person knows, and gives it one clear interface.",
-        "featuredWork.label": "Featured Project",
-        "featuredWork.subtitle": "A spotlighted case study with a presentation-style gallery, longer project context, and quick switching between featured builds.",
         "featuredWork.stack": "Tech Stack",
         "featuredWork.links": "Project Links",
-        "featuredWork.preview": "Project Preview",
         "featuredWork.screens": "screens",
-        "featuredWork.singleView": "Single view",
         "featuredWork.viewGithub": "GitHub",
         "featuredWork.viewDemo": "Website",
         "featuredWork.viewMarketplace": "Marketplace",
@@ -1728,11 +1601,6 @@ const translations = {
         "featuredWork.lockedSub": "The work is real; the pixels are classified.",
         "projects.visitGithub": "Explore more on GitHub",
         // Journey
-        "journey.subtitle": "Career Path",
-        "journey.the": "Professional",
-        "journey.title": "Journey.",
-        "journey.readMore": "Read More",
-        "journey.achievements": "Key Achievements",
         "journey.role0": "Fullstack Engineer",
         "journey.date0": "Jul. 2026 to Present",
         "journey.status0": "Current · Angular + Spring Boot",
@@ -1765,73 +1633,111 @@ const translations = {
         "footer.title1": "Let's build something",
         "footer.title2": "people actually use.",
         "footer.copyright": "&copy; 2026 Enzo Esmeraldo",
-        "footer.credits": "Crafted with <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> in Brazil",
+        "footer.credits": "Recorded in Fortaleza, BR. Mixed in VS Code.",
         // Heatmap / Tech
         "contrib.label": "Contribution Activity",
         "contrib.less": "Less",
         "contrib.more": "More",
         "tech.label": "Core Stack",
         // Music
-        "music.hint": "Flip the record and the theme follows"
+        "music.hint": "Flip the record and the theme follows",
+        // Streaming shell
+        "sp.skip": "Skip to content",
+        "sp.home": "Home",
+        "sp.search": "Search",
+        "sp.search.placeholder": "What do you want to see?",
+        "sp.search.browse": "Browse all",
+        "sp.library": "Your Library",
+        "sp.library.collapse": "Collapse Your Library",
+        "sp.library.expand": "Expand Your Library",
+        "sp.library.create": "Start a project with me",
+        "sp.library.createShort": "Create",
+        "sp.library.filter": "Search in Your Library",
+        "sp.library.recents": "Recents",
+        "sp.library.empty": "Nothing in your library matches that.",
+        "sp.chip.projects": "Projects",
+        "sp.chip.career": "Career",
+        "sp.chip.records": "Records",
+        "sp.type.artist": "Artist",
+        "sp.type.song": "Song",
+        "sp.type.project": "Project",
+        "sp.type.caseStudy": "Case study",
+        "sp.release.album": "Album",
+        "sp.release.ep": "EP",
+        "sp.release.single": "Single",
+        "sp.latest": "Latest release",
+        "sp.badge.live": "Live",
+        "sp.verified": "Verified Engineer",
+        "sp.play": "Play",
+        "sp.pause": "Pause",
+        "sp.prev": "Previous",
+        "sp.next": "Next",
+        "sp.shuffle": "Shuffle",
+        "sp.repeat.btn": "Repeat",
+        "sp.mute": "Mute",
+        "sp.unmute": "Unmute",
+        "sp.follow": "Follow",
+        "sp.share": "Copy link",
+        "sp.copyLink": "Copy link to profile",
+        "sp.copied": "Link copied to clipboard",
+        "sp.openSite": "Open website",
+        "sp.popular": "Popular",
+        "sp.pick": "Artist pick",
+        "sp.discography": "Discography",
+        "sp.showAll": "Show all",
+        "sp.repeat": "Also on repeat",
+        "sp.tour": "On tour",
+        "sp.tour.remote": "Remote-friendly",
+        "sp.tour.cta": "Get in touch",
+        "sp.tour.connect": "Connect",
+        "sp.tour.setlist": "See the setlist",
+        "sp.footer.downloads": "Downloads",
+        "sp.listeners": "contributions in the last year",
+        "sp.np.title": "Now playing",
+        "sp.np.open": "Open Now playing view",
+        "sp.np.why": "The record is the theme",
+        "sp.np.next": "Next in queue",
+        "sp.np.credits": "Credits",
+        "sp.close": "Close",
+        "sp.credits.design": "Design, code, everything",
+        "sp.credits.built": "Built with",
+        "sp.credits.session": "Session musician",
+        "sp.like.add": "Save to Liked Records",
+        "sp.like.remove": "Remove from Liked Records",
+        "sp.like.added": "Added to Liked Records",
+        "sp.like.removed": "Removed from Liked Records",
+        "sp.screen": "screen",
+        "sp.achievement": "achievement",
+        "sp.achievements": "achievements",
+        "sp.title": "Title",
+        "sp.more.by": "More by Enzo Esmeraldo",
+        "sp.more.releases": "More releases",
+        "sp.browse": "Browse all",
+        "sp.topResult": "Top result",
+        "sp.noResults": "No results found for",
+        "sp.noResults.hint": "Check the spelling, or try a technology like React or Spring Boot."
     },
     pt: {
-        // Nav
-        "nav.about": "Sobre",
-        "nav.projects": "Trabalhos",
-        "nav.journey": "Trajetória",
-        "nav.contact": "Contato",
         // Hero
         "hero.available": "Aberto a trabalho",
         "hero.location": "Fortaleza, BR",
         "hero.headline1": "Eu construo interfaces",
         "hero.headline2": "para trabalho bagunçado.",
-        "hero.description": "Médicos decidindo sob pressão. Times de QA correndo atrás de commits. Pesquisadores soterrados em dados de campo. Eu curto pegar fluxos bagunçados assim e transformar em <span class=\"text-accent font-medium\">software que as pessoas realmente querem abrir</span>, do banco de dados até a tela, com IA ajudando no caminho. <span class=\"text-text\">Entrei como estagiário em 2024 e em 2026 já estava liderando um projeto.</span>",
-        "hero.viewProjects": "VER TRABALHOS",
         "hero.resume": "BAIXAR CV",
-        "hero.scroll": "Role",
         "hero.role": "Engenheiro Fullstack · Tech Lead",
-        "hero.subrole": "Engenheiro Fullstack @ Colégio Christus",
-        "hero.tl1": "2024 · Estágio",
-        "hero.tl2": "2025 · Dev Fullstack",
-        "hero.tl3": "2026 · Líder de Projeto",
-        "hero.tl4": "Hoje · Engenheiro Fullstack",
-        // Jukebox
-        "jukebox.kicker": "ENZO.DEV · A JUKEBOX",
-        "jukebox.title1": "Escolha um disco.",
-        "jukebox.title2": "O disco é o tema.",
-        "jukebox.moodA": "azul profundo",
-        "jukebox.moodB": "tinta no osso",
-        "jukebox.skip": "pular, sem som",
         // About
         "about.label": "Sobre",
-        "about.title1": "A interface é",
-        "about.title2": "o produto.",
-        "about.offCode": "Sobre o Desenvolvedor",
-        "about.title": "Enzo Esmeraldo",
         "about.description": "Fui de <strong>estagiário a líder de projeto em 21 meses</strong>, e sinceramente acho que é porque trato a interface como o produto, não como a pintura. Seja uma plataforma de IA ajudando médicos em decisões clínicas ou uma extensão do VS Code que empacota commits em evidência de QA, o trabalho é o mesmo: <strong>achar a parte do fluxo que todo mundo odeia em silêncio e deixar ela óbvia</strong>.",
         "about.bio2": "Já liderei um time, cuidando de arquitetura, design system, estratégia de Git e mentoria, e nunca parei de <strong>entregar toda semana</strong>. Meu workflow é <strong>AI-native</strong>: Claude Code, agentes customizados e skills que me levam da spec aos testes até a revisão de pull request.",
         "about.avatarJoke": "e sim, esse sou eu",
-        "about.interests.label": "Interesses",
         "about.interests.title": "Fora do editor",
-        "about.funfact.label": "Curiosidade",
-        "about.funfact.title": "Pokémon Fav. é Lugia",
-        "about.funfact.desc": "Elegância de tipo Psíquico e raridade lendária. Basicamente minha filosofia de design, só que em forma de Pokémon.",
         "about.current.label": "Em Desenvolvimento",
         "about.current.desc": "<strong>Exitus Gestor</strong>, na stack inteira. Isso inclui modelo de dados em PostgreSQL, camada de domínio em Spring Boot dividida com Domain-Driven Design e Angular no front, com TDD, migrations Flyway e <strong>agentes do Claude Code</strong> ajudando no caminho.",
         "about.current.status": "Em desenvolvimento ativo",
-        "about.downloadCV": "BAIXAR CV",
         // Work
-        "work.label": "Portfólio",
-        "work.title1": "Meu",
-        "work.title2": "Trabalho.",
-        "work.subtitle": "Todo projeto aqui faz a mesma coisa: pega um trabalho espalhado em abas, planilhas e coisas que só uma pessoa sabe, e dá a ele uma interface clara.",
-        "featuredWork.label": "Projeto em Destaque",
-        "featuredWork.subtitle": "Um destaque com galeria em estilo apresentação, contexto maior do projeto e troca rápida entre projetos em destaque.",
         "featuredWork.stack": "Tecnologias",
         "featuredWork.links": "Links do Projeto",
-        "featuredWork.preview": "Preview do Projeto",
         "featuredWork.screens": "telas",
-        "featuredWork.singleView": "Visual único",
         "featuredWork.viewGithub": "GitHub",
         "featuredWork.viewDemo": "Website",
         "featuredWork.viewMarketplace": "Marketplace",
@@ -1844,11 +1750,6 @@ const translations = {
         "featuredWork.lockedSub": "O trabalho é real; os pixels são confidenciais.",
         "projects.visitGithub": "Explore mais no GitHub",
         // Journey
-        "journey.subtitle": "Trajetória Profissional",
-        "journey.the": "Jornada",
-        "journey.title": "Profissional.",
-        "journey.readMore": "Ler Mais",
-        "journey.achievements": "Principais Conquistas",
         "journey.role0": "Engenheiro Fullstack",
         "journey.date0": "Jul. 2026 até hoje",
         "journey.status0": "Atual · Angular + Spring Boot",
@@ -1881,22 +1782,804 @@ const translations = {
         "footer.title1": "Vamos construir algo",
         "footer.title2": "que as pessoas realmente usem.",
         "footer.copyright": "&copy; 2026 Enzo Esmeraldo",
-        "footer.credits": "Criado com <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> no Brasil",
+        "footer.credits": "Gravado em Fortaleza, BR. Mixado no VS Code.",
         // Heatmap / Tech
         "contrib.label": "Atividade de Contribuição",
         "contrib.less": "Menos",
         "contrib.more": "Mais",
         "tech.label": "Stack Principal",
         // Music
-        "music.hint": "Vire o disco e o tema acompanha"
+        "music.hint": "Vire o disco e o tema acompanha",
+        // Streaming shell
+        "sp.skip": "Pular para o conteúdo",
+        "sp.home": "Início",
+        "sp.search": "Buscar",
+        "sp.search.placeholder": "O que você quer ver?",
+        "sp.search.browse": "Navegar por tudo",
+        "sp.library": "Sua Biblioteca",
+        "sp.library.collapse": "Recolher Sua Biblioteca",
+        "sp.library.expand": "Expandir Sua Biblioteca",
+        "sp.library.create": "Começar um projeto comigo",
+        "sp.library.createShort": "Criar",
+        "sp.library.filter": "Buscar em Sua Biblioteca",
+        "sp.library.recents": "Recentes",
+        "sp.library.empty": "Nada na sua biblioteca combina com isso.",
+        "sp.chip.projects": "Projetos",
+        "sp.chip.career": "Carreira",
+        "sp.chip.records": "Discos",
+        "sp.type.artist": "Artista",
+        "sp.type.song": "Música",
+        "sp.type.project": "Projeto",
+        "sp.type.caseStudy": "Estudo de caso",
+        "sp.release.album": "Álbum",
+        "sp.release.ep": "EP",
+        "sp.release.single": "Single",
+        "sp.latest": "Lançamento mais recente",
+        "sp.badge.live": "No ar",
+        "sp.verified": "Engenheiro verificado",
+        "sp.play": "Tocar",
+        "sp.pause": "Pausar",
+        "sp.prev": "Anterior",
+        "sp.next": "Próxima",
+        "sp.shuffle": "Aleatório",
+        "sp.repeat.btn": "Repetir",
+        "sp.mute": "Silenciar",
+        "sp.unmute": "Ativar som",
+        "sp.follow": "Seguir",
+        "sp.share": "Copiar link",
+        "sp.copyLink": "Copiar link do perfil",
+        "sp.copied": "Link copiado",
+        "sp.openSite": "Abrir site",
+        "sp.popular": "Populares",
+        "sp.pick": "Escolha do artista",
+        "sp.discography": "Discografia",
+        "sp.showAll": "Mostrar tudo",
+        "sp.repeat": "Também no repeat",
+        "sp.tour": "Em turnê",
+        "sp.tour.remote": "Aberto a remoto",
+        "sp.tour.cta": "Falar comigo",
+        "sp.tour.connect": "Conectar",
+        "sp.tour.setlist": "Ver o setlist",
+        "sp.footer.downloads": "Downloads",
+        "sp.listeners": "contribuições no último ano",
+        "sp.np.title": "Tocando agora",
+        "sp.np.open": "Abrir Tocando agora",
+        "sp.np.why": "O disco é o tema",
+        "sp.np.next": "Próxima na fila",
+        "sp.np.credits": "Créditos",
+        "sp.close": "Fechar",
+        "sp.credits.design": "Design, código, tudo",
+        "sp.credits.built": "Feito com",
+        "sp.credits.session": "Músico de estúdio",
+        "sp.like.add": "Salvar em Discos Curtidos",
+        "sp.like.remove": "Remover de Discos Curtidos",
+        "sp.like.added": "Adicionado aos Discos Curtidos",
+        "sp.like.removed": "Removido dos Discos Curtidos",
+        "sp.screen": "tela",
+        "sp.achievement": "conquista",
+        "sp.achievements": "conquistas",
+        "sp.title": "Título",
+        "sp.more.by": "Mais de Enzo Esmeraldo",
+        "sp.more.releases": "Mais lançamentos",
+        "sp.browse": "Navegar por tudo",
+        "sp.topResult": "Melhor resultado",
+        "sp.noResults": "Nenhum resultado para",
+        "sp.noResults.hint": "Confira a grafia ou tente uma tecnologia como React ou Spring Boot."
     }
 };
+
+// ═══════════════════════════════════════════════════
+// App shell: library, artist page lists, routes, search
+// ═══════════════════════════════════════════════════
+const mainEl = document.getElementById('sp-main');
+const homeView = document.getElementById('view-home');
+const pageView = document.getElementById('view-page');
+const stickyTitle = document.getElementById('sp-main-sticky-title');
+const searchInput = document.getElementById('sp-search-input');
+const libraryList = document.getElementById('sp-library-list');
+const libraryChips = document.getElementById('sp-library-chips');
+const libraryFilterInput = document.getElementById('sp-library-filter');
+
+let currentRoute = { name: 'home' };
+
+function normalizeText(value) {
+    return String(value || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
+function playButtonMarkup(sizeClass) {
+    return `
+        <button type="button" class="sp-play-btn ${sizeClass}" data-sp-play aria-label="${isPlaying ? t('sp.pause') : t('sp.play')}">
+            <i class="fas fa-play sp-when-paused"></i><i class="fas fa-pause sp-when-playing"></i>
+        </button>
+    `;
+}
+
+function cvHref() {
+    return currentLang === 'pt' ? 'assets/cv/CV_ENZO_ESMERALDO_LÍDER_FULLSTACK_PT.pdf' : 'assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf';
+}
+
+// ── Project presentation helpers ──
+function projectHost(project) {
+    const url = project.links && (project.links.demo || project.links.marketplace);
+    if (!url) return '';
+    try {
+        return new URL(url).hostname.replace(/^www\./, '');
+    } catch {
+        return '';
+    }
+}
+
+function projectMeta(project) {
+    return project.status ? pick(project.status) : projectHost(project);
+}
+
+function projectScreens(project) {
+    const count = (project.images || []).length;
+    if (!count) return '';
+    return `${count} ${count === 1 ? t('sp.screen') : t('featuredWork.screens')}`;
+}
+
+function projectBadge(project) {
+    if (project.locked) return '<span class="sp-badge">NDA</span>';
+    if (project.links && (project.links.demo || project.links.marketplace)) return `<span class="sp-badge is-live">${t('sp.badge.live')}</span>`;
+    return '';
+}
+
+function projectThumbMarkup(project, extraClass = '') {
+    if (project.locked) {
+        return `<span class="sp-thumb is-locked ${extraClass}"><i class="fas fa-lock"></i></span>`;
+    }
+    return `
+        <span class="sp-thumb is-logo ${extraClass}" style="--thumb-rgb: ${project.tint};">
+            <img src="${project.logo.src}" alt="" loading="lazy" decoding="async">
+        </span>
+    `;
+}
+
+function projectRowMarkup(project, index) {
+    return `
+        <li>
+            <a class="sp-row ${routeKey(currentRoute) === `project:${project.id}` ? 'is-active' : ''}" href="#/project/${project.id}">
+                <span class="sp-row-index" aria-hidden="true"><span class="sp-row-num">${index + 1}</span><i class="fas fa-play sp-row-hover"></i></span>
+                <span class="sp-row-main">
+                    ${projectThumbMarkup(project)}
+                    <span class="sp-row-text">
+                        <span class="sp-row-title">${project.title}</span>
+                        <span class="sp-row-sub">${projectBadge(project)}${project.technologies.slice(0, 3).join(', ')}</span>
+                    </span>
+                </span>
+                <span class="sp-row-meta">${projectMeta(project)}</span>
+                <span class="sp-row-dur">${projectScreens(project) || '—'}</span>
+            </a>
+        </li>
+    `;
+}
+
+function projectCardMarkup(project) {
+    return `
+        <a class="sp-card" href="#/project/${project.id}">
+            <span class="sp-card-cover">
+                ${projectThumbMarkup(project, 'is-cover')}
+                <span class="sp-play-btn sp-card-play" aria-hidden="true"><i class="fas fa-play"></i></span>
+            </span>
+            <span class="sp-card-title">${project.title}</span>
+            <span class="sp-card-sub">${projectMeta(project) || project.technologies.slice(0, 2).join(', ')}</span>
+        </a>
+    `;
+}
+
+function renderPopular() {
+    const list = document.getElementById('sp-popular-list');
+    if (!list) return;
+    list.innerHTML = featuredProjects.map(projectRowMarkup).join('');
+}
+
+// ── Your Library ──
+const libraryFilters = ['projects', 'career', 'records'];
+let activeLibraryFilter = null;
+
+function getLibraryItems() {
+    return [
+        {
+            kind: 'artist',
+            key: 'home',
+            href: '#/',
+            pinned: true,
+            title: 'Enzo Esmeraldo',
+            sub: t('sp.type.artist'),
+            thumb: '<span class="sp-thumb is-round"><img src="assets/EnzoGym3.jpeg" alt=""></span>'
+        },
+        ...featuredProjects.map(project => ({
+            kind: 'projects',
+            key: `project:${project.id}`,
+            href: `#/project/${project.id}`,
+            title: project.title,
+            sub: `${t('sp.type.project')} • ${project.technologies.slice(0, 2).join(', ')}`,
+            thumb: projectThumbMarkup(project)
+        })),
+        ...careerRoles.map((role, index) => ({
+            kind: 'career',
+            key: `career:${index}`,
+            href: `#/career/${index}`,
+            title: t(`journey.role${index}`),
+            sub: `${releaseType(role)} • ${role.year}`,
+            thumb: `<span class="sp-thumb">${mixCoverMarkup(role, 'sp-mix-thumb')}</span>`
+        })),
+        ...songs.map((song, index) => ({
+            kind: 'records',
+            key: `record:${index}`,
+            record: index,
+            title: song.title,
+            sub: `${t('sp.type.song')} • ${song.artist}`,
+            thumb: `<span class="sp-thumb"><img src="${song.cover}" alt=""></span>`
+        }))
+    ];
+}
+
+function renderLibrary() {
+    libraryChips.innerHTML = libraryFilters.map(id => `
+        <button type="button" class="sp-chip" data-library-filter="${id}" aria-pressed="${activeLibraryFilter === id}">${t(`sp.chip.${id}`)}</button>
+    `).join('');
+
+    const query = normalizeText(libraryFilterInput.value.trim());
+    const items = getLibraryItems()
+        .filter(item => !activeLibraryFilter || item.kind === activeLibraryFilter)
+        .filter(item => !query || normalizeText(`${item.title} ${item.sub}`).includes(query));
+
+    if (!items.length) {
+        libraryList.innerHTML = `<li class="sp-lib-empty">${t('sp.library.empty')}</li>`;
+        return;
+    }
+
+    const currentKey = routeKey(currentRoute);
+    libraryList.innerHTML = items.map(item => {
+        const isRecord = item.record !== undefined;
+        const tag = isRecord ? 'button' : 'a';
+        const target = isRecord ? `type="button" data-record="${item.record}"` : `href="${item.href}"`;
+        return `
+            <li>
+                <${tag} class="sp-lib-item ${item.key === currentKey ? 'is-current' : ''}" ${target} title="${escapeHtml(item.title)}">
+                    ${item.thumb}
+                    <span class="sp-lib-copy">
+                        <span class="sp-lib-title">${item.title}</span>
+                        <span class="sp-lib-sub">${item.pinned ? '<i class="fas fa-thumbtack" aria-hidden="true"></i>' : ''}${item.sub}</span>
+                    </span>
+                    <span class="sp-lib-state" aria-hidden="true"></span>
+                </${tag}>
+            </li>
+        `;
+    }).join('');
+
+    syncLibraryPlayback();
+}
+
+// The playing record gets the accent title and a speaker icon, like any library
+function syncLibraryPlayback() {
+    if (!libraryList) return;
+    libraryList.querySelectorAll('[data-record]').forEach(button => {
+        const index = Number(button.dataset.record);
+        const isCurrent = index === currentSongIndex;
+        button.classList.toggle('is-playing', isCurrent);
+        button.querySelector('.sp-lib-state').innerHTML = isCurrent && isPlaying ? '<i class="fas fa-volume-high"></i>' : '';
+        button.setAttribute('aria-label', `${isCurrent && isPlaying ? t('sp.pause') : t('sp.play')}: ${songs[index].title}`);
+    });
+}
+
+libraryChips.addEventListener('click', event => {
+    const chip = event.target.closest('[data-library-filter]');
+    if (!chip) return;
+    activeLibraryFilter = activeLibraryFilter === chip.dataset.libraryFilter ? null : chip.dataset.libraryFilter;
+    renderLibrary();
+});
+
+libraryFilterInput.addEventListener('input', renderLibrary);
+
+libraryList.addEventListener('click', event => {
+    const record = event.target.closest('[data-record]');
+    if (record) selectRecord(Number(record.dataset.record));
+    if (event.target.closest('.sp-lib-item')) setLibrarySheetOpen(false);
+});
+
+function setLibrarySheetOpen(open) {
+    document.body.classList.toggle('lib-open', open);
+    syncTabbar();
+}
+
+document.getElementById('sp-tab-library').addEventListener('click', () => {
+    setLibrarySheetOpen(!document.body.classList.contains('lib-open'));
+});
+document.getElementById('sp-library-close').addEventListener('click', () => setLibrarySheetOpen(false));
+
+// Desktop collapses to an icon rail; tablets start as the rail and expand
+const tabletQuery = window.matchMedia('(max-width: 1023px)');
+const libraryCollapseBtn = document.getElementById('sp-library-collapse');
+libraryCollapseBtn.addEventListener('click', () => {
+    if (mobileQuery.matches) return;
+    let collapsed;
+    if (tabletQuery.matches) {
+        collapsed = !document.body.classList.toggle('lib-expanded');
+    } else {
+        collapsed = document.body.classList.toggle('lib-collapsed');
+    }
+    libraryCollapseBtn.setAttribute('aria-expanded', String(!collapsed));
+    libraryCollapseBtn.setAttribute('aria-label', t(collapsed ? 'sp.library.expand' : 'sp.library.collapse'));
+});
+
+function syncTabbar() {
+    const libraryOpen = document.body.classList.contains('lib-open');
+    const activeTab = libraryOpen ? 'library' : currentRoute.name === 'search' ? 'search' : currentRoute.name === 'home' ? 'home' : '';
+    document.querySelectorAll('.sp-tab').forEach(tab => tab.classList.toggle('is-active', tab.dataset.tab === activeTab));
+}
+
+// ── Routes: #/, #/project/:id, #/career/:index, #/search?q= (plain #anchors scroll the artist page) ──
+function parseRoute(hash = window.location.hash) {
+    if (!hash.startsWith('#/')) return { name: 'home', anchor: hash.slice(1) };
+    const [path, query = ''] = hash.slice(2).split('?');
+    const [section, param] = path.split('/');
+    if (section === 'project' && param) return { name: 'project', id: decodeURIComponent(param) };
+    if (section === 'career' && param !== undefined) return { name: 'career', index: Number(param) };
+    if (section === 'search') return { name: 'search', query: new URLSearchParams(query).get('q') || '' };
+    return { name: 'home' };
+}
+
+function routeKey(route) {
+    if (route.name === 'project') return `project:${route.id}`;
+    if (route.name === 'career') return `career:${route.index}`;
+    return route.name;
+}
+
+function getScrollTop() {
+    return mobileQuery.matches ? window.scrollY : mainEl.scrollTop;
+}
+
+function scrollMainTo(top) {
+    if (mobileQuery.matches) window.scrollTo({ top });
+    else mainEl.scrollTo({ top });
+}
+
+function setPageChrome(title, tint) {
+    document.title = `${title} · Enzo Esmeraldo`;
+    stickyTitle.textContent = title;
+    if (tint) document.documentElement.style.setProperty('--page-tint-rgb', tint);
+    else document.documentElement.style.removeProperty('--page-tint-rgb');
+}
+
+function renderRoute({ preserveScroll = false, force = false } = {}) {
+    const previous = currentRoute;
+    let route = parseRoute();
+    if (force) pageView.innerHTML = '';
+
+    const rendered = route.name !== 'home' && renderPage(route, previous);
+    if (route.name !== 'home' && !rendered) route = { name: 'home' };
+    currentRoute = route;
+
+    const isHome = route.name === 'home';
+    document.body.dataset.route = route.name;
+    homeView.hidden = !isHome;
+    pageView.hidden = isHome;
+
+    if (isHome) {
+        pageView.innerHTML = '';
+        watchFeaturedVideo(null);
+        document.title = DEFAULT_TITLE;
+        stickyTitle.textContent = 'Enzo Esmeraldo';
+        document.documentElement.style.removeProperty('--page-tint-rgb');
+    }
+
+    if (route.name !== 'search' && document.activeElement !== searchInput) searchInput.value = '';
+
+    renderPopular();
+    renderLibrary();
+    setLibrarySheetOpen(false);
+
+    if (!preserveScroll) {
+        const anchor = isHome && route.anchor ? document.getElementById(route.anchor) : null;
+        if (anchor) anchor.scrollIntoView({ block: 'start' });
+        else scrollMainTo(0);
+    }
+    syncStickyHeader();
+}
+
+function renderPage(route, previous) {
+    if (route.name === 'project') return renderProjectPage(route.id, previous);
+    if (route.name === 'career') return renderCareerPage(route.index);
+    if (route.name === 'search') return renderSearchPage(route.query, previous);
+    return false;
+}
+
+function pageMetaMarkup(parts) {
+    return `
+        <p class="sp-page-meta">
+            <img src="assets/EnzoGym3.jpeg" alt=""><strong>Enzo Esmeraldo</strong>
+            ${parts.filter(Boolean).map(part => `<span class="sp-dot">${part}</span>`).join('')}
+        </p>
+    `;
+}
+
+// A project reads like a playlist: cover, title, then the case study as the "tracks"
+function renderProjectPage(id, previous) {
+    const index = featuredProjects.findIndex(project => project.id === id);
+    if (index < 0) return false;
+
+    const project = featuredProjects[index];
+    const isSameProject = previous && previous.name === 'project' && previous.id === id;
+    featuredProjectState.activeProjectIndex = index;
+    if (!isSameProject) featuredProjectState.activeImageIndex = 0;
+
+    const primaryUrl = project.links && (project.links.demo || project.links.marketplace);
+    const cover = project.locked
+        ? '<div class="sp-page-cover is-logo is-locked"><i class="fas fa-lock"></i></div>'
+        : `<div class="sp-page-cover is-logo"><img src="${project.logo.src}" alt="${project.logo.alt}"></div>`;
+    const primaryAction = primaryUrl
+        ? `<a class="sp-play-btn sp-play-xl" href="${primaryUrl}" target="_blank" rel="noreferrer" aria-label="${t('sp.openSite')}" title="${t('sp.openSite')}"><i class="fas fa-arrow-up-right-from-square"></i></a>`
+        : playButtonMarkup('sp-play-xl');
+    const githubAction = project.links && project.links.github
+        ? `<a class="sp-action-icon" href="${project.links.github}" target="_blank" rel="noreferrer" aria-label="GitHub" title="GitHub"><i class="fab fa-github"></i></a>`
+        : '';
+
+    pageView.innerHTML = `
+        <article class="sp-page">
+            <header class="sp-page-head">
+                ${cover}
+                <div class="sp-page-titles">
+                    <p class="sp-page-type">${t('sp.type.caseStudy')}</p>
+                    <h1 class="sp-page-title">${project.title}</h1>
+                    ${pageMetaMarkup([projectMeta(project), projectScreens(project)])}
+                </div>
+            </header>
+            <div class="sp-page-body">
+                <div class="sp-actionbar">
+                    ${primaryAction}
+                    ${githubAction}
+                    <button type="button" class="sp-follow" data-sp-share>${t('sp.share')}</button>
+                </div>
+                <div id="featured-project-stage" class="featured-project-stage"></div>
+                <section class="sp-section">
+                    <div class="sp-section-head">
+                        <h2 class="sp-section-title">${t('sp.more.by')}</h2>
+                    </div>
+                    <div class="sp-shelf">${featuredProjects.filter(other => other.id !== id).map(projectCardMarkup).join('')}</div>
+                </section>
+            </div>
+        </article>
+    `;
+
+    setPageChrome(project.title, project.tint);
+    renderFeaturedProjectStage();
+    return true;
+}
+
+// A role reads like an album: the achievements are the tracklist
+function renderCareerPage(index) {
+    const role = careerRoles[index];
+    if (!role) return false;
+
+    const title = t(`journey.role${index}`);
+    const trackWord = role.tracks === 1 ? t('sp.achievement') : t('sp.achievements');
+    const tracks = Array.from({ length: role.tracks }, (_, item) => `
+        <li class="sp-row is-text">
+            <span class="sp-row-index">${item + 1}</span>
+            <p class="sp-row-sentence">${t(`journey.role${index}.item${item + 1}`)}</p>
+        </li>
+    `).join('');
+
+    pageView.innerHTML = `
+        <article class="sp-page">
+            <header class="sp-page-head">
+                <div class="sp-page-cover">${mixCoverMarkup(role)}</div>
+                <div class="sp-page-titles">
+                    <p class="sp-page-type">${releaseType(role)}</p>
+                    <h1 class="sp-page-title">${title}</h1>
+                    ${pageMetaMarkup([role.company, t(`journey.date${index}`), `${role.tracks} ${trackWord}`])}
+                </div>
+            </header>
+            <div class="sp-page-body">
+                <div class="sp-actionbar">
+                    ${playButtonMarkup('sp-play-xl')}
+                    <a class="sp-action-icon" href="${cvHref()}" download aria-label="${stripTags(t('hero.resume'))}" title="${stripTags(t('hero.resume'))}"><i class="far fa-circle-down"></i></a>
+                </div>
+                <p class="sp-album-desc">${t(`journey.desc${index}`)}</p>
+                <ol class="sp-tracklist">
+                    <li class="sp-row is-text sp-tracklist-head" aria-hidden="true"><span class="sp-row-index">#</span><span>${t('sp.title')}</span></li>
+                    ${tracks}
+                </ol>
+                <p class="sp-copyright">℗ ${role.year} ${role.company} · ${t(`journey.status${index}`)}</p>
+                <section class="sp-section">
+                    <div class="sp-section-head">
+                        <h2 class="sp-section-title">${t('sp.more.releases')}</h2>
+                        <a class="sp-show-all" href="#trajectory">${t('sp.showAll')}</a>
+                    </div>
+                    <div class="sp-shelf">${careerRoles.map((other, otherIndex) => otherIndex === index ? '' : careerCardMarkup(other, otherIndex)).join('')}</div>
+                </section>
+            </div>
+        </article>
+    `;
+
+    setPageChrome(title, role.mix);
+    return true;
+}
+
+// ── Search ──
+const browseTiles = [
+    { term: 'React', rgb: '39 133 106', img: `${TECH_ICON_BASE}/react.png` },
+    { term: 'Angular', rgb: '186 23 61', img: `${TECH_ICON_BASE}/angular.png` },
+    { term: 'Spring Boot', rgb: '71 125 149', img: `${TECH_ICON_BASE}/spring_boot.png` },
+    { term: 'AI', label: { en: 'AI & agents', pt: 'IA e agentes' }, rgb: '141 103 171', icon: 'fas fa-robot' },
+    { term: 'PostgreSQL', rgb: '30 50 100', img: `${TECH_ICON_BASE}/postgresql.png` },
+    { term: 'TypeScript', rgb: '13 115 236', img: `${TECH_ICON_BASE}/typescript.png` },
+    { term: 'Pokémon', rgb: '232 17 91', img: 'assets/icons/teamBuilderLogo.png' },
+    { term: 'Christus', label: { en: 'Career', pt: 'Carreira' }, rgb: '188 89 0', icon: 'fas fa-briefcase' }
+];
+
+// Word-prefix match, accent-insensitive: "ai" finds "AI-assisted", not "maintain"
+function matchesQuery(text, query) {
+    const pattern = new RegExp(`(^|[^a-z0-9])${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);
+    return pattern.test(normalizeText(stripTags(text)));
+}
+
+function searchPortfolio(rawQuery) {
+    const query = normalizeText(rawQuery.trim());
+    if (!query) return null;
+
+    const projects = featuredProjects.filter(project => matchesQuery(
+        [project.title, project.technologies.join(' '), getFeaturedProjectDescription(project), pick(project.status)].join(' '),
+        query
+    ));
+
+    const roles = careerRoles
+        .map((role, index) => ({ role, index }))
+        .filter(({ role, index }) => matchesQuery([
+            t(`journey.role${index}`),
+            t(`journey.status${index}`),
+            t(`journey.desc${index}`),
+            role.company,
+            ...Array.from({ length: role.tracks }, (_, item) => t(`journey.role${index}.item${item + 1}`))
+        ].join(' '), query));
+
+    const allTech = [...new Set([...techStack.map(tech => tech.name), ...featuredProjects.flatMap(project => project.technologies)])];
+    const stack = allTech.filter(name => matchesQuery(name, query));
+
+    return { projects, roles, stack };
+}
+
+function topResultMarkup(results) {
+    const project = results.projects[0];
+    if (project) {
+        return `
+            <a class="sp-top-result" href="#/project/${project.id}">
+                ${projectThumbMarkup(project)}
+                <div>
+                    <p class="sp-top-result-title">${project.title}</p>
+                    <p class="sp-top-result-sub"><span class="sp-type-pill">${t('sp.type.project')}</span>${projectMeta(project)}</p>
+                </div>
+                <span class="sp-play-btn sp-card-play" aria-hidden="true"><i class="fas fa-play"></i></span>
+            </a>
+        `;
+    }
+    const { role, index } = results.roles[0];
+    return `
+        <a class="sp-top-result" href="#/career/${index}">
+            <span class="sp-thumb">${mixCoverMarkup(role, 'sp-mix-thumb')}</span>
+            <div>
+                <p class="sp-top-result-title">${t(`journey.role${index}`)}</p>
+                <p class="sp-top-result-sub"><span class="sp-type-pill">${releaseType(role)}</span>${role.year}</p>
+            </div>
+            <span class="sp-play-btn sp-card-play" aria-hidden="true"><i class="fas fa-play"></i></span>
+        </a>
+    `;
+}
+
+function renderSearchResults(query) {
+    const container = document.getElementById('sp-search-results');
+    if (!container) return;
+
+    const results = searchPortfolio(query);
+    if (!results) {
+        container.innerHTML = `
+            <h2 class="sp-section-title">${t('sp.browse')}</h2>
+            <div class="sp-browse">
+                ${browseTiles.map(tile => `
+                    <button type="button" class="sp-browse-tile" style="--tile: ${tile.rgb};" data-search-term="${tile.term}">
+                        <span>${tile.label ? pick(tile.label) : tile.term}</span>
+                        ${tile.img ? `<img src="${tile.img}" alt="" loading="lazy" decoding="async">` : `<i class="${tile.icon}" aria-hidden="true"></i>`}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+        return;
+    }
+
+    const { projects, roles, stack } = results;
+    if (!projects.length && !roles.length && !stack.length) {
+        container.innerHTML = `
+            <div class="sp-empty">
+                <h2>${t('sp.noResults')} “${escapeHtml(query)}”</h2>
+                <p>${t('sp.noResults.hint')}</p>
+            </div>
+        `;
+        return;
+    }
+
+    const hasTop = projects.length || roles.length;
+    container.innerHTML = `
+        ${hasTop ? `
+            <div class="sp-results-top">
+                <section>
+                    <h2 class="sp-section-title">${t('sp.topResult')}</h2>
+                    ${topResultMarkup(results)}
+                </section>
+                ${projects.length ? `
+                    <section>
+                        <h2 class="sp-section-title">${t('sp.chip.projects')}</h2>
+                        <ol class="sp-tracklist">${projects.slice(0, 4).map(projectRowMarkup).join('')}</ol>
+                    </section>
+                ` : ''}
+            </div>
+        ` : ''}
+        ${roles.length ? `
+            <section class="sp-section">
+                <h2 class="sp-section-title">${t('sp.chip.career')}</h2>
+                <div class="sp-shelf is-grid">${roles.map(({ role, index }) => careerCardMarkup(role, index)).join('')}</div>
+            </section>
+        ` : ''}
+        ${stack.length ? `
+            <section class="sp-section">
+                <h2 class="sp-section-title">Stack</h2>
+                <div class="sp-stack-chips">${stack.map(name => `<button type="button" class="sp-chip" data-search-term="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join('')}</div>
+            </section>
+        ` : ''}
+    `;
+}
+
+function renderSearchPage(query, previous) {
+    // Keep the page (and the phone's inline search box) alive while typing; only results change
+    if (previous.name !== 'search' || !document.getElementById('sp-search-results')) {
+        pageView.innerHTML = `
+            <div class="sp-search-page">
+                <form class="sp-search sp-search-inline" role="search" data-inline-search>
+                    <i class="fas fa-magnifying-glass sp-search-icon" aria-hidden="true"></i>
+                    <input type="search" autocomplete="off" spellcheck="false" placeholder="${stripTags(t('sp.search.placeholder'))}" aria-label="${stripTags(t('sp.search.placeholder'))}">
+                </form>
+                <div id="sp-search-results"></div>
+            </div>
+        `;
+        const inlineForm = pageView.querySelector('[data-inline-search]');
+        inlineForm.addEventListener('submit', event => event.preventDefault());
+        inlineForm.querySelector('input').addEventListener('input', event => runSearch(event.target.value));
+    }
+
+    const inlineInput = pageView.querySelector('[data-inline-search] input');
+    if (inlineInput && document.activeElement !== inlineInput) inlineInput.value = query;
+    if (document.activeElement !== searchInput) searchInput.value = query;
+
+    renderSearchResults(query);
+    setPageChrome(t('sp.search'), null);
+    return true;
+}
+
+function runSearch(query) {
+    const hash = query ? `#/search?q=${encodeURIComponent(query)}` : '#/search';
+    if (currentRoute.name === 'search') {
+        history.replaceState(null, '', hash);
+        renderRoute({ preserveScroll: true });
+    } else {
+        window.location.hash = hash;
+    }
+}
+
+function focusSearch() {
+    if (!mobileQuery.matches) {
+        searchInput.focus();
+        return;
+    }
+    if (currentRoute.name !== 'search') window.location.hash = '#/search';
+    requestAnimationFrame(() => {
+        const inlineInput = pageView.querySelector('[data-inline-search] input');
+        if (inlineInput) inlineInput.focus();
+    });
+}
+
+document.getElementById('sp-search-form').addEventListener('submit', event => event.preventDefault());
+searchInput.addEventListener('input', () => runSearch(searchInput.value));
+// Like the real thing: focusing the search bar opens Browse
+searchInput.addEventListener('focus', () => {
+    if (currentRoute.name !== 'search') runSearch(searchInput.value);
+});
+
+pageView.addEventListener('click', event => {
+    const term = event.target.closest('[data-search-term]');
+    if (term) runSearch(term.dataset.searchTerm);
+    if (event.target.closest('[data-sp-share]')) copyText(window.location.href);
+});
+
+// ── Sticky header inside the main view ──
+let stickyTicking = false;
+function syncStickyHeader() {
+    const header = currentRoute.name === 'home'
+        ? homeView.querySelector('.sp-artist-hero')
+        : pageView.querySelector('.sp-page-head');
+    const threshold = header ? header.offsetHeight - 72 : Infinity;
+    mainEl.classList.toggle('is-stuck', getScrollTop() > threshold);
+}
+
+function onMainScroll() {
+    if (stickyTicking) return;
+    stickyTicking = true;
+    requestAnimationFrame(() => {
+        syncStickyHeader();
+        stickyTicking = false;
+    });
+}
+
+mainEl.addEventListener('scroll', onMainScroll, { passive: true });
+window.addEventListener('scroll', onMainScroll, { passive: true });
+
+// ── Small affordances: share, menus, skip link, home ──
+function copyText(text) {
+    if (!navigator.clipboard) {
+        showToast(text);
+        return;
+    }
+    navigator.clipboard.writeText(text)
+        .then(() => showToast(t('sp.copied')))
+        .catch(() => showToast(text));
+}
+
+function closeMenus() {
+    document.querySelectorAll('details.sp-more[open]').forEach(menu => { menu.open = false; });
+}
+
+document.getElementById('sp-copy-link').addEventListener('click', () => {
+    copyText(`${window.location.origin}${window.location.pathname}`);
+    closeMenus();
+});
+
+document.addEventListener('click', event => {
+    if (!event.target.closest('details.sp-more')) closeMenus();
+});
+
+document.querySelector('.sp-skip').addEventListener('click', event => {
+    event.preventDefault();
+    mainEl.focus();
+});
+
+// "#/" doesn't fire hashchange when it's already the hash: scroll home to the top instead
+document.addEventListener('click', event => {
+    const link = event.target.closest('a[href="#/"]');
+    if (link && window.location.hash === '#/') {
+        event.preventDefault();
+        scrollMainTo(0);
+    }
+});
+
+function renderTourDate() {
+    const now = new Date();
+    const locale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
+    document.getElementById('sp-tour-month').textContent = now.toLocaleDateString(locale, { month: 'short' }).replace('.', '');
+    document.getElementById('sp-tour-day').textContent = String(now.getDate());
+}
+
+// "1,234 contributions in the last year" is this page's monthly-listeners line
+function renderListeners(totalCount) {
+    const locale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
+    const text = typeof totalCount === 'number'
+        ? `${totalCount.toLocaleString(locale)} ${t('sp.listeners')}`
+        : stripTags(t('hero.role'));
+    ['sp-listeners', 'sp-about-listeners'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = text;
+    });
+}
 
 let currentLang = 'en';
 
 function setLanguage(lang) {
     currentLang = lang;
-    document.documentElement.lang = lang;
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
 
     document.querySelectorAll('[data-lang]').forEach(element => {
         const key = element.getAttribute('data-lang');
@@ -1904,57 +2587,81 @@ function setLanguage(lang) {
             element.innerHTML = translations[lang][key];
         }
     });
-
-    // Update CV links
-    const cvLinks = document.querySelectorAll('a[href*="cv"]');
-    const cvFile = lang === 'pt' ? 'assets/cv/CV_ENZO_ESMERALDO_LÍDER_FULLSTACK_PT.pdf' : 'assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf';
-    cvLinks.forEach(link => {
-        link.href = cvFile;
+    document.querySelectorAll('[data-lang-placeholder]').forEach(element => {
+        element.placeholder = stripTags(t(element.dataset.langPlaceholder));
+    });
+    document.querySelectorAll('[data-lang-aria]').forEach(element => {
+        element.setAttribute('aria-label', stripTags(t(element.dataset.langAria)));
     });
 
-    // Update toggle buttons
-    const desktopBtn = document.getElementById('current-lang-desktop');
-    const mobileBtn = document.getElementById('current-lang-mobile');
-    if (desktopBtn) desktopBtn.textContent = lang.toUpperCase();
-    if (mobileBtn) mobileBtn.textContent = lang.toUpperCase();
+    document.querySelectorAll('[data-cv]').forEach(link => {
+        link.href = cvHref();
+    });
 
+    document.getElementById('current-lang').textContent = lang.toUpperCase();
     localStorage.setItem('preferred-lang', lang);
 
-    renderFeaturedProjects();
-    renderHeatmap();
-    renderTechStack();
+    renderNowPlaying();
+    setPlayingState(isPlaying);
+    setVolume(audioPlayer.volume);
+    renderTourDate();
+    renderDiscography();
     renderAboutInterests();
+    renderHeatmap();
+    renderRoute({ preserveScroll: true, force: true });
 }
 
 function toggleLanguage() {
-    const newLang = currentLang === 'en' ? 'pt' : 'en';
-    setLanguage(newLang);
+    setLanguage(currentLang === 'en' ? 'pt' : 'en');
 }
 
 function initLanguage() {
     const savedLang = localStorage.getItem('preferred-lang');
     const browserLang = navigator.language.startsWith('pt') ? 'pt' : 'en';
-    const initialLang = savedLang || browserLang;
-    setLanguage(initialLang);
-
-    const desktopToggle = document.getElementById('lang-toggle-desktop');
-    const mobileToggle = document.getElementById('lang-toggle-mobile');
-    if (desktopToggle) desktopToggle.addEventListener('click', toggleLanguage);
-    if (mobileToggle) mobileToggle.addEventListener('click', toggleLanguage);
+    setLanguage(savedLang || browserLang);
+    document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
 }
 
-document.addEventListener('DOMContentLoaded', initLanguage);
-document.addEventListener('DOMContentLoaded', initFeaturedProjects);
-document.addEventListener('DOMContentLoaded', initHeatmapTooltip);
-document.addEventListener('DOMContentLoaded', loadHeatmap);
-document.addEventListener('DOMContentLoaded', renderTechStack);
-document.addEventListener('DOMContentLoaded', renderAboutInterests);
 document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
         closeFeaturedImageModal();
-        // Escape on the jukebox = the quiet skip
-        if (document.getElementById('jukebox')) {
-            chooseRecord(0, { withMusic: false });
-        }
+        closeMenus();
+        setLibrarySheetOpen(false);
+        // Only the overlay / phone sheet closes; the docked panel stays put
+        if (!wideQuery.matches) setNowPlayingOpen(false);
+        if (event.target === searchInput) searchInput.blur();
+        return;
+    }
+
+    const isTyping = event.target.closest && event.target.closest('input, textarea, select, [contenteditable="true"]');
+    if (isTyping) return;
+
+    if (event.key === '/' || ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k')) {
+        event.preventDefault();
+        focusSearch();
+        return;
+    }
+
+    // Space plays/pauses, unless it's already pressing a focused control
+    if (event.code === 'Space' && !event.target.closest('button, a, summary, [role="tab"]')) {
+        event.preventDefault();
+        togglePlay();
     }
 });
+
+window.addEventListener('hashchange', () => renderRoute());
+wideQuery.addEventListener('change', initNowPlaying);
+mobileQuery.addEventListener('change', syncStickyHeader);
+
+function initApp() {
+    const savedSide = localStorage.getItem('jukebox-side');
+    loadSong(savedSide !== null ? (Number(savedSide) || 0) : 0);
+    setVolume(audioPlayer.volume);
+    initNowPlaying();
+    renderTechStack();
+    initLanguage();
+    initHeatmapTooltip();
+    loadHeatmap();
+}
+
+initApp();

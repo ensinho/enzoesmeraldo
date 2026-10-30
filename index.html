@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Enzo Esmeraldo · Interfaces for messy work</title>
     <meta name="description" content="Fullstack engineer from Fortaleza, BR. I take messy workflows like clinical decisions, QA handoffs and field research, and turn them into software people actually want to open.">
     <meta name="author" content="Enzo Esmeraldo">
+    <meta name="theme-color" content="#000000">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
     <link rel="shortcut icon" href="assets/favicon.svg" />
     <meta property="og:type" content="website" />
@@ -22,668 +23,421 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
 
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-
-    <!-- Custom Styles -->
+    <!-- Base component styles (project gallery, deep dive, heatmap) -->
     <link rel="stylesheet" href="styles.css" />
 
     <!-- Tailwind (prebuilt, loaded after styles.css so utilities win — matching the old CDN cascade.
          Rebuild with: npx tailwindcss -c tailwind.config.js -i tailwind.input.css -o tailwind.css --minify) -->
     <link rel="stylesheet" href="tailwind.css" />
+
+    <!-- Streaming-app shell: loaded last so it owns layout and color -->
+    <link rel="stylesheet" href="spotify.css" />
 </head>
 
-<body class="bg-bg text-text font-body antialiased overflow-x-hidden">
+<body class="sp">
+    <a class="sp-skip" href="#sp-main" data-lang="sp.skip">Skip to content</a>
 
-    <!-- ═══ THE JUKEBOX (signature moment — replaces loader) ═══ -->
-    <div id="jukebox" class="jukebox" role="dialog" aria-modal="true" aria-label="Choose a record to set the site theme">
-        <div class="jukebox-inner">
-            <p class="jukebox-kicker font-mono" data-lang="jukebox.kicker">ENZO.DEV · THE JUKEBOX</p>
-            <h2 class="jukebox-title font-display">
-                <span data-lang="jukebox.title1">Pick a record.</span><br>
-                <span class="jukebox-title-sub" data-lang="jukebox.title2">The record is the theme.</span>
-            </h2>
-            <div class="jukebox-records">
-                <button type="button" class="jukebox-record" data-jukebox-side="0">
-                    <span class="jukebox-media">
-                        <span class="jukebox-vinyl" style="--vinyl-label: rgb(122 169 216);"></span>
-                        <img class="jukebox-sleeve" src="assets/albumCovers/oxygenPorchLight.jpg" alt="Oxygen by Porch Light, album cover" loading="eager">
-                    </span>
-                    <span class="jukebox-record-meta">
-                        <span class="jukebox-side font-mono">SIDE A</span>
-                        <span class="jukebox-song font-display">Oxygen</span>
-                        <span class="jukebox-artist font-mono">Porch Light · <em data-lang="jukebox.moodA">deep blue</em></span>
-                    </span>
-                </button>
-                <button type="button" class="jukebox-record" data-jukebox-side="1">
-                    <span class="jukebox-media">
-                        <span class="jukebox-vinyl" style="--vinyl-label: rgb(244 244 241);"></span>
-                        <img class="jukebox-sleeve" src="assets/albumCovers/DeftonesCover.jpg" alt="Change (In the House of Flies) by Deftones, album cover" loading="eager">
-                    </span>
-                    <span class="jukebox-record-meta">
-                        <span class="jukebox-side font-mono">SIDE B</span>
-                        <span class="jukebox-song font-display">Change</span>
-                        <span class="jukebox-artist font-mono">Deftones · <em data-lang="jukebox.moodB">ink on bone</em></span>
-                    </span>
-                </button>
-            </div>
-            <button type="button" id="jukebox-skip" class="jukebox-skip font-mono" data-lang="jukebox.skip">skip, keep it quiet</button>
-        </div>
-    </div>
+    <div class="sp-app">
 
-    <!-- ═══ NAVBAR ═══ -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-[100] transition-all duration-500">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
-            <!-- Logo -->
-            <a href="#" class="font-heading text-xl tracking-tight text-white hover:text-accent transition-colors">
-                ENZO<span class="text-accent">.</span>DEV
+        <!-- ═══ TOP BAR ═══ -->
+        <header class="sp-topbar">
+            <a href="#/" class="sp-logo" aria-label="Enzo Esmeraldo, home">
+                <svg viewBox="0 0 640 512" aria-hidden="true"><path fill="currentColor" d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/></svg>
+                <span class="sp-logo-word">enzo.dev</span>
             </a>
 
-            <!-- Desktop Nav -->
-            <div class="hidden md:flex items-center gap-8">
-                <a href="#about" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.about">About</a>
-                <a href="#trajectory" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Trajectory</a>
-                <a href="#work" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Work</a>
-                <a href="#contact" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.contact">Contact</a>
+            <div class="sp-topbar-center">
+                <a href="#/" class="sp-round-btn sp-home-btn" data-lang-aria="sp.home" aria-label="Home">
+                    <i class="fas fa-house"></i>
+                </a>
+                <form class="sp-search" id="sp-search-form" role="search">
+                    <i class="fas fa-magnifying-glass sp-search-icon" aria-hidden="true"></i>
+                    <input id="sp-search-input" type="search" autocomplete="off" spellcheck="false"
+                        placeholder="What do you want to see?" data-lang-placeholder="sp.search.placeholder"
+                        aria-label="Search projects, career and stack">
+                    <span class="sp-search-divider" aria-hidden="true"></span>
+                    <a href="#/search" class="sp-search-browse" data-lang-aria="sp.search.browse" aria-label="Browse all" title="Browse all">
+                        <i class="fas fa-layer-group"></i>
+                    </a>
+                </form>
+            </div>
 
-                <!-- Record Flip (theme) -->
-                <button id="theme-flip-desktop" class="theme-flip flex items-center gap-2 font-mono text-[11px] tracking-wider text-gray hover:text-accent transition-colors cursor-pointer" title="Flip the record and the theme follows">
-                    <i class="fas fa-record-vinyl text-[12px] theme-flip-icon"></i>
-                    <span class="theme-flip-side">SIDE A</span>
+            <div class="sp-topbar-right">
+                <a href="assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf" download onclick="checkCV(event)" class="sp-pill-white" data-cv>
+                    <span data-lang="hero.resume">Download CV</span>
+                </a>
+                <button id="lang-toggle" type="button" class="sp-topbar-link" aria-label="Switch language">
+                    <i class="fas fa-globe"></i>
+                    <span id="current-lang">EN</span>
                 </button>
-
-                <!-- Lang Toggle -->
-                <button id="lang-toggle-desktop" class="flex items-center gap-1.5 font-mono text-[11px] tracking-wider text-gray hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-globe text-[10px]"></i>
-                    <span id="current-lang-desktop">EN</span>
-                </button>
-            </div>
-
-            <!-- Mobile Menu Button -->
-            <button id="menu-btn" class="md:hidden text-text cursor-pointer z-[110]">
-                <i class="fas fa-bars text-xl"></i>
-            </button>
-        </div>
-    </nav>
-
-    <!-- ═══ MOBILE MENU ═══ -->
-    <div id="mobile-menu-backdrop" class="fixed inset-0 bg-black/60 z-[105] opacity-0 pointer-events-none transition-opacity duration-300 md:hidden" onclick="closeMobileMenu()"></div>
-    <div id="mobile-menu" class="fixed top-0 right-0 h-full w-72 bg-panel z-[108] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden border-l border-white/5">
-        <div class="flex flex-col pt-24 px-8 gap-6">
-            <a href="#about" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.about">About</a>
-            <a href="#trajectory" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Trajectory</a>
-            <a href="#work" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Work</a>
-            <a href="#contact" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.contact">Contact</a>
-            <hr class="border-white/5">
-            <button id="theme-flip-mobile" class="theme-flip flex items-center gap-2 font-mono text-[11px] tracking-wider text-gray hover:text-accent transition-colors cursor-pointer">
-                <i class="fas fa-record-vinyl text-[12px] theme-flip-icon"></i>
-                <span class="theme-flip-side">SIDE A</span>
-            </button>
-            <button id="lang-toggle-mobile" class="flex items-center gap-1.5 font-mono text-[11px] tracking-wider text-gray hover:text-accent transition-colors cursor-pointer">
-                <i class="fas fa-globe text-[10px]"></i>
-                <span id="current-lang-mobile">EN</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- ═══ HERO ═══ -->
-    <section id="hero" class="relative min-h-screen flex items-center overflow-hidden">
-        <!-- Background Image -->
-        <div id="hero-bg" class="absolute inset-0 bg-cover bg-center opacity-45 transition-opacity duration-500" style="background-image: url('assets/backgrounds/catwhaleshark.jpg');"></div>
-
-        <div class="relative z-10 max-w-[1160px] mx-auto px-6 md:px-10 w-full pt-32 pb-20">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-end">
-                <!-- Main Content -->
-                <div class="lg:col-span-8 space-y-8">
-                    <!-- Eyebrow / Status -->
-                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-                        <span class="hero-text-anim font-mono text-[11px] tracking-[0.2em] uppercase text-text">Enzo Esmeraldo</span>
-                        <div class="hero-text-anim hidden sm:block text-white/10 font-light">|</div>
-                        <span class="hero-text-anim font-mono text-[11px] tracking-[0.2em] uppercase text-gray" data-lang="hero.role">Fullstack Engineer · Tech Lead</span>
-                        <div class="hero-text-anim hidden sm:block text-white/10 font-light">|</div>
-                        <div class="hero-text-anim flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                            <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-gray" data-lang="hero.available">Open to work</span>
-                        </div>
-                        <div class="hero-text-anim hidden md:flex items-center gap-2">
-                            <i class="fas fa-map-marker-alt text-[10px] text-gray"></i>
-                            <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-gray" data-lang="hero.location">Fortaleza, BR</span>
-                        </div>
-                    </div>
-
-                    <!-- Claim -->
-                    <div>
-                        <h1 class="hero-headline font-display text-5xl sm:text-6xl md:text-7xl lg:text-[5.2rem] font-medium leading-[1.04] tracking-tight text-text">
-                            <span class="hero-text-anim inline-block" data-lang="hero.headline1">I build interfaces</span><br>
-                            <span class="hero-text-anim inline-block text-accent italic" data-lang="hero.headline2">for messy work.</span>
-                        </h1>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="max-w-2xl">
-                        <p class="hero-text-anim font-body text-base md:text-lg text-gray leading-relaxed" data-lang="hero.description">
-                            Doctors making calls under pressure. QA teams chasing commits. Researchers buried in field data. I like taking messy workflows like these and turning them into <span class="text-accent font-medium">software people actually want to open</span>, from the database all the way to the screen, with AI helping along the way. <span class="text-text">I started as an intern in 2024 and was leading a project by 2026.</span>
-                        </p>
-                    </div>
-
-                    <!-- CTAs -->
-                    <div class="hero-text-anim flex flex-wrap items-center gap-4">
-                        <a href="#work" class="group flex items-center gap-3 bg-accent text-black px-6 py-3 font-mono text-[11px] tracking-[0.15em] uppercase hover:bg-accent/90 transition-all">
-                            <span data-lang="hero.viewProjects">VIEW SELECTED WORK</span>
-                            <i class="fas fa-arrow-down text-[10px] group-hover:translate-y-0.5 transition-transform"></i>
-                        </a>
-                        <a href="assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf" download onclick="checkCV(event)" class="group flex items-center gap-3 border border-white/15 px-6 py-3 font-mono text-[11px] tracking-[0.15em] uppercase text-gray hover:text-text hover:border-white/30 transition-all">
-                            <span data-lang="hero.resume">DOWNLOAD CV</span>
-                            <i class="fas fa-download text-[10px] opacity-50 group-hover:opacity-100 transition-opacity"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Metadata Column -->
-                <div class="lg:col-span-4 gs-fade-in">
-                    <div class="space-y-6 lg:border-l lg:border-white/10 lg:pl-8">
-                        <!-- Photo -->
-                        <div class="flex items-center gap-4">
-                            <img src="assets/EnzoGym3.jpeg" alt="Enzo Esmeraldo" class="duotone-portrait w-24 h-24 rounded-full object-cover border-2 border-accent/20 transition-all duration-500" />
-                            <div>
-                                <p class="font-heading text-base text-text font-medium" data-lang="about.title">Enzo Esmeraldo</p>
-                                <p class="font-mono text-[11px] text-gray tracking-wider uppercase" data-lang="hero.subrole">Fullstack Engineer @ Colégio Christus</p>
-                            </div>
-                        </div>
-
-                        <!-- Promotion timeline (replaces vanity stats) -->
-                        <div class="hero-timeline font-mono text-[10px] tracking-wider uppercase">
-                            <span class="hero-timeline-step" data-lang="hero.tl1">2024 · Intern</span>
-                            <span class="hero-timeline-arrow">→</span>
-                            <span class="hero-timeline-step" data-lang="hero.tl2">2025 · Fullstack Dev</span>
-                            <span class="hero-timeline-arrow">→</span>
-                            <span class="hero-timeline-step" data-lang="hero.tl3">2026 · Project Lead</span>
-                            <span class="hero-timeline-arrow">→</span>
-                            <span class="hero-timeline-step is-current" data-lang="hero.tl4">Now · Fullstack Engineer</span>
-                        </div>
-
-                        <!-- Social Links -->
-                        <div class="flex items-center gap-3">
-                            <a href="https://github.com/ensinho" target="_blank" class="social-link w-10 h-10 flex items-center justify-center border border-white/10 hover:border-accent/40 rounded-full text-text transition-all"><i class="fab fa-github text-sm"></i></a>
-                            <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" class="social-link w-10 h-10 flex items-center justify-center border border-white/10 hover:border-accent/40 rounded-full text-text transition-all"><i class="fab fa-linkedin-in text-sm"></i></a>
-                            <a href="mailto:enzopo625@gmail.com" class="social-link w-10 h-10 flex items-center justify-center border border-white/10 hover:border-accent/40 rounded-full text-text transition-all"><i class="fas fa-envelope text-sm"></i></a>
-                        </div>
-
-                        <!-- GitHub Activity -->
-                        <div class="hero-activity-panel">
-                            <div class="flex items-center justify-between gap-4 mb-3">
-                                <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase" data-lang="contrib.label">Contribution Activity</p>
-                                <span id="contrib-total" class="font-mono text-[10px] text-gray/40">&nbsp;</span>
-                            </div>
-                            <div class="contrib" role="img" aria-label="GitHub contribution activity over the past year">
-                                <div class="contrib-months" id="contrib-months" aria-hidden="true"></div>
-                                <div class="contrib-grid" id="contrib-grid" aria-hidden="true"></div>
-                                <div class="contrib-footer">
-                                    <div class="contrib-legend" aria-hidden="true">
-                                        <span data-lang="contrib.less">Less</span>
-                                        <span class="contrib-swatch" style="background:var(--heat-0)"></span>
-                                        <span class="contrib-swatch" style="background:var(--heat-1)"></span>
-                                        <span class="contrib-swatch" style="background:var(--heat-2)"></span>
-                                        <span class="contrib-swatch" style="background:var(--heat-3)"></span>
-                                        <span class="contrib-swatch" style="background:var(--heat-4)"></span>
-                                        <span data-lang="contrib.more">More</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase mb-2" data-lang="tech.label">Core Stack</p>
-                                <div id="tech-icons" class="tech-icons" aria-label="Core technology stack"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Scroll Indicator -->
-            <div class="gs-fade-in absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-                <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-gray/40" data-lang="hero.scroll">Scroll</span>
-                <div class="w-[1px] h-8 bg-gradient-to-b from-accent/40 to-transparent animate-pulse"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══ ABOUT ═══ -->
-    <section id="about" class="relative py-24 md:py-28">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10">
-            <!-- Section Header -->
-            <div class="gs-reveal mb-16 md:mb-20">
-                <p class="section-label font-mono text-[11px] tracking-[0.3em] uppercase text-accent mb-4" data-lang="about.label">About</p>
-                <h2 class="font-display text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1]">
-                    <span data-lang="about.title1">The interface is</span><br>
-                    <span class="text-accent italic" data-lang="about.title2">the product.</span>
-                </h2>
-            </div>
-
-            <!-- Bento Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-
-                <!-- Card 1 — Main bio (spans 2 cols) -->
-                <div class="gs-reveal bento-card about-card about-card-main lg:col-span-2 group">
-                    <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col md:flex-row gap-8 items-start min-h-[280px]">
-                        <div class="about-avatar-stack">
-                            <img loading="lazy" decoding="async" src="assets/EnzoGym3.jpeg" alt="Enzo Esmeraldo" class="about-avatar-image w-20 h-20 rounded-full object-cover border-2 border-accent/20 transition-all duration-500 shrink-0" />
-                            <div class="about-avatar-note" aria-label="And by the way, that's me">
-                                <img loading="lazy" decoding="async" src="assets/icons/mudkipicon.png" alt="" class="about-avatar-note-icon" />
-                                <span data-lang="about.avatarJoke">btw, that's me</span>
-                                <span class="about-theme-mark about-theme-mark-deftones" aria-hidden="true"><i class="fas fa-circle-half-stroke"></i></span>
-                            </div>
-                        </div>
-                        <div class="flex-1 space-y-4">
-                            <span class="bento-tag">
-                                <i class="fas fa-user text-[10px]"></i>
-                                <span data-lang="about.offCode">About the Developer</span>
-                            </span>
-                            <p class="font-body text-sm md:text-base text-gray leading-relaxed" data-lang="about.description">I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.</p>
-                            <p class="font-body text-sm text-gray/60 leading-relaxed" data-lang="about.bio2">I've led a team, handling architecture, the design system, Git strategy and mentoring, and I never stopped <strong>shipping every week</strong>. My workflow is <strong>AI-native</strong>: Claude Code, custom agents and skills that take me from spec to tests to pull request review.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2 — Fav Pokemon / Fun fact -->
-                <div class="gs-reveal bento-card about-card about-card-funfact group">
-                    <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col justify-between min-h-[280px]">
-                        <div>
-                            <span class="bento-tag">
-                                <i class="fas fa-star text-[10px]"></i>
-                                <span data-lang="about.funfact.label">Fun Fact</span>
-                            </span>
-                            <div class="fav-pokemon-heading">
-                                <h3 class="font-heading text-xl md:text-2xl text-text font-medium" data-lang="about.funfact.title">Fav. Pokémon is Lugia</h3>
-                                <img loading="lazy" decoding="async" src="assets/icons/LugiaLittleIcon.png" alt="" class="fav-pokemon-icon" />
-                            </div>
-                            <p class="font-body text-sm text-gray leading-relaxed" data-lang="about.funfact.desc">Psychic-type elegance and legendary rarity. Basically my design philosophy, but as a Pokémon.</p>
-                        </div>
-                        <div class="about-funfact-footer flex items-center gap-2 mt-6 transition-all duration-500">
-                            <span class="w-8 h-[1px] bg-accent/30"></span>
-                            <span class="font-mono text-[10px] tracking-widest uppercase">Pokémon 2000</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3 — Currently building -->
-                <div class="gs-reveal bento-card about-card about-card-current lg:col-span-3 group">
-                    <div class="bento-card-inner p-8 md:p-10 h-full flex flex-col justify-between min-h-[160px]">
-                        <div>
-                            <span class="bento-tag">
-                                <i class="fas fa-code-branch text-[10px]"></i>
-                                <span data-lang="about.current.label">Currently Building</span>
-                            </span>
-                            <p class="font-body text-sm md:text-base text-gray leading-relaxed mt-4" data-lang="about.current.desc"><strong>Exitus Gestor</strong>, across the whole stack. That means a PostgreSQL data model, a Spring Boot domain layer split with Domain-Driven Design and Angular on the front, with TDD, Flyway migrations and <strong>Claude Code agents</strong> helping out.</p>
-                        </div>
-                        <div class="flex items-center gap-3 mt-6">
-                            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                            <span class="font-mono text-[10px] tracking-wider text-green-400/70 uppercase" data-lang="about.current.status">In active development</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Interest Chips -->
-            <div class="gs-reveal about-interest-panel mt-5">
-                <div class="about-interest-copy">
-                    <span class="bento-tag max-w-fit">
-                        <i class="fas fa-compass text-[10px]"></i>
-                        <span data-lang="about.interests.label">Interests</span>
-                    </span>
-                    <p class="about-interest-title" data-lang="about.interests.title">Outside the editor</p>
-                    <p id="about-interest-text" class="about-interest-text"><strong>Pokemon and sharks</strong> are my main hype focus: <strong>Lugia</strong>, <strong>Gengar</strong>, and <strong>Arcanine</strong> for personality and style; <strong>whale sharks</strong> and <strong>hammerheads</strong> for calm scale, sharp silhouettes, and natural design energy.</p>
-                </div>
-                <div id="about-interest-buttons" class="about-interest-buttons" role="tablist" aria-label="Personal interests"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══ TRAJECTORY ═══ -->
-    <section id="trajectory" class="relative py-24 md:py-28">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10">
-            <!-- Section Header -->
-            <div class="gs-reveal mb-16 md:mb-20">
-                <p class="section-label font-mono text-[11px] tracking-[0.3em] uppercase text-accent mb-4" data-lang="journey.subtitle">Career Path</p>
-                <h2 class="font-display text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1]">
-                    <span data-lang="journey.the">Professional</span><br>
-                    <span class="text-accent italic" data-lang="journey.title">Journey.</span>
-                </h2>
-            </div>
-
-            <!-- Timeline -->
-            <div class="max-w-3xl mx-auto space-y-0">
-
-                <!-- Role 0 — Current: Fullstack Engineer -->
-                <div class="gs-reveal relative pl-8 md:pl-12 border-l-2 border-accent/30 pb-12">
-                    <div class="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-accent border-[3px] border-bg shadow-[0_0_12px_rgba(var(--accent-rgb),0.4)]"></div>
-                    <div class="space-y-4">
-                        <!-- Header row -->
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="font-heading text-lg md:text-xl text-text font-semibold" data-lang="journey.role0">Fullstack Engineer</h3>
-                                <span class="font-mono text-[10px] tracking-wider text-accent bg-accent/10 px-3 py-1 rounded-full font-medium" data-lang="journey.status0">Current · Angular + Spring Boot</span>
-                            </div>
-                            <p class="font-mono text-[11px] text-gray/60 tracking-wider shrink-0" data-lang="journey.date0">Jul. 2026 to Present</p>
-                        </div>
-
-                        <!-- Company -->
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-building text-[10px] text-gray/40"></i>
-                            <span class="font-body text-sm text-gray/60">Colégio Christus</span>
-                        </div>
-
-                        <!-- Description -->
-                        <p class="font-body text-sm text-gray leading-relaxed" data-lang="journey.desc0">Structuring <strong>Exitus Gestor</strong> end to end, so the data model, back-end and interface are all <strong>speaking the same domain language</strong>. Domain-Driven Design, TDD and an <strong>AI-native workflow</strong> keep it that way.</p>
-
-                        <!-- Achievements — OPEN by default -->
-                        <div class="pt-2 space-y-4">
-                            <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-accent/60" data-lang="journey.achievements">Key Achievements</p>
-                            <ul class="space-y-3">
-                                <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                    <span data-lang="journey.role0.item1"><strong>Structure Exitus Gestor across the whole stack</strong>: PostgreSQL data model, Spring Boot domain layer, and Angular applications integrated with its RESTful APIs</span>
-                                </li>
-                                <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                    <span data-lang="journey.role0.item2"><strong>Apply Domain-Driven Design</strong> to split the platform into services with explicit boundaries and contracts, so each one evolves and deploys without coupling</span>
-                                </li>
-                                <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                    <span data-lang="journey.role0.item3"><strong>Drive Test-Driven Development</strong>, with business rules explicit and covered by tests from day one</span>
-                                </li>
-                                <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                    <span data-lang="journey.role0.item4">Version every schema change with <strong>Flyway migrations</strong>, making database evolution reproducible across environments</span>
-                                </li>
-                                <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                    <span data-lang="journey.role0.item5"><strong>Build agentic development workflows with Claude Code</strong>, with custom agents, skills and automated flows from spec to tests, and automate pull request review with AI</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Role 1 — Project Leader -->
-                <div class="gs-reveal relative pl-8 md:pl-12 border-l-2 border-white/8 pb-12">
-                    <div class="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-white/20 border-[3px] border-bg"></div>
-                    <div class="space-y-4">
-                        <!-- Header row -->
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="font-heading text-lg md:text-xl text-text font-semibold" data-lang="journey.role1">Project Leader</h3>
-                                <span class="font-mono text-[10px] tracking-wider text-gray bg-white/5 px-3 py-1 rounded-full" data-lang="journey.status1">Completed · React + Node.js + PostgreSQL</span>
-                            </div>
-                            <p class="font-mono text-[11px] text-gray/60 tracking-wider shrink-0" data-lang="journey.date1">Jan. 2026 to Jun. 2026</p>
-                        </div>
-
-                        <!-- Company -->
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-building text-[10px] text-gray/40"></i>
-                            <span class="font-body text-sm text-gray/60">Colégio Christus</span>
-                        </div>
-
-                        <!-- Description -->
-                        <p class="font-body text-sm text-gray leading-relaxed" data-lang="journey.desc1">Promoted <strong>within the same company</strong> to <strong>Project Leader</strong>, owning an AI-assisted medical platform end to end: <strong>team, architecture and delivery</strong>, from vision to deployment.</p>
-
-                        <!-- Expandable Section -->
-                        <button onclick="toggleJourney('journey1-content', this)" class="flex items-center gap-2 text-accent/60 hover:text-accent transition-colors cursor-pointer mt-2">
-                            <span class="font-mono text-[10px] tracking-wider uppercase" data-lang="journey.readMore">Read More</span>
-                            <i class="fas fa-chevron-down text-[8px] transition-transform duration-300"></i>
-                        </button>
-
-                        <div id="journey1-content" class="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-in-out">
-                            <div class="overflow-hidden">
-                                <div class="pt-4 space-y-4">
-                                    <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-accent/60" data-lang="journey.achievements">Key Achievements</p>
-                                    <ul class="space-y-3">
-                                        <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                            <span data-lang="journey.role1.item1"><strong>Led the end-to-end development</strong> of an AI-assisted medical platform for clinical decision support, including AI automations for consultations and development routines</span>
-                                        </li>
-                                        <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                            <span data-lang="journey.role1.item2"><strong>Architected the fullstack solution</strong> (data model, Node.js services and React front-end) for scalability, performance and maintainability</span>
-                                        </li>
-                                        <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                            <span data-lang="journey.role1.item3"><strong>Mentored the team</strong> on Git workflows, code reviews, clean code, and design patterns</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Role 2 — FullStack Developer -->
-                <div class="gs-reveal relative pl-8 md:pl-12 border-l-2 border-white/8 pb-12">
-                    <div class="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-white/20 border-[3px] border-bg"></div>
-                    <div class="space-y-4">
-                        <!-- Header row -->
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="font-heading text-lg md:text-xl text-text font-semibold" data-lang="journey.role2">FullStack Developer</h3>
-                                <span class="font-mono text-[10px] tracking-wider text-gray bg-white/5 px-3 py-1 rounded-full" data-lang="journey.status2">Completed · Angular + Spring Boot</span>
-                            </div>
-                            <p class="font-mono text-[11px] text-gray/60 tracking-wider shrink-0" data-lang="journey.date2">Jan. 2025 to Dec. 2025</p>
-                        </div>
-
-                        <!-- Company -->
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-building text-[10px] text-gray/40"></i>
-                            <span class="font-body text-sm text-gray/60">Colégio Christus</span>
-                        </div>
-
-                        <!-- Description -->
-                        <p class="font-body text-sm text-gray leading-relaxed" data-lang="journey.desc2">Advanced <strong>within the same company</strong> to a <strong>FullStack Developer</strong> role, owning the Exitus educational system across front-end, back-end, and database.</p>
-
-                        <!-- Expandable Section -->
-                        <button onclick="toggleJourney('journey2-content', this)" class="flex items-center gap-2 text-accent/60 hover:text-accent transition-colors cursor-pointer mt-2">
-                            <span class="font-mono text-[10px] tracking-wider uppercase" data-lang="journey.readMore">Read More</span>
-                            <i class="fas fa-chevron-down text-[8px] transition-transform duration-300"></i>
-                        </button>
-
-                        <div id="journey2-content" class="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-in-out">
-                            <div class="overflow-hidden">
-                                <div class="pt-4 space-y-4">
-                                    <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-accent/60" data-lang="journey.achievements">Key Achievements</p>
-                                    <ul class="space-y-3">
-                                        <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                            <span data-lang="journey.role2.item1"><strong>Developed the Exitus educational system end-to-end</strong>, across front-end, back-end, and database</span>
-                                        </li>
-                                        <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                            <span data-lang="journey.role2.item2"><strong>Integrated AI services</strong> for automated question validation and built webhook integrations with cloud deployment management</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Role 3 — Intern -->
-                <div class="gs-reveal relative pl-8 md:pl-12 border-l-2 border-white/8 pb-4">
-                    <div class="absolute left-0 top-0 w-4 h-4 -translate-x-[9px] rounded-full bg-white/20 border-[3px] border-bg"></div>
-                    <div class="space-y-4">
-                        <!-- Header row -->
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="font-heading text-lg md:text-xl text-text font-semibold" data-lang="journey.role3">FullStack Intern</h3>
-                                <span class="font-mono text-[10px] tracking-wider text-gray bg-white/5 px-3 py-1 rounded-full" data-lang="journey.status3">Completed · Angular + Spring Boot</span>
-                            </div>
-                            <p class="font-mono text-[11px] text-gray/60 tracking-wider shrink-0" data-lang="journey.date3">Apr. 2024 to Dec. 2024</p>
-                        </div>
-
-                        <!-- Company -->
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-building text-[10px] text-gray/40"></i>
-                            <span class="font-body text-sm text-gray/60">Colégio Christus</span>
-                        </div>
-
-                        <!-- Description -->
-                        <p class="font-body text-sm text-gray leading-relaxed" data-lang="journey.desc3">Started out as a <strong>FullStack Intern</strong>. That's the base that turned into project leadership 21 months later.</p>
-
-                        <!-- Expandable Section -->
-                        <button onclick="toggleJourney('journey3-content', this)" class="flex items-center gap-2 text-accent/60 hover:text-accent transition-colors cursor-pointer mt-2">
-                            <span class="font-mono text-[10px] tracking-wider uppercase" data-lang="journey.readMore">Read More</span>
-                            <i class="fas fa-chevron-down text-[8px] transition-transform duration-300"></i>
-                        </button>
-
-                        <div id="journey3-content" class="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-in-out">
-                            <div class="overflow-hidden">
-                                <div class="pt-4 space-y-4">
-                                    <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-accent/60" data-lang="journey.achievements">Key Achievements</p>
-                                    <ul class="space-y-3">
-                                        <li class="flex items-start gap-3 font-body text-sm text-gray leading-relaxed">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-accent/40 mt-[7px] shrink-0"></span>
-                                            <span data-lang="journey.role3.item1"><strong>Built Exitus features</strong> with Angular and TypeScript on the front and Spring Boot on the back, focusing on usability and accessibility</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══ SELECTED WORK ═══ -->
-    <section id="work" class="relative py-24 md:py-28">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10">
-            <!-- Section Header -->
-            <div class="gs-reveal featured-project-header mb-8 md:mb-10">
-                <div class="featured-project-header-copy">
-                    <p class="section-label font-mono text-[11px] tracking-[0.3em] uppercase text-accent mb-4" data-lang="work.label">Portfolio</p>
-                    <h2 class="font-display featured-project-header-title text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1]">
-                        <span data-lang="work.title1">My</span>
-                        <span class="text-accent italic" data-lang="work.title2">Work.</span>
-                    </h2>
-                    <p class="mt-4 max-w-2xl font-body text-sm md:text-base text-gray leading-relaxed" data-lang="work.subtitle">Every project here does the same thing: it takes work scattered across tabs, spreadsheets and stuff only one person knows, and gives it one clear interface.</p>
-                </div>
-                <div id="featured-project-switcher" class="featured-project-header-switcher" aria-label="Featured projects"></div>
-            </div>
-
-            <!-- Featured Project Spotlight -->
-            <div class="gs-reveal mb-10 md:mb-12">
-                <div class="bento-card-inner featured-project-spotlight rounded-[28px] p-4 sm:p-5 lg:p-6">
-                    <div id="featured-project-stage" class="featured-project-stage"></div>
-                </div>
-            </div>
-
-            <!-- GitHub CTA -->
-            <div class="gs-reveal mt-10 md:mt-12 flex justify-center">
-                <a href="https://github.com/ensinho" target="_blank" class="group flex items-center gap-3 border border-white/10 hover:border-accent/30 px-8 py-4 transition-all">
-                    <i class="fab fa-github text-sm text-gray group-hover:text-accent transition-colors"></i>
-                    <span class="font-mono text-[11px] tracking-[0.15em] uppercase text-gray group-hover:text-text transition-colors" data-lang="projects.visitGithub">Explore more on GitHub</span>
-                    <i class="fas fa-arrow-right text-[10px] text-gray/40 group-hover:text-accent group-hover:translate-x-1 transition-all"></i>
+                <a href="https://github.com/ensinho" target="_blank" rel="noreferrer" class="sp-topbar-icon" aria-label="GitHub" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" rel="noreferrer" class="sp-avatar" aria-label="Enzo Esmeraldo on LinkedIn" title="Enzo Esmeraldo">
+                    <img src="assets/EnzoGym3.jpeg" alt="">
                 </a>
             </div>
-        </div>
-    </section>
+        </header>
 
-
-    <div id="music-card" class="music-card paused fixed bottom-6 right-6 z-50">
-
-        <!-- Always-visible row: album art + info + controls + collapse btn -->
-        <div class="flex items-center gap-3">
-            <div id="album-art" class="w-10 h-10 rounded-sm bg-cover bg-center shrink-0 shadow-lg"></div>
-            <div id="music-meta" class="flex-1 min-w-0">
-                <p id="song-title" class="font-heading text-xs text-text font-medium truncate">Oxygen</p>
-                <p id="artist-name" class="font-mono text-[10px] text-gray truncate">Porch Light</p>
-            </div>
-            <div id="music-nav" class="flex items-center gap-1">
-                <button id="prev-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-backward-step text-[10px]"></i>
+        <!-- ═══ YOUR LIBRARY ═══ -->
+        <aside class="sp-library" id="sp-library" aria-labelledby="sp-library-title">
+            <div class="sp-library-head">
+                <button type="button" id="sp-library-collapse" class="sp-library-title" aria-expanded="true" data-lang-aria="sp.library.collapse" aria-label="Collapse Your Library">
+                    <i class="fas fa-lines-leaning sp-library-title-icon" aria-hidden="true"></i>
+                    <h2 id="sp-library-title" data-lang="sp.library">Your Library</h2>
                 </button>
-                <button id="play-btn" class="w-8 h-8 flex items-center justify-center text-text hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-play text-xs"></i>
-                </button>
-                <button id="next-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-forward-step text-[10px]"></i>
+                <a href="mailto:enzopo625@gmail.com" class="sp-create" data-lang-aria="sp.library.create" aria-label="Start a project with me" title="Start a project with me">
+                    <i class="fas fa-plus"></i>
+                    <span data-lang="sp.library.createShort">Create</span>
+                </a>
+                <button type="button" id="sp-library-close" class="sp-library-close" aria-label="Close">
+                    <i class="fas fa-xmark"></i>
                 </button>
             </div>
-            <div id="equalizer" class="flex items-end gap-[2px] h-4 ml-1">
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-            </div>
-            <!-- Collapse toggle -->
-            <button id="collapse-btn" onclick="toggleMusicCollapse()" class="w-6 h-6 flex items-center justify-center text-gray/40 hover:text-accent transition-colors cursor-pointer ml-1 shrink-0" title="Minimize">
-                <i id="collapse-icon" class="fas fa-chevron-down text-[8px] transition-transform duration-300"></i>
-            </button>
-        </div>
 
-        <!-- Collapsible section -->
-        <div id="music-collapsible" class="overflow-hidden transition-all duration-400 ease-in-out" style="max-height: 80px; opacity: 1;">
-            <div class="pt-2 flex flex-col gap-1.5">
-                <div id="progress-container" class="w-full h-1 bg-white/5 cursor-pointer rounded-full overflow-hidden">
-                    <div id="progress-bar" class="h-full bg-accent/60 rounded-full transition-all duration-100" style="width: 0%"></div>
+            <div class="sp-chips" id="sp-library-chips" role="group" aria-label="Filter Your Library"></div>
+
+            <div class="sp-library-tools">
+                <label class="sp-library-filter">
+                    <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                    <input id="sp-library-filter" type="search" autocomplete="off" placeholder="Search in Your Library" data-lang-placeholder="sp.library.filter" aria-label="Search in Your Library">
+                </label>
+                <span class="sp-library-sort"><span data-lang="sp.library.recents">Recents</span> <i class="fas fa-list-ul"></i></span>
+            </div>
+
+            <ul class="sp-library-list" id="sp-library-list"></ul>
+        </aside>
+
+        <!-- ═══ MAIN VIEW ═══ -->
+        <main class="sp-main" id="sp-main" tabindex="-1">
+            <!-- Compact header that fades in once the big one scrolls away -->
+            <div class="sp-main-sticky" id="sp-main-sticky" aria-hidden="true">
+                <button type="button" class="sp-play-btn sp-play-sm" data-sp-play tabindex="-1">
+                    <i class="fas fa-play sp-when-paused"></i><i class="fas fa-pause sp-when-playing"></i>
+                </button>
+                <span class="sp-main-sticky-title" id="sp-main-sticky-title">Enzo Esmeraldo</span>
+            </div>
+
+            <!-- Home = the artist page -->
+            <div id="view-home" class="sp-view">
+                <section class="sp-artist-hero" aria-labelledby="sp-artist-name">
+                    <div id="sp-hero-bg" class="sp-artist-hero-bg"></div>
+                    <div class="sp-artist-hero-content">
+                        <p class="sp-verified">
+                            <span class="sp-verified-badge" aria-hidden="true"><i class="fas fa-certificate"></i><i class="fas fa-check"></i></span>
+                            <span data-lang="sp.verified">Verified Engineer</span>
+                        </p>
+                        <h1 class="sp-artist-name" id="sp-artist-name">Enzo Esmeraldo</h1>
+                        <p class="sp-artist-claim"><span data-lang="hero.headline1">I build interfaces</span> <span data-lang="hero.headline2">for messy work.</span></p>
+                        <p class="sp-artist-listeners"><span id="sp-listeners">&nbsp;</span></p>
+                    </div>
+                </section>
+
+                <div class="sp-artist-body">
+                    <div class="sp-actionbar">
+                        <button type="button" class="sp-play-btn sp-play-xl" data-sp-play data-lang-aria="sp.play" aria-label="Play">
+                            <i class="fas fa-play sp-when-paused"></i><i class="fas fa-pause sp-when-playing"></i>
+                        </button>
+                        <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" rel="noreferrer" class="sp-follow" data-lang="sp.follow">Follow</a>
+                        <a href="assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf" download class="sp-action-icon" data-cv data-lang-aria="hero.resume" aria-label="Download CV" title="Download CV">
+                            <i class="far fa-circle-down"></i>
+                        </a>
+                        <details class="sp-more">
+                            <summary class="sp-action-icon" aria-label="More options"><i class="fas fa-ellipsis"></i></summary>
+                            <div class="sp-menu" role="menu">
+                                <a role="menuitem" href="mailto:enzopo625@gmail.com"><i class="fas fa-envelope"></i><span>enzopo625@gmail.com</span></a>
+                                <a role="menuitem" href="https://github.com/ensinho" target="_blank" rel="noreferrer"><i class="fab fa-github"></i><span>GitHub</span></a>
+                                <a role="menuitem" href="https://linkedin.com/in/enzoesmeraldo" target="_blank" rel="noreferrer"><i class="fab fa-linkedin-in"></i><span>LinkedIn</span></a>
+                                <button role="menuitem" type="button" id="sp-copy-link"><i class="fas fa-link"></i><span data-lang="sp.copyLink">Copy link to profile</span></button>
+                            </div>
+                        </details>
+                        <p class="sp-status-pill"><span class="sp-live-dot"></span><span data-lang="hero.available">Open to work</span> · <span data-lang="hero.location">Fortaleza, BR</span></p>
+                    </div>
+
+                    <div class="sp-home-top">
+                        <!-- Popular = the projects -->
+                        <section id="work" class="sp-section sp-popular" aria-labelledby="sp-popular-title">
+                            <h2 class="sp-section-title" id="sp-popular-title" data-lang="sp.popular">Popular</h2>
+                            <ol class="sp-tracklist" id="sp-popular-list"></ol>
+                        </section>
+
+                        <!-- Artist pick = what I'm building right now -->
+                        <section class="sp-section sp-pick-section" aria-labelledby="sp-pick-title">
+                            <h2 class="sp-section-title" id="sp-pick-title" data-lang="sp.pick">Artist pick</h2>
+                            <a href="#/career/0" class="sp-pick">
+                                <span class="sp-pick-bubble">
+                                    <img src="assets/EnzoGym3.jpeg" alt="">
+                                    <span data-lang="about.current.label">Currently Building</span>
+                                </span>
+                                <span class="sp-pick-row">
+                                    <span class="sp-mix sp-pick-cover" style="--mix: 80 155 245;">
+                                        <span class="sp-mix-top">Exitus</span>
+                                        <span class="sp-mix-band"><span class="sp-mix-label">Gestor</span><span class="sp-mix-num">26</span></span>
+                                    </span>
+                                    <span class="sp-pick-copy">
+                                        <span class="sp-pick-title">Exitus Gestor</span>
+                                        <span class="sp-pick-sub"><span class="sp-live-dot"></span><span data-lang="about.current.status">In active development</span></span>
+                                    </span>
+                                </span>
+                                <span class="sp-pick-desc" data-lang="about.current.desc"><strong>Exitus Gestor</strong>, across the whole stack. That means a PostgreSQL data model, a Spring Boot domain layer split with Domain-Driven Design and Angular on the front, with TDD, Flyway migrations and <strong>Claude Code agents</strong> helping out.</span>
+                            </a>
+                        </section>
+                    </div>
+
+                    <!-- Discography = the career, one release per role -->
+                    <section id="trajectory" class="sp-section" aria-labelledby="sp-disco-title">
+                        <div class="sp-section-head">
+                            <h2 class="sp-section-title" id="sp-disco-title" data-lang="sp.discography">Discography</h2>
+                            <a href="#/search?q=Christus" class="sp-show-all" data-lang="sp.showAll">Show all</a>
+                        </div>
+                        <div class="sp-shelf" id="sp-discography"></div>
+                    </section>
+
+                    <!-- About -->
+                    <section id="about" class="sp-section" aria-labelledby="sp-about-title">
+                        <h2 class="sp-section-title" id="sp-about-title" data-lang="about.label">About</h2>
+                        <div class="sp-about">
+                            <div class="sp-about-photo">
+                                <img src="assets/EnzoGym3.jpeg" alt="Enzo Esmeraldo" loading="lazy" decoding="async">
+                                <span class="sp-about-note"><img src="assets/icons/mudkipicon.png" alt=""><span data-lang="about.avatarJoke">btw, that's me</span></span>
+                            </div>
+                            <div class="sp-about-copy">
+                                <p class="sp-about-listeners"><span id="sp-about-listeners">&nbsp;</span></p>
+                                <p class="sp-about-bio" data-lang="about.description">I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.</p>
+                                <p class="sp-about-bio sp-about-bio-soft" data-lang="about.bio2">I've led a team, handling architecture, the design system, Git strategy and mentoring, and I never stopped <strong>shipping every week</strong>. My workflow is <strong>AI-native</strong>: Claude Code, custom agents and skills that take me from spec to tests to pull request review.</p>
+                            </div>
+                            <div class="sp-about-stats">
+                                <div class="sp-about-block">
+                                    <div class="sp-about-block-head">
+                                        <p class="sp-about-block-title" data-lang="contrib.label">Contribution Activity</p>
+                                        <span id="contrib-total" class="sp-about-block-meta">&nbsp;</span>
+                                    </div>
+                                    <div class="contrib" role="img" aria-label="GitHub contribution activity over the past year">
+                                        <div class="contrib-months" id="contrib-months" aria-hidden="true"></div>
+                                        <div class="contrib-grid" id="contrib-grid" aria-hidden="true"></div>
+                                        <div class="contrib-footer">
+                                            <div class="contrib-legend" aria-hidden="true">
+                                                <span data-lang="contrib.less">Less</span>
+                                                <span class="contrib-swatch" style="background:var(--heat-0)"></span>
+                                                <span class="contrib-swatch" style="background:var(--heat-1)"></span>
+                                                <span class="contrib-swatch" style="background:var(--heat-2)"></span>
+                                                <span class="contrib-swatch" style="background:var(--heat-3)"></span>
+                                                <span class="contrib-swatch" style="background:var(--heat-4)"></span>
+                                                <span data-lang="contrib.more">More</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="sp-about-block">
+                                    <p class="sp-about-block-title" data-lang="tech.label">Core Stack</p>
+                                    <div id="tech-icons" class="tech-icons" aria-label="Core technology stack"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Also on repeat = interests outside the editor -->
+                    <section id="interests" class="sp-section" aria-labelledby="sp-repeat-title">
+                        <div class="sp-section-head">
+                            <h2 class="sp-section-title" id="sp-repeat-title" data-lang="sp.repeat">Also on repeat</h2>
+                            <span class="sp-section-hint" data-lang="about.interests.title">Outside the editor</span>
+                        </div>
+                        <div class="sp-shelf" id="about-interest-buttons" role="tablist" aria-label="Personal interests"></div>
+                        <p id="about-interest-text" class="sp-interest-detail" aria-live="polite"></p>
+                    </section>
+
+                    <!-- On tour = contact -->
+                    <section id="contact" class="sp-section" aria-labelledby="sp-tour-title">
+                        <div class="sp-section-head">
+                            <h2 class="sp-section-title" id="sp-tour-title" data-lang="sp.tour">On tour</h2>
+                        </div>
+                        <p class="sp-tour-lead"><span data-lang="footer.title1">Let's build something</span> <span data-lang="footer.title2">people actually use.</span></p>
+                        <ul class="sp-tour">
+                            <li class="sp-tour-row">
+                                <span class="sp-tour-date" aria-hidden="true"><span id="sp-tour-month">OCT</span><strong id="sp-tour-day">30</strong></span>
+                                <span class="sp-tour-copy">
+                                    <span class="sp-tour-title"><span data-lang="hero.available">Open to work</span> · <span data-lang="hero.role">Fullstack Engineer · Tech Lead</span></span>
+                                    <span class="sp-tour-sub"><span data-lang="hero.location">Fortaleza, BR</span> · <span data-lang="sp.tour.remote">Remote-friendly</span></span>
+                                </span>
+                                <a href="mailto:enzopo625@gmail.com" class="sp-tour-btn" data-lang="sp.tour.cta">Get in touch</a>
+                            </li>
+                            <li class="sp-tour-row">
+                                <span class="sp-tour-date is-icon" aria-hidden="true"><i class="fab fa-linkedin-in"></i></span>
+                                <span class="sp-tour-copy">
+                                    <span class="sp-tour-title">LinkedIn</span>
+                                    <span class="sp-tour-sub">linkedin.com/in/enzoesmeraldo</span>
+                                </span>
+                                <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" rel="noreferrer" class="sp-tour-btn is-ghost" data-lang="sp.tour.connect">Connect</a>
+                            </li>
+                            <li class="sp-tour-row">
+                                <span class="sp-tour-date is-icon" aria-hidden="true"><i class="fab fa-github"></i></span>
+                                <span class="sp-tour-copy">
+                                    <span class="sp-tour-title">GitHub</span>
+                                    <span class="sp-tour-sub" data-lang="projects.visitGithub">Explore more on GitHub</span>
+                                </span>
+                                <a href="https://github.com/ensinho" target="_blank" rel="noreferrer" class="sp-tour-btn is-ghost" data-lang="sp.tour.setlist">See the setlist</a>
+                            </li>
+                        </ul>
+                    </section>
                 </div>
-                <!-- Easter egg line — hidden by default, shown on song change -->
-                <p id="music-easter-egg" class="font-mono text-[8px] text-accent/0 text-center tracking-wider italic transition-all duration-700 ease-in-out leading-relaxed" style="max-height:0; overflow:hidden;"></p>
-                <p class="font-mono text-[8px] text-gray/30 text-center tracking-wider" data-lang="music.hint">Flip the record and the theme follows</p>
             </div>
-        </div>
 
+            <!-- Project / career / search pages render here -->
+            <div id="view-page" class="sp-view" hidden></div>
+
+            <footer class="sp-footer">
+                <div class="sp-footer-cols">
+                    <div>
+                        <p class="sp-footer-head">Enzo</p>
+                        <a href="#about" data-lang="about.label">About</a>
+                        <a href="#work" data-lang="sp.popular">Popular</a>
+                        <a href="#trajectory" data-lang="sp.discography">Discography</a>
+                    </div>
+                    <div>
+                        <p class="sp-footer-head" data-lang="footer.label">Get In Touch</p>
+                        <a href="mailto:enzopo625@gmail.com">Email</a>
+                        <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" rel="noreferrer">LinkedIn</a>
+                        <a href="https://github.com/ensinho" target="_blank" rel="noreferrer">GitHub</a>
+                    </div>
+                    <div>
+                        <p class="sp-footer-head" data-lang="sp.footer.downloads">Downloads</p>
+                        <a href="assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf" download>CV · English</a>
+                        <a href="assets/cv/CV_ENZO_ESMERALDO_LÍDER_FULLSTACK_PT.pdf" download>CV · Português</a>
+                    </div>
+                    <div class="sp-footer-social">
+                        <a href="https://github.com/ensinho" target="_blank" rel="noreferrer" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" rel="noreferrer" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="mailto:enzopo625@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="sp-footer-bottom">
+                    <p data-lang="footer.copyright">&copy; 2026 Enzo Esmeraldo</p>
+                    <p data-lang="footer.credits">Recorded in Fortaleza, BR. Mixed in VS Code.</p>
+                </div>
+            </footer>
+        </main>
+
+        <!-- ═══ NOW PLAYING VIEW ═══ -->
+        <aside class="sp-np" id="sp-np" aria-labelledby="np-heading">
+            <div class="sp-np-head">
+                <h2 id="np-heading" class="sp-np-context"><span data-lang="sp.np.title">Now playing</span></h2>
+                <button type="button" id="np-close" class="sp-ctrl" data-lang-aria="sp.close" aria-label="Close">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+            <div class="sp-np-scroll">
+                <img id="np-cover" class="sp-np-cover" src="assets/albumCovers/oxygenPorchLight.jpg" alt="">
+                <div class="sp-np-titles">
+                    <div class="sp-np-titles-copy">
+                        <p id="np-title" class="sp-np-title">Oxygen</p>
+                        <p id="np-artist" class="sp-np-artist">Porch Light</p>
+                    </div>
+                    <button type="button" class="sp-ctrl sp-like" data-sp-like aria-pressed="false" data-lang-aria="sp.like.add" aria-label="Save to Liked Records">
+                        <i class="fas fa-circle-plus sp-when-unliked"></i><i class="fas fa-circle-check sp-when-liked"></i>
+                    </button>
+                </div>
+
+                <section class="sp-np-card sp-np-mood-card">
+                    <p class="sp-np-card-kicker" data-lang="sp.np.why">The record is the theme</p>
+                    <p id="np-mood" class="sp-np-mood">deep blue</p>
+                    <p id="np-egg" class="sp-np-egg">Oxygen mode: quiet blue focus.</p>
+                </section>
+
+                <section class="sp-np-card">
+                    <div class="sp-np-card-head">
+                        <h3 data-lang="sp.np.next">Next in queue</h3>
+                    </div>
+                    <button type="button" id="np-next" class="sp-np-queue">
+                        <img id="np-next-cover" src="assets/albumCovers/DeftonesCover.jpg" alt="">
+                        <span class="sp-np-queue-copy">
+                            <span id="np-next-title" class="sp-np-queue-title">Change (In the House of Flies)</span>
+                            <span id="np-next-artist" class="sp-np-queue-artist">Deftones</span>
+                        </span>
+                        <i class="fas fa-play sp-np-queue-play" aria-hidden="true"></i>
+                    </button>
+                </section>
+
+                <section class="sp-np-card">
+                    <div class="sp-np-card-head">
+                        <h3 data-lang="sp.np.credits">Credits</h3>
+                    </div>
+                    <dl class="sp-credits">
+                        <div><dt>Enzo Esmeraldo</dt><dd data-lang="sp.credits.design">Design, code, everything</dd></div>
+                        <div><dt>Vanilla JS · Tailwind</dt><dd data-lang="sp.credits.built">Built with</dd></div>
+                        <div><dt>Claude Code</dt><dd data-lang="sp.credits.session">Session musician</dd></div>
+                    </dl>
+                </section>
+            </div>
+        </aside>
+
+        <!-- ═══ PLAYER BAR ═══ -->
+        <footer class="sp-player" id="sp-player" aria-label="Player">
+            <div class="sp-player-left">
+                <button type="button" id="album-art" class="sp-player-cover" data-lang-aria="sp.np.open" aria-label="Open Now playing view"></button>
+                <button type="button" class="sp-player-meta" id="sp-player-meta" data-lang-aria="sp.np.open" aria-label="Open Now playing view">
+                    <span id="song-title" class="sp-player-title">Oxygen</span>
+                    <span id="artist-name" class="sp-player-artist">Porch Light</span>
+                </button>
+                <button type="button" class="sp-ctrl sp-like" data-sp-like aria-pressed="false" data-lang-aria="sp.like.add" aria-label="Save to Liked Records">
+                    <i class="fas fa-circle-plus sp-when-unliked"></i><i class="fas fa-circle-check sp-when-liked"></i>
+                </button>
+            </div>
+
+            <div class="sp-player-center">
+                <div class="sp-player-controls">
+                    <button type="button" id="shuffle-btn" class="sp-ctrl sp-toggle" aria-pressed="false" data-lang-aria="sp.shuffle" aria-label="Shuffle">
+                        <i class="fas fa-shuffle"></i>
+                    </button>
+                    <button type="button" id="prev-btn" class="sp-ctrl" data-lang-aria="sp.prev" aria-label="Previous">
+                        <i class="fas fa-backward-step"></i>
+                    </button>
+                    <button type="button" id="play-btn" class="sp-play-btn sp-play-md" data-lang-aria="sp.play" aria-label="Play">
+                        <i class="fas fa-play sp-when-paused"></i><i class="fas fa-pause sp-when-playing"></i>
+                    </button>
+                    <button type="button" id="next-btn" class="sp-ctrl" data-lang-aria="sp.next" aria-label="Next">
+                        <i class="fas fa-forward-step"></i>
+                    </button>
+                    <button type="button" id="repeat-btn" class="sp-ctrl sp-toggle" aria-pressed="false" data-lang-aria="sp.repeat.btn" aria-label="Repeat">
+                        <i class="fas fa-repeat"></i>
+                    </button>
+                </div>
+                <div class="sp-progress">
+                    <span id="time-current" class="sp-time">0:00</span>
+                    <input type="range" id="progress-range" class="sp-range" min="0" max="1000" step="1" value="0" aria-label="Seek">
+                    <span id="time-total" class="sp-time">0:00</span>
+                </div>
+            </div>
+
+            <div class="sp-player-right">
+                <button type="button" id="np-toggle" class="sp-ctrl sp-toggle" aria-pressed="false" data-lang-aria="sp.np.title" aria-label="Now playing view">
+                    <i class="far fa-square-caret-right"></i>
+                </button>
+                <button type="button" id="theme-flip" class="sp-ctrl" data-lang-aria="music.hint" aria-label="Flip the record and the theme follows" title="Flip the record and the theme follows">
+                    <i class="fas fa-record-vinyl"></i>
+                </button>
+                <button type="button" id="mute-btn" class="sp-ctrl" data-lang-aria="sp.mute" aria-label="Mute">
+                    <i class="fas fa-volume-low"></i>
+                </button>
+                <input type="range" id="volume-range" class="sp-range sp-volume" min="0" max="100" step="1" value="40" aria-label="Volume">
+            </div>
+
+            <span class="sp-player-line" aria-hidden="true"><span id="progress-bar"></span></span>
+        </footer>
+
+        <!-- ═══ MOBILE TAB BAR ═══ -->
+        <nav class="sp-tabbar" aria-label="Primary">
+            <a href="#/" class="sp-tab" data-tab="home"><i class="fas fa-house"></i><span data-lang="sp.home">Home</span></a>
+            <a href="#/search" class="sp-tab" data-tab="search"><i class="fas fa-magnifying-glass"></i><span data-lang="sp.search">Search</span></a>
+            <button type="button" class="sp-tab" data-tab="library" id="sp-tab-library"><i class="fas fa-lines-leaning"></i><span data-lang="sp.library">Your Library</span></button>
+        </nav>
     </div>
 
-    <!-- ═══ FOOTER / CONTACT ═══ -->
-    <footer id="contact" class="relative py-24 md:py-28 border-t border-white/5">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10">
-            <div class="gs-reveal text-center space-y-8">
-                <p class="section-label font-mono text-[11px] tracking-[0.3em] uppercase text-accent" data-lang="footer.label">Get In Touch</p>
-                <h2 class="font-display text-4xl sm:text-5xl md:text-7xl font-light leading-[1.1]">
-                    <span data-lang="footer.title1">Let's build something</span><br>
-                    <span class="text-accent italic" data-lang="footer.title2">people actually use.</span>
-                </h2>
-
-                <!-- Contact Links -->
-                <div class="flex flex-wrap justify-center gap-4 pt-6">
-                    <a href="mailto:enzopo625@gmail.com" class="group flex items-center gap-3 border border-white/10 hover:border-accent/30 px-6 py-3 transition-all">
-                        <i class="fas fa-envelope text-sm text-gray group-hover:text-accent transition-colors"></i>
-                        <span class="font-mono text-[11px] tracking-wider text-gray group-hover:text-text transition-colors">enzopo625@gmail.com</span>
-                    </a>
-                    <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" class="group flex items-center gap-3 border border-white/10 hover:border-accent/30 px-6 py-3 transition-all">
-                        <i class="fab fa-linkedin-in text-sm text-gray group-hover:text-accent transition-colors"></i>
-                        <span class="font-mono text-[11px] tracking-wider text-gray group-hover:text-text transition-colors">LinkedIn</span>
-                    </a>
-                    <a href="https://github.com/ensinho" target="_blank" class="group flex items-center gap-3 border border-white/10 hover:border-accent/30 px-6 py-3 transition-all">
-                        <i class="fab fa-github text-sm text-gray group-hover:text-accent transition-colors"></i>
-                        <span class="font-mono text-[11px] tracking-wider text-gray group-hover:text-text transition-colors">GitHub</span>
-                    </a>
-                </div>
-
-                <!-- CV Download -->
-                <div class="pt-4">
-                    <a href="assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf" download onclick="checkCV(event)" class="inline-flex items-center gap-3 bg-accent text-black px-8 py-3 font-mono text-[11px] tracking-[0.15em] uppercase hover:bg-accent/90 transition-all">
-                        <span data-lang="about.downloadCV">DOWNLOAD CV</span>
-                        <i class="fas fa-download text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Bottom Bar -->
-            <div class="mt-24 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="font-mono text-[10px] text-gray/30 tracking-wider" data-lang="footer.copyright">&copy; 2026 Enzo Esmeraldo</p>
-                <p class="font-mono text-[10px] text-gray/30 tracking-wider" data-lang="footer.credits">Crafted with <i class="fas fa-heart text-accent/40 animate-pulse text-[8px]"></i> in Brazil</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Back to Top -->
-    <button id="back-to-top" class="fixed bottom-24 right-6 z-40 w-10 h-10 flex items-center justify-center border border-white/10 hover:border-accent/40 bg-panel text-gray hover:text-accent cursor-pointer">
-        <i class="fas fa-arrow-up text-xs"></i>
-    </button>
+    <div class="sp-toast" id="sp-toast" role="status" aria-live="polite"></div>
 
     <!-- Scripts -->
     <script defer src="script.js"></script>

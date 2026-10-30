@@ -1234,11 +1234,6 @@ body[data-music-theme="deftones"] .about-theme-mark-deftones {
 }
 
 @media (max-width: 768px) {
-    #work {
-        padding-top: 5.5rem;
-        padding-bottom: 6rem;
-    }
-
     .featured-project-header {
         align-items: stretch;
         gap: 22px;
