@@ -1641,22 +1641,24 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
     transform: translate(-50%, -100%);
 }
 
-/* ── Music Card ── */
+/* ── The Turntable (music card) ──
+   The disc spins at a real 33⅓ rpm (JS drives the angle so it can coast to a stop),
+   and the tonearm's angle is the progress bar. */
 .music-card {
     position: fixed;
     bottom: 20px;
     right: 20px;
     background: rgb(var(--panel-rgb) / 0.97);
     border-radius: 14px;
-    padding: 16px;
+    padding: 14px 14px 12px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     z-index: 9998;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease,
                 background-color 0.4s ease, width 0.3s ease;
-    width: 300px;
+    width: 320px;
     transform: translateY(0) scale(1);
     opacity: 1;
 }
@@ -1665,71 +1667,280 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
     .music-card {
         width: 91%;
         border-radius: 12px;
-        padding: 10px;
-        gap: 6px;
+        padding: 10px 12px;
+        gap: 4px;
     }
 }
 
-.music-card-content {
+.turntable-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    width: 100%;
 }
 
-.music-hint {
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.2);
-    text-align: center;
-    width: 100%;
-    font-family: var(--font-mono);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+.turntable-deck {
+    --deck: 60px;
+    position: relative;
+    width: var(--deck);
+    height: var(--deck);
+    margin-right: 14px; /* the tonearm's pivot sits just outside the platter */
+    flex-shrink: 0;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 768px) {
-    .music-hint { font-size: 8px; }
+    .turntable-deck { --deck: 52px; }
 }
 
-.progress-container {
-    width: 100%;
-    height: 3px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 2px;
-    cursor: pointer;
-    margin: 4px 0;
-    overflow: hidden;
-    position: relative;
+.turntable-platter {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: rgb(var(--text-rgb) / 0.05);
+    box-shadow: inset 0 0 0 1px rgb(var(--text-rgb) / 0.06);
 }
 
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background: var(--accent-color);
-    border-radius: 2px;
-    transition: width 0.1s linear;
+.turntable-flip {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
 }
 
-.progress-container:hover .progress-bar {
-    background: var(--text-color);
-}
-
-.music-card.hidden-card {
-    transform: translateY(20px);
-    opacity: 0;
+/* Fixed light on a moving record: the sheen lives outside the rotating disc */
+.turntable-flip::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 20deg,
+        transparent 0 8%, rgba(255, 255, 255, 0.09) 13%, transparent 19% 58%,
+        rgba(255, 255, 255, 0.06) 63%, transparent 69%);
     pointer-events: none;
 }
 
-/* ── Collapsed (minimized) state ── */
+.turntable-disc {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle, transparent 0 33%, #0c0c0e 33.5% 35.5%, transparent 36%),
+        repeating-radial-gradient(circle, #131316 0 1.5px, #1e1e22 1.5px 3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    will-change: transform;
+}
+
+.turntable-label {
+    position: absolute;
+    inset: 32%;
+    border-radius: 50%;
+    background-color: #2a2a2e;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
+}
+
+.turntable-spindle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    margin: -2px 0 0 -2px;
+    border-radius: 50%;
+    background: #d9dbe0;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.turntable-arm {
+    position: absolute;
+    left: 108%;
+    top: 8%;
+    width: 2px;
+    height: 62%;
+    margin-left: -1px;
+    border-radius: 1px;
+    background: rgb(var(--gray-rgb));
+    transform-origin: 50% 0;
+    transform: rotate(var(--arm-angle, 0deg));
+    transition: transform 0.7s var(--ease-out);
+    pointer-events: none;
+}
+
+/* Pivot */
+.turntable-arm::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border-radius: 50%;
+    background: rgb(var(--panel-rgb));
+    box-shadow: inset 0 0 0 2px rgb(var(--gray-rgb));
+}
+
+/* Headshell: casts a longer shadow while lifted */
+.turntable-arm::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    width: 5px;
+    height: 8px;
+    margin-left: -2.5px;
+    border-radius: 1px;
+    background: rgb(var(--gray-rgb));
+    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.35);
+    transition: box-shadow 0.4s ease;
+}
+
+.music-card.is-arm-down .turntable-arm::after {
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+/* The global theme cross-fade narrows transition-property to colors; keep the arm sweeping */
+body.theme-switching .turntable-arm {
+    transition-property: transform, background-color;
+    transition-duration: 0.7s;
+}
+
+.turntable-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.turntable-speed {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 3px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: rgb(var(--gray-rgb) / 0.6);
+}
+
+.turntable-play {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgb(var(--text-rgb));
+    color: rgb(var(--bg-rgb));
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.turntable-play:hover {
+    transform: scale(1.06);
+}
+
+.turntable-play .fa-play {
+    margin-left: 2px;
+}
+
+.turntable-transport {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.turntable-time {
+    min-width: 26px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--gray-rgb) / 0.6);
+    text-align: center;
+}
+
+/* Seek: a native range, styled down to a hairline */
+.turntable-progress {
+    --progress: 0%;
+    flex: 1;
+    min-width: 0;
+    height: 14px;
+    margin: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.turntable-progress:focus-visible {
+    outline: 1px solid rgb(var(--accent-rgb) / 0.5);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.turntable-progress::-webkit-slider-runnable-track {
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(to right,
+        rgb(var(--accent-rgb) / 0.7) var(--progress),
+        rgb(var(--text-rgb) / 0.08) var(--progress));
+}
+
+.turntable-progress::-moz-range-track {
+    height: 3px;
+    border-radius: 2px;
+    background: rgb(var(--text-rgb) / 0.08);
+}
+
+.turntable-progress::-moz-range-progress {
+    height: 3px;
+    border-radius: 2px;
+    background: rgb(var(--accent-rgb) / 0.7);
+}
+
+.turntable-progress::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 9px;
+    height: 9px;
+    margin-top: -3px;
+    border-radius: 50%;
+    background: rgb(var(--text-rgb));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.turntable-progress::-moz-range-thumb {
+    width: 9px;
+    height: 9px;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(var(--text-rgb));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.turntable-progress:hover::-webkit-slider-thumb,
+.turntable-progress:focus-visible::-webkit-slider-thumb {
+    opacity: 1;
+}
+
+.turntable-progress:hover::-moz-range-thumb,
+.turntable-progress:focus-visible::-moz-range-thumb {
+    opacity: 1;
+}
+
+/* ── Collapsed (minimized) state: just the record and the play button ── */
+/* Explicit width: the hidden transport row would otherwise still size an auto-width card */
 .music-card.collapsed {
-    width: 200px;
+    width: 192px;
+}
+
+@media screen and (max-width: 768px) {
+    .music-card.collapsed { width: 180px; }
 }
 
 .music-card.collapsed #music-meta {
-    display: none;
-}
-
-.music-card.collapsed #music-nav .music-nav-btn {
     display: none;
 }
 
@@ -1759,122 +1970,47 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
     }
 }
 
-.album-art {
-    width: 46px;
-    height: 46px;
-    border-radius: 8px;
-    background-color: var(--panel-color);
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    overflow: hidden;
-    flex-shrink: 0;
-}
-
-@media screen and (max-width: 768px) {
-    .album-art { width: 40px; height: 40px; }
-}
-
-.album-art::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(45deg, rgb(var(--accent-rgb) / 0.2), transparent);
-    transition: background 1s ease;
-}
-
-.music-info {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.song-title {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--text-color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.2;
-}
-
-@media screen and (max-width: 480px) {
-    .song-title { font-size: 13px; }
-}
-
-.artist-name {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.3);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-@media screen and (max-width: 480px) {
-    .artist-name { font-size: 10px; }
-}
-
-.music-controls {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-}
-
-.control-btn {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
-    font-size: 13px;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s ease;
-}
-
-.control-btn:hover {
-    color: var(--accent-color);
-    background: rgb(var(--accent-rgb) / 0.05);
-}
-
+/* ── Equalizer: driven by a live AnalyserNode; CSS bars only when Web Audio isn't there ── */
 .equalizer {
-    display: flex;
-    gap: 2px;
-    height: 12px;
+    display: inline-flex;
     align-items: flex-end;
-    margin-left: 4px;
+    gap: 2px;
+    height: 9px;
+    margin-left: 6px;
 }
 
 .eq-bar {
-    width: 3px;
+    width: 2px;
+    height: 100%;
+    border-radius: 1px;
     background-color: rgb(var(--accent-rgb));
-    animation: equalize 1s infinite ease-in-out;
-    transition: background-color 1s ease, height 0.3s ease;
-    border-radius: 2px;
+    transform: scaleY(0.2);
+    transform-origin: bottom;
+    transition: transform 0.08s linear, opacity 0.4s ease;
 }
 
-.eq-bar:nth-child(1) { animation-delay: 0.0s; height: 40%; }
-.eq-bar:nth-child(2) { animation-delay: 0.2s; height: 80%; }
-.eq-bar:nth-child(3) { animation-delay: 0.4s; height: 55%; }
-.eq-bar:nth-child(4) { animation-delay: 0.3s; height: 65%; }
+.equalizer.is-fallback .eq-bar {
+    animation: equalize 1s infinite ease-in-out;
+}
+
+.equalizer.is-fallback .eq-bar:nth-child(1) { animation-delay: 0.0s; }
+.equalizer.is-fallback .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+.equalizer.is-fallback .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+.equalizer.is-fallback .eq-bar:nth-child(4) { animation-delay: 0.3s; }
 
 @keyframes equalize {
-    0%, 100% { height: 30%; }
-    50% { height: 100%; }
+    0%, 100% { transform: scaleY(0.3); }
+    50% { transform: scaleY(1); }
 }
 
 .music-card.paused .eq-bar {
     animation-play-state: paused;
-    height: 20%;
-    opacity: 0.3;
+    opacity: 0.35;
+}
+
+/* Sits above the turntable instead of behind it */
+#back-to-top {
+    bottom: 11.5rem;
 }
 
 /* ── Typography Roles ── */
@@ -1920,6 +2056,7 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
 /* ═══════════════════════════════════════════════════
    THE JUKEBOX — signature moment.
    First visit: pick a record, the record is the theme.
+   Paper title strips + selector keys; the pick plays out on a real-looking deck.
    ═══════════════════════════════════════════════════ */
 #jukebox {
     position: fixed;
@@ -1927,7 +2064,9 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
     z-index: 10050;
     display: grid;
     place-items: center;
-    padding: 24px;
+    padding: 24px 16px;
+    overflow-x: hidden;
+    overflow-y: auto;
     background:
         radial-gradient(ellipse 90% 70% at 50% 110%, rgba(122, 169, 216, 0.08), transparent 60%),
         #06070a;
@@ -1972,102 +2111,340 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
     color: rgba(255, 255, 255, 0.42);
 }
 
-.jukebox-records {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(18px, 4vw, 40px);
-    width: 100%;
-    margin-top: clamp(18px, 4vh, 36px);
-}
-
-.jukebox-record {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    padding: 0;
-    background: none;
-    border: 0;
-    cursor: pointer;
-}
-
-.jukebox-media {
+/* ── The deck: an empty platter until a record is picked ── */
+.jukebox-deck {
     position: relative;
-    width: min(240px, 36vw);
+    width: min(200px, 44vw);
     aspect-ratio: 1 / 1;
+    margin-top: clamp(10px, 3vh, 26px);
 }
 
-.jukebox-sleeve {
-    position: relative;
-    z-index: 2;
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 4px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.07);
-    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.45s ease;
+.jukebox-platter {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+        repeating-radial-gradient(circle, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 7px),
+        #101114;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+        inset 0 0 0 9px rgba(255, 255, 255, 0.015),
+        0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+.jukebox-spindle {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 3;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background: #c9ccd2;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .jukebox-vinyl {
     position: absolute;
-    top: 4%;
-    left: 6%;
-    z-index: 1;
-    width: 92%;
-    height: 92%;
+    inset: 2%;
+    z-index: 2;
+    border-radius: 50%;
+    opacity: 0;
+    transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease;
+}
+
+.jukebox-vinyl[data-side="0"] { transform: translateX(-120%) rotate(-40deg); }
+.jukebox-vinyl[data-side="1"] { transform: translateX(120%) rotate(40deg); }
+
+/* Fixed light on a spinning record */
+.jukebox-vinyl::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 20deg,
+        transparent 0 8%, rgba(255, 255, 255, 0.07) 13%, transparent 19% 58%,
+        rgba(255, 255, 255, 0.05) 63%, transparent 69%);
+    pointer-events: none;
+}
+
+.jukebox-vinyl-disc {
+    position: absolute;
+    inset: 0;
     border-radius: 50%;
     background:
-        radial-gradient(circle, var(--vinyl-label, #888) 0 17%, #0c0c0e 17.5% 18.5%, transparent 19%),
+        radial-gradient(circle, transparent 0 33%, #0c0c0e 33.5% 35%, transparent 35.5%),
         repeating-radial-gradient(circle, #131316 0 2px, #1c1c20 2px 4px);
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
-    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.jukebox-record:hover .jukebox-sleeve,
-.jukebox-record:focus-visible .jukebox-sleeve {
-    transform: translateY(-6px) rotate(-2deg);
-    box-shadow: 0 32px 70px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.16);
+.jukebox-vinyl-disc::before {
+    content: '';
+    position: absolute;
+    inset: 34%;
+    border-radius: 50%;
+    background: var(--vinyl-cover) center / cover;
 }
 
-.jukebox-record:hover .jukebox-vinyl,
-.jukebox-record:focus-visible .jukebox-vinyl {
-    transform: translateX(38%) rotate(160deg);
+/* Hovering a title strip peeks its record in from the side */
+#jukebox:not(.is-loading):has(.jukebox-strip[data-jukebox-side="0"]:is(:hover, :focus-visible)) .jukebox-vinyl[data-side="0"] {
+    opacity: 0.55;
+    transform: translateX(-64%) rotate(-12deg);
 }
 
-.jukebox-record-meta {
+#jukebox:not(.is-loading):has(.jukebox-strip[data-jukebox-side="1"]:is(:hover, :focus-visible)) .jukebox-vinyl[data-side="1"] {
+    opacity: 0.55;
+    transform: translateX(64%) rotate(12deg);
+}
+
+#jukebox[data-selected="0"] .jukebox-vinyl[data-side="0"],
+#jukebox[data-selected="1"] .jukebox-vinyl[data-side="1"] {
+    opacity: 1;
+    transform: none;
+}
+
+/* Spin up once it lands (ease-in to exactly 33⅓ rpm), then hold speed */
+#jukebox.is-loading .jukebox-vinyl-disc {
+    animation: vinyl-spin-up 0.9s ease-in 0.45s both, vinyl-spin 1.8s linear 1.35s infinite;
+}
+
+@keyframes vinyl-spin-up {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(90deg); }
+}
+
+@keyframes vinyl-spin {
+    from { transform: rotate(90deg); }
+    to { transform: rotate(450deg); }
+}
+
+.jukebox-arm {
+    position: absolute;
+    left: 97%;
+    top: 6%;
+    z-index: 4;
+    width: 4px;
+    height: 62%;
+    margin-left: -2px;
+    border-radius: 2px;
+    background: linear-gradient(#d5d8de, #9ea3ab);
+    transform-origin: 50% 0;
+    transform: rotate(-6deg);
+    transition: transform 0.5s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+
+.jukebox-arm::before {
+    content: '';
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    border-radius: 50%;
+    background: #2a2c31;
+    box-shadow: inset 0 0 0 3px #3a3d44;
+}
+
+.jukebox-arm::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    width: 10px;
+    height: 16px;
+    margin-left: -5px;
+    border-radius: 2px;
+    background: #d5d8de;
+    box-shadow: 3px 6px 8px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.4s ease;
+}
+
+#jukebox.is-needle-down .jukebox-arm {
+    transform: rotate(11deg);
+}
+
+#jukebox.is-needle-down .jukebox-arm::after {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Title strips: paper labels, typed, with the record's ink as the rules ── */
+.jukebox-strips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    width: min(620px, 100%);
+    margin-top: clamp(16px, 3vh, 28px);
+}
+
+.jukebox-strip {
+    --strip-ink: #3d6fa6;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 14px;
+    align-items: center;
+    padding: 12px 16px 10px;
+    text-align: left;
+    font-family: var(--font-mono);
+    color: #1d1c1a;
+    background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.018) 0 1px, transparent 1px 3px),
+        #efe9da;
+    border: 0;
+    border-top: 3px solid var(--strip-ink);
+    border-bottom: 3px solid var(--strip-ink);
+    border-radius: 2px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, opacity 0.35s ease;
+}
+
+.jukebox-strip:hover,
+.jukebox-strip:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.jukebox-strip:focus-visible {
+    outline: 2px solid #f4f6fa;
+    outline-offset: 3px;
+}
+
+.jukebox-strip-code {
+    grid-row: 1 / span 2;
+    padding: 6px 8px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: var(--strip-ink);
+    border: 1.5px solid var(--strip-ink);
+    border-radius: 2px;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.jukebox-strip-body {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.jukebox-strip-song {
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--strip-ink);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.jukebox-strip-artist {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(29, 28, 26, 0.7);
+}
+
+.jukebox-strip-mood {
+    grid-column: 2;
+    margin-top: 4px;
+    font-family: var(--font-serif);
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(29, 28, 26, 0.55);
+}
+
+/* Picked: the strip lights up like it's behind the glass, the other one dims */
+#jukebox.is-loading .jukebox-strip {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+#jukebox[data-selected="0"] .jukebox-strip[data-jukebox-side="0"],
+#jukebox[data-selected="1"] .jukebox-strip[data-jukebox-side="1"] {
+    opacity: 1;
+    box-shadow: 0 0 0 1px var(--strip-ink), 0 0 48px rgba(255, 236, 190, 0.22);
+}
+
+#jukebox[data-selected="0"] .jukebox-strip[data-jukebox-side="0"] .jukebox-strip-code,
+#jukebox[data-selected="1"] .jukebox-strip[data-jukebox-side="1"] .jukebox-strip-code {
+    background: var(--strip-ink);
+    color: #efe9da;
+}
+
+/* ── Selector keys ── */
+.jukebox-selector {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 10px;
+    margin-top: clamp(12px, 3vh, 24px);
 }
 
-.jukebox-side {
-    font-size: 9px;
+.jukebox-keys {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.jukebox-keys-gap {
+    width: 10px;
+}
+
+.jukebox-key {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.72);
+    background: linear-gradient(#24262b, #16171b);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 3px 0 #0b0c0e, 0 6px 14px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.1s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.jukebox-key:hover {
+    color: #f4f6fa;
+}
+
+.jukebox-key:focus-visible {
+    outline: 2px solid #f4f6fa;
+    outline-offset: 3px;
+}
+
+.jukebox-key:active,
+.jukebox-key.is-armed {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #0b0c0e, 0 3px 8px rgba(0, 0, 0, 0.4);
+    color: #f4f6fa;
+    border-color: rgba(122, 169, 216, 0.6);
+}
+
+.jukebox-display {
+    font-family: var(--font-mono);
+    font-size: 10px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.34);
 }
 
-.jukebox-song {
-    font-size: 18px;
-    font-weight: 600;
+.jukebox-display-code {
+    margin-left: 6px;
+    letter-spacing: 0.2em;
     color: #f4f6fa;
 }
 
-.jukebox-artist {
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.jukebox-artist em {
-    font-style: italic;
-    color: rgba(255, 255, 255, 0.62);
-}
-
 .jukebox-skip {
-    margin-top: clamp(16px, 4vh, 32px);
+    margin-top: clamp(8px, 2vh, 20px);
     padding: 8px 14px;
     background: none;
     border: 0;
@@ -2086,20 +2463,58 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
 }
 
 @media (max-width: 560px) {
-    .jukebox-records {
-        gap: 14px;
+    .jukebox-strips {
+        gap: 10px;
     }
 
-    .jukebox-media {
-        width: min(150px, 40vw);
+    .jukebox-strip {
+        column-gap: 10px;
+        padding: 10px 10px 8px;
     }
 
-    .jukebox-record:hover .jukebox-vinyl {
-        transform: translateX(18%) rotate(120deg);
-    }
-
-    .jukebox-song {
+    .jukebox-strip-code {
+        padding: 5px 6px;
         font-size: 14px;
+    }
+
+    .jukebox-strip-song {
+        font-size: 12px;
+        letter-spacing: 0.1em;
+    }
+
+    .jukebox-strip-artist {
+        font-size: 9px;
+        letter-spacing: 0.14em;
+    }
+
+    .jukebox-strip-mood {
+        font-size: 12px;
+    }
+}
+
+/* ── Liner notes: the nav reads as a tracklist ── */
+.nav-track {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.nav-track-code {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: rgb(var(--accent-rgb) / 0.7);
+}
+
+.nav-track-time {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--gray-rgb) / 0.45);
+}
+
+@media (max-width: 1100px) {
+    .nav-link .nav-track-time {
+        display: none;
     }
 }
 

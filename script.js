@@ -156,6 +156,10 @@ let isPlaying = false;
 const audioPlayer = new Audio();
 // Don't pull a 4–7 MB track on page load; fetch it when the visitor actually hits play.
 audioPlayer.preload = 'none';
+// A turntable bends pitch when it speeds up or slows down; let playbackRate do the same.
+audioPlayer.preservesPitch = false;
+audioPlayer.mozPreservesPitch = false;
+audioPlayer.webkitPreservesPitch = false;
 
 const musicCard = document.getElementById('music-card');
 const albumArt = document.getElementById('album-art');
@@ -165,9 +169,15 @@ const playBtn = document.getElementById('play-btn');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const equalizer = document.getElementById('equalizer');
+const eqBars = equalizer ? Array.from(equalizer.querySelectorAll('.eq-bar')) : [];
 const heroBg = document.getElementById('hero-bg');
-const progressContainer = document.getElementById('progress-container');
-const progressBar = document.getElementById('progress-bar');
+const progressRange = document.getElementById('progress-range');
+const timeCurrent = document.getElementById('time-current');
+const timeTotal = document.getElementById('time-total');
+const turntableDeck = document.getElementById('turntable-deck');
+const turntableFlip = document.getElementById('turntable-flip');
+const turntableDisc = document.getElementById('turntable-disc');
+const turntableSide = document.getElementById('turntable-side');
 const musicCollapsible = document.getElementById('music-collapsible');
 const collapseIcon = document.getElementById('collapse-icon');
 const musicEasterEgg = document.getElementById('music-easter-egg');
@@ -184,7 +194,7 @@ function toggleMusicCollapse() {
         collapseIcon.style.transform = 'rotate(180deg)';
         musicCard.classList.add('collapsed');
     } else {
-        musicCollapsible.style.maxHeight = '80px';
+        musicCollapsible.style.maxHeight = '96px';
         musicCollapsible.style.opacity = '1';
         collapseIcon.style.transform = 'rotate(0deg)';
         musicCard.classList.remove('collapsed');
@@ -235,14 +245,33 @@ function flashThemeVeil() {
     veil.classList.add('is-active');
 }
 
+// ── Record flip: the disc turns over in 3D and the new label lands on the far side ──
+let flipLabelTimer = null;
+function flipDiscTo(cover) {
+    clearTimeout(flipLabelTimer);
+    if (!turntableFlip || prefersReducedMotion || !turntableFlip.animate) {
+        albumArt.style.backgroundImage = cover;
+        return;
+    }
+    turntableFlip.animate([
+        { transform: 'perspective(260px) rotateY(0deg)', easing: 'cubic-bezier(0.5, 0, 0.9, 0.6)' },
+        { transform: 'perspective(260px) rotateY(90deg)', offset: 0.5 },
+        { transform: 'perspective(260px) rotateY(-90deg)', offset: 0.5, easing: 'cubic-bezier(0.1, 0.4, 0.4, 1)' },
+        { transform: 'perspective(260px) rotateY(0deg)' }
+    ], { duration: 620 });
+    // Swap the label while the disc is edge-on
+    flipLabelTimer = setTimeout(() => { albumArt.style.backgroundImage = cover; }, 310);
+}
+
 function loadSong(index) {
     const song = songs[index];
     const isThemeSwitch = themeLoadedOnce;
     songTitle.innerText = song.title;
     artistName.innerText = song.artist;
-    albumArt.style.backgroundImage = song.cover;
-    albumArt.style.backgroundSize = "cover";
+    if (isThemeSwitch) flipDiscTo(song.cover);
+    else albumArt.style.backgroundImage = song.cover;
     audioPlayer.src = song.file;
+    resetProgress();
 
     if (heroBg) {
         if (!isThemeSwitch || prefersReducedMotion) {
@@ -261,10 +290,12 @@ function loadSong(index) {
         }
     }
 
-    // Keep the nav flip control + storage in sync with whichever record is on
+    // Keep the nav flip control, the deck + storage in sync with whichever record is on
+    const sideLabel = index === 0 ? 'SIDE A' : 'SIDE B';
     document.querySelectorAll('.theme-flip-side').forEach(el => {
-        el.textContent = index === 0 ? 'SIDE A' : 'SIDE B';
+        el.textContent = sideLabel;
     });
+    if (turntableSide) turntableSide.textContent = sideLabel;
     localStorage.setItem('jukebox-side', String(index));
     if (themeLoadedOnce) flashThemeVeil();
     themeLoadedOnce = true;
@@ -297,32 +328,278 @@ function updateFavicon(color) {
     document.getElementsByTagName('head')[0].appendChild(link);
 }
 
-function togglePlay() {
-    const icon = playBtn.querySelector('i');
-    if (isPlaying) {
-        audioPlayer.pause();
-        isPlaying = false;
-        icon.classList.remove('fa-pause');
-        icon.classList.add('fa-play');
-        musicCard.classList.add('paused');
-    } else {
-        audioPlayer.play();
-        isPlaying = true;
-        icon.classList.remove('fa-play');
-        icon.classList.add('fa-pause');
-        musicCard.classList.remove('paused');
+// ── Audio graph: built lazily inside a click, so the context is never born suspended ──
+// element → gain (fades) → analyser (equalizer) → speakers
+let audioCtx = null;
+let musicGain = null;
+let analyser = null;
+let freqData = null;
+
+function ensureAudioGraph() {
+    if (audioCtx) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return true;
+    }
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    // Over file:// the element is cross-origin and the graph would output silence
+    if (!Ctx || !location.protocol.startsWith('http')) {
+        equalizer?.classList.add('is-fallback');
+        return false;
+    }
+    try {
+        audioCtx = new Ctx();
+        const source = audioCtx.createMediaElementSource(audioPlayer);
+        musicGain = audioCtx.createGain();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.82;
+        freqData = new Uint8Array(analyser.frequencyBinCount);
+        source.connect(musicGain);
+        musicGain.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        return true;
+    } catch (err) {
+        audioCtx = null;
+        equalizer?.classList.add('is-fallback');
+        return false;
     }
 }
 
-function nextSong() {
-    currentSongIndex = (currentSongIndex + 1) % songs.length;
-    loadSong(currentSongIndex);
-    audioPlayer.play();
-    isPlaying = true;
+function setMusicLevel(level) {
+    if (musicGain) {
+        musicGain.gain.cancelScheduledValues(audioCtx.currentTime);
+        musicGain.gain.setValueAtTime(level, audioCtx.currentTime);
+    } else {
+        audioPlayer.volume = 0.4 * level;
+    }
+}
+
+function fadeMusicIn(ms) {
+    if (musicGain) {
+        const now = audioCtx.currentTime;
+        musicGain.gain.cancelScheduledValues(now);
+        musicGain.gain.setValueAtTime(musicGain.gain.value, now);
+        musicGain.gain.linearRampToValueAtTime(1, now + ms / 1000);
+        return;
+    }
+    const start = performance.now();
+    const step = () => {
+        const t = Math.min((performance.now() - start) / ms, 1);
+        audioPlayer.volume = 0.4 * t;
+        if (t < 1) setTimeout(step, 40);
+    };
+    step();
+}
+
+// ── Needle drop: a soft thump, then about a second of surface crackle. Synthesized, no file. ──
+function playNeedleDrop(duration = 0.9) {
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const rate = audioCtx.sampleRate;
+    const length = Math.floor(rate * duration);
+    const buffer = audioCtx.createBuffer(1, length, rate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * 0.02;
+    // Pops: sparse, random-signed bursts that die off within a few milliseconds
+    const pops = Math.floor(duration * 32);
+    for (let p = 0; p < pops; p++) {
+        const at = Math.floor(Math.random() * length);
+        const amp = 0.15 + Math.random() * 0.55;
+        const decay = 8 + Math.random() * 40;
+        for (let k = 0; k < 160 && at + k < length; k++) {
+            data[at + k] += amp * Math.exp(-k / decay) * (Math.random() * 2 - 1);
+        }
+    }
+
+    const crackle = audioCtx.createBufferSource();
+    crackle.buffer = buffer;
+    const highpass = audioCtx.createBiquadFilter();
+    highpass.type = 'highpass';
+    highpass.frequency.value = 380;
+    const lowpass = audioCtx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.value = 7200;
+    const crackleGain = audioCtx.createGain();
+    crackleGain.gain.setValueAtTime(0.0001, now);
+    crackleGain.gain.exponentialRampToValueAtTime(0.32, now + 0.02);
+    crackleGain.gain.setValueAtTime(0.32, now + duration * 0.55);
+    crackleGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+    crackle.connect(highpass);
+    highpass.connect(lowpass);
+    lowpass.connect(crackleGain);
+    crackleGain.connect(audioCtx.destination);
+    crackle.start(now);
+
+    // The stylus landing: a short, falling low sine
+    const thump = audioCtx.createOscillator();
+    thump.frequency.setValueAtTime(95, now);
+    thump.frequency.exponentialRampToValueAtTime(38, now + 0.14);
+    const thumpGain = audioCtx.createGain();
+    thumpGain.gain.setValueAtTime(0.0001, now);
+    thumpGain.gain.exponentialRampToValueAtTime(0.3, now + 0.008);
+    thumpGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+    thump.connect(thumpGain);
+    thumpGain.connect(audioCtx.destination);
+    thump.start(now);
+    thump.stop(now + 0.22);
+}
+
+// ── The deck: one rAF loop drives the platter (a real 33⅓ rpm) and the live equalizer ──
+const DISC_DEG_PER_MS = 360 / 1800;
+let discAngle = 0;
+let discSpeed = 0;       // 0 = stopped, 1 = 33⅓ rpm
+let discTarget = 0;
+let discRampMs = 1;
+let deckFrameId = null;
+let lastDeckFrame = 0;
+
+function setDiscMotor(on, rampMs) {
+    discTarget = on ? 1 : 0;
+    discRampMs = Math.max(rampMs, 1);
+    if (prefersReducedMotion) return;
+    if (!deckFrameId) deckFrameId = requestAnimationFrame(deckFrame);
+}
+
+function deckFrame(now) {
+    const dt = lastDeckFrame ? Math.min(now - lastDeckFrame, 64) : 16;
+    lastDeckFrame = now;
+
+    const gap = discTarget - discSpeed;
+    discSpeed += Math.sign(gap) * Math.min(Math.abs(gap), dt / discRampMs);
+    discAngle = (discAngle + discSpeed * DISC_DEG_PER_MS * dt) % 360;
+    if (turntableDisc) turntableDisc.style.transform = `rotate(${discAngle.toFixed(2)}deg)`;
+    updateEqualizer();
+
+    if (discSpeed === 0 && discTarget === 0) {
+        deckFrameId = null;
+        lastDeckFrame = 0;
+        updateEqualizer(true);
+        return;
+    }
+    deckFrameId = requestAnimationFrame(deckFrame);
+}
+
+// Four bands, low to high, raised to a power so the bars read like a meter, not a strobe
+const EQ_BANDS = [[1, 4], [4, 12], [12, 32], [32, 80]];
+function updateEqualizer(rest = false) {
+    if (!analyser || !eqBars.length) return;
+    if (rest || !isPlaying) {
+        eqBars.forEach(bar => { bar.style.transform = ''; });
+        return;
+    }
+    analyser.getByteFrequencyData(freqData);
+    EQ_BANDS.forEach(([from, to], i) => {
+        let sum = 0;
+        for (let k = from; k < to; k++) sum += freqData[k];
+        const level = Math.pow(sum / (to - from) / 255, 1.3);
+        eqBars[i].style.transform = `scaleY(${(0.15 + level * 0.85).toFixed(3)})`;
+    });
+}
+
+// ── Tonearm: rests off the disc, drops on the outer groove, walks inward with the song ──
+const ARM_REST_DEG = 0;
+const ARM_OUTER_DEG = 16;
+const ARM_INNER_DEG = 36;
+let armDown = false;
+
+function updateTonearm() {
+    let angle = ARM_REST_DEG;
+    if (armDown) {
+        const progress = audioPlayer.duration ? audioPlayer.currentTime / audioPlayer.duration : 0;
+        angle = ARM_OUTER_DEG + (ARM_INNER_DEG - ARM_OUTER_DEG) * Math.min(progress, 1);
+    }
+    musicCard.style.setProperty('--arm-angle', `${angle.toFixed(2)}deg`);
+    musicCard.classList.toggle('is-arm-down', armDown);
+}
+
+// ── Transport: speed ramps bend the pitch, like a real platter ──
+let transportToken = 0;
+
+function rampPlaybackRate(from, to, ms, token) {
+    return new Promise(resolve => {
+        if (prefersReducedMotion || ms <= 0) {
+            audioPlayer.playbackRate = to;
+            resolve(true);
+            return;
+        }
+        const start = performance.now();
+        let settled = false;
+        const finish = ok => {
+            if (settled) return;
+            settled = true;
+            if (ok) audioPlayer.playbackRate = to;
+            resolve(ok);
+        };
+        const step = now => {
+            if (settled) return;
+            if (token !== transportToken) return finish(false);
+            const t = Math.min((now - start) / ms, 1);
+            audioPlayer.playbackRate = from + (to - from) * t;
+            if (t < 1) requestAnimationFrame(step);
+            else finish(true);
+        };
+        requestAnimationFrame(step);
+        // rAF sleeps in background tabs; don't leave the record stuck at half speed
+        setTimeout(() => finish(token === transportToken), ms + 120);
+    });
+}
+
+function setPlayingState(playing) {
+    isPlaying = playing;
     const icon = playBtn.querySelector('i');
-    icon.classList.remove('fa-play');
-    icon.classList.add('fa-pause');
-    musicCard.classList.remove('paused');
+    icon.classList.toggle('fa-pause', playing);
+    icon.classList.toggle('fa-play', !playing);
+    playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    musicCard.classList.toggle('paused', !playing);
+}
+
+// Power on: needle down, the platter spins up from 0.6× to speed
+function powerUp() {
+    const token = ++transportToken;
+    ensureAudioGraph();
+    const from = audioPlayer.paused ? 0.6 : audioPlayer.playbackRate;
+    audioPlayer.playbackRate = prefersReducedMotion ? 1 : from;
+    setPlayingState(true);
+    armDown = true;
+    updateTonearm();
+    setDiscMotor(true, 350);
+
+    Promise.resolve(audioPlayer.play())
+        .then(() => rampPlaybackRate(from, 1, 350, token))
+        .catch(() => {
+            if (token !== transportToken) return;
+            setPlayingState(false);
+            armDown = false;
+            updateTonearm();
+            setDiscMotor(false, 1);
+            audioPlayer.playbackRate = 1;
+        });
+}
+
+// Power off: the platter coasts down and the pitch sags with it, then the arm lifts
+function powerDown() {
+    const token = ++transportToken;
+    setPlayingState(false);
+    setDiscMotor(false, 520);
+    rampPlaybackRate(audioPlayer.playbackRate, 0.45, 520, token).then(done => {
+        if (!done) return;
+        audioPlayer.pause();
+        audioPlayer.playbackRate = 1;
+        armDown = false;
+        updateTonearm();
+    });
+}
+
+function togglePlay() {
+    if (isPlaying) powerDown();
+    else powerUp();
+}
+
+function changeRecord(step) {
+    currentSongIndex = (currentSongIndex + step + songs.length) % songs.length;
+    loadSong(currentSongIndex);
+    powerUp();
 
     // Easter eggs
     const song = songs[currentSongIndex];
@@ -330,39 +607,59 @@ function nextSong() {
     console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
 }
 
-function prevSong() {
-    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-    loadSong(currentSongIndex);
-    audioPlayer.play();
-    isPlaying = true;
-    const icon = playBtn.querySelector('i');
-    icon.classList.remove('fa-play');
-    icon.classList.add('fa-pause');
-    musicCard.classList.remove('paused');
+function nextSong() { changeRecord(1); }
+function prevSong() { changeRecord(-1); }
 
-    // Easter eggs
-    const song = songs[currentSongIndex];
-    showEasterEgg(song.easterEgg);
-    console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
+// ── Progress: a real range input, so seeking works from the keyboard too ──
+let isSeeking = false;
+
+function formatTime(seconds) {
+    if (!isFinite(seconds)) return '0:00';
+    const s = Math.floor(seconds);
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
-function updateProgress(e) {
-    const { duration, currentTime } = e.srcElement;
+function resetProgress() {
+    if (!progressRange) return;
+    progressRange.max = 1;
+    progressRange.value = 0;
+    progressRange.style.setProperty('--progress', '0%');
+    progressRange.setAttribute('aria-valuetext', '0:00');
+    timeCurrent.textContent = '0:00';
+    timeTotal.textContent = '0:00';
+}
+
+// The range is in whole seconds, so arrow keys step a second and Page Up/Down a tenth of the song
+function updateProgress() {
+    const { duration, currentTime } = audioPlayer;
     if (isNaN(duration)) return;
-    const progressPercent = (currentTime / duration) * 100;
-    progressBar.style.width = `${progressPercent}%`;
+    progressRange.max = Math.max(Math.floor(duration), 1);
+    if (!isSeeking) {
+        progressRange.value = Math.floor(currentTime);
+        progressRange.style.setProperty('--progress', `${(currentTime / duration * 100).toFixed(2)}%`);
+    }
+    progressRange.setAttribute('aria-valuetext', `${formatTime(currentTime)} / ${formatTime(duration)}`);
+    timeCurrent.textContent = formatTime(currentTime);
+    timeTotal.textContent = formatTime(duration);
+    if (armDown) updateTonearm();
 }
 
-function setProgress(e) {
-    const width = this.clientWidth;
-    const clickX = e.offsetX;
-    const duration = audioPlayer.duration;
-    audioPlayer.currentTime = (clickX / width) * duration;
+function setProgress() {
+    if (isNaN(audioPlayer.duration)) return;
+    audioPlayer.currentTime = Number(progressRange.value);
 }
 
 audioPlayer.addEventListener('ended', nextSong);
 audioPlayer.addEventListener('timeupdate', updateProgress);
-progressContainer.addEventListener('click', setProgress);
+audioPlayer.addEventListener('loadedmetadata', updateProgress);
+progressRange.addEventListener('input', () => {
+    isSeeking = true;
+    progressRange.style.setProperty('--progress', `${progressRange.value / progressRange.max * 100}%`);
+});
+progressRange.addEventListener('change', () => {
+    isSeeking = false;
+    setProgress();
+});
 
 audioPlayer.addEventListener('error', (e) => {
     console.error("Error loading audio:", audioPlayer.src);
@@ -373,18 +670,15 @@ audioPlayer.addEventListener('error', (e) => {
 playBtn.addEventListener('click', togglePlay);
 nextBtn.addEventListener('click', nextSong);
 prevBtn.addEventListener('click', prevSong);
+// Tapping the record does what tapping a real one would: start or stop it
+if (turntableDeck) turntableDeck.addEventListener('click', togglePlay);
 
 // ── The Jukebox: first visit picks a record; the record is the theme. ──
-// No autoplay — music only starts from the visitor's own click on a record.
+// No autoplay — music only starts from the visitor's own click or keypress on a record.
 const jukebox = document.getElementById('jukebox');
-
-function setPlayingState(playing) {
-    isPlaying = playing;
-    const icon = playBtn.querySelector('i');
-    icon.classList.toggle('fa-pause', playing);
-    icon.classList.toggle('fa-play', !playing);
-    musicCard.classList.toggle('paused', !playing);
-}
+const jukeboxDisplayCode = jukebox ? jukebox.querySelector('.jukebox-display-code') : null;
+let jukeboxChosen = false;
+let pendingLetter = null;
 
 function dismissJukebox(immediate = false) {
     if (!jukebox || !document.body.contains(jukebox)) {
@@ -403,20 +697,63 @@ function dismissJukebox(immediate = false) {
     }, 750);
 }
 
+// The ritual: the record slides onto the platter, the arm swings over, the needle drops,
+// a second of crackle, then the song fades up and the jukebox steps aside.
+const RITUAL = prefersReducedMotion
+    ? { arm: 0, needle: 0, fadeIn: 300, leave: 200 }
+    : { arm: 500, needle: 900, fadeIn: 1400, leave: 1900 };
+
 function chooseRecord(index, options = {}) {
+    if (jukeboxChosen) return;
+    jukeboxChosen = true;
     const { withMusic = true } = options;
     currentSongIndex = (index + songs.length) % songs.length;
     loadSong(currentSongIndex);
 
-    if (withMusic) {
-        audioPlayer.volume = 0.4;
-        const playPromise = audioPlayer.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => setPlayingState(true)).catch(() => setPlayingState(false));
-        }
+    if (!withMusic || !jukebox) {
+        dismissJukebox();
+        return;
     }
 
-    dismissJukebox();
+    // Start the track inside the gesture (autoplay rules), but keep it silent under the ritual
+    audioPlayer.volume = 0.4;
+    ensureAudioGraph();
+    setMusicLevel(0);
+    powerUp();
+
+    setJukeboxDisplay(currentSongIndex === 0 ? 'A1' : 'B1');
+    jukebox.dataset.selected = String(currentSongIndex);
+    jukebox.classList.add('is-loading');
+    setTimeout(() => jukebox.classList.add('is-needle-down'), RITUAL.arm);
+    setTimeout(() => playNeedleDrop(0.9), RITUAL.needle);
+    setTimeout(() => fadeMusicIn(1300), RITUAL.fadeIn);
+    setTimeout(() => dismissJukebox(), RITUAL.leave);
+}
+
+function setJukeboxDisplay(text) {
+    if (jukeboxDisplayCode) jukeboxDisplayCode.textContent = text;
+}
+
+// Selector keys: a letter, then a number. A1 and B1 hold records; the rest are empty slots.
+function pressJukeboxKey(key) {
+    if (jukeboxChosen || !jukebox) return;
+    key = key.toUpperCase();
+    jukebox.querySelectorAll('.jukebox-key').forEach(btn => {
+        btn.classList.toggle('is-armed', btn.dataset.jukeboxKey === key && (key === 'A' || key === 'B'));
+    });
+
+    if (key === 'A' || key === 'B') {
+        pendingLetter = key;
+        setJukeboxDisplay(`${key} _`);
+        return;
+    }
+    if (!pendingLetter) return;
+
+    const code = `${pendingLetter}${key}`;
+    pendingLetter = null;
+    if (code === 'A1') chooseRecord(0);
+    else if (code === 'B1') chooseRecord(1);
+    else setJukeboxDisplay(`${code} · ${translations[currentLang]['jukebox.empty']}`);
 }
 
 function initJukebox() {
@@ -442,18 +779,26 @@ function initJukebox() {
     jukebox.querySelectorAll('[data-jukebox-side]').forEach(button => {
         button.addEventListener('click', () => chooseRecord(Number(button.dataset.jukeboxSide)));
     });
+    jukebox.querySelectorAll('[data-jukebox-key]').forEach(button => {
+        button.addEventListener('click', () => pressJukeboxKey(button.dataset.jukeboxKey));
+    });
+    document.addEventListener('keydown', event => {
+        if (jukeboxChosen || event.ctrlKey || event.metaKey || event.altKey) return;
+        if (/^[abAB12]$/.test(event.key)) pressJukeboxKey(event.key);
+    });
 
     const skipBtn = document.getElementById('jukebox-skip');
     if (skipBtn) skipBtn.addEventListener('click', () => chooseRecord(0, { withMusic: false }));
 }
 
 initJukebox();
+updateTonearm();
 
 // ── Record flip (navbar): swaps theme, keeps the music state as-is ──
 function flipRecord() {
     currentSongIndex = (currentSongIndex + 1) % songs.length;
     loadSong(currentSongIndex);
-    if (isPlaying) audioPlayer.play();
+    if (isPlaying) powerUp();
 
     const song = songs[currentSongIndex];
     showEasterEgg(song.easterEgg);
@@ -1686,6 +2031,8 @@ const translations = {
         "jukebox.moodA": "deep blue",
         "jukebox.moodB": "ink on bone",
         "jukebox.skip": "skip, keep it quiet",
+        "jukebox.select": "SELECT",
+        "jukebox.empty": "empty slot",
         // About
         "about.label": "About",
         "about.title1": "The interface is",
@@ -1764,8 +2111,8 @@ const translations = {
         "footer.label": "Get In Touch",
         "footer.title1": "Let's build something",
         "footer.title2": "people actually use.",
-        "footer.copyright": "&copy; 2026 Enzo Esmeraldo",
-        "footer.credits": "Crafted with <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> in Brazil",
+        "footer.copyright": "&#8471; &amp; &copy; 2026 Enzo Esmeraldo",
+        "footer.credits": "Recorded in Fortaleza, BR · Mixed in VS Code · Produced by Enzo Esmeraldo",
         // Heatmap / Tech
         "contrib.label": "Contribution Activity",
         "contrib.less": "Less",
@@ -1802,6 +2149,8 @@ const translations = {
         "jukebox.moodA": "azul profundo",
         "jukebox.moodB": "tinta no osso",
         "jukebox.skip": "pular, sem som",
+        "jukebox.select": "SELEÇÃO",
+        "jukebox.empty": "slot vazio",
         // About
         "about.label": "Sobre",
         "about.title1": "A interface é",
@@ -1880,8 +2229,8 @@ const translations = {
         "footer.label": "Entre em Contato",
         "footer.title1": "Vamos construir algo",
         "footer.title2": "que as pessoas realmente usem.",
-        "footer.copyright": "&copy; 2026 Enzo Esmeraldo",
-        "footer.credits": "Criado com <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> no Brasil",
+        "footer.copyright": "&#8471; &amp; &copy; 2026 Enzo Esmeraldo",
+        "footer.credits": "Gravado em Fortaleza, BR · Mixado no VS Code · Produzido por Enzo Esmeraldo",
         // Heatmap / Tech
         "contrib.label": "Atividade de Contribuição",
         "contrib.less": "Menos",

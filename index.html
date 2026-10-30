@@ -46,30 +46,48 @@
                 <span data-lang="jukebox.title1">Pick a record.</span><br>
                 <span class="jukebox-title-sub" data-lang="jukebox.title2">The record is the theme.</span>
             </h2>
-            <div class="jukebox-records">
-                <button type="button" class="jukebox-record" data-jukebox-side="0">
-                    <span class="jukebox-media">
-                        <span class="jukebox-vinyl" style="--vinyl-label: rgb(122 169 216);"></span>
-                        <img class="jukebox-sleeve" src="assets/albumCovers/oxygenPorchLight.jpg" alt="Oxygen by Porch Light, album cover" loading="eager">
+
+            <!-- The mechanism: an empty platter waiting for a pick -->
+            <div class="jukebox-deck" aria-hidden="true">
+                <span class="jukebox-platter"></span>
+                <span class="jukebox-vinyl" data-side="0"><span class="jukebox-vinyl-disc" style="--vinyl-cover: url('assets/albumCovers/oxygenPorchLight.jpg');"></span></span>
+                <span class="jukebox-vinyl" data-side="1"><span class="jukebox-vinyl-disc" style="--vinyl-cover: url('assets/albumCovers/DeftonesCover.jpg');"></span></span>
+                <span class="jukebox-spindle"></span>
+                <span class="jukebox-arm"></span>
+            </div>
+
+            <!-- Title strips: the paper labels behind the jukebox glass -->
+            <div class="jukebox-strips">
+                <button type="button" class="jukebox-strip" data-jukebox-side="0" style="--strip-ink: #3d6fa6;" aria-label="A1: Oxygen by Porch Light">
+                    <span class="jukebox-strip-code">A1</span>
+                    <span class="jukebox-strip-body">
+                        <span class="jukebox-strip-song">Oxygen</span>
+                        <span class="jukebox-strip-artist">Porch Light</span>
                     </span>
-                    <span class="jukebox-record-meta">
-                        <span class="jukebox-side font-mono">SIDE A</span>
-                        <span class="jukebox-song font-display">Oxygen</span>
-                        <span class="jukebox-artist font-mono">Porch Light · <em data-lang="jukebox.moodA">deep blue</em></span>
-                    </span>
+                    <em class="jukebox-strip-mood" data-lang="jukebox.moodA">deep blue</em>
                 </button>
-                <button type="button" class="jukebox-record" data-jukebox-side="1">
-                    <span class="jukebox-media">
-                        <span class="jukebox-vinyl" style="--vinyl-label: rgb(244 244 241);"></span>
-                        <img class="jukebox-sleeve" src="assets/albumCovers/DeftonesCover.jpg" alt="Change (In the House of Flies) by Deftones, album cover" loading="eager">
+                <button type="button" class="jukebox-strip" data-jukebox-side="1" style="--strip-ink: #9b2c2c;" aria-label="B1: Change (In the House of Flies) by Deftones">
+                    <span class="jukebox-strip-code">B1</span>
+                    <span class="jukebox-strip-body">
+                        <span class="jukebox-strip-song">Change</span>
+                        <span class="jukebox-strip-artist">Deftones</span>
                     </span>
-                    <span class="jukebox-record-meta">
-                        <span class="jukebox-side font-mono">SIDE B</span>
-                        <span class="jukebox-song font-display">Change</span>
-                        <span class="jukebox-artist font-mono">Deftones · <em data-lang="jukebox.moodB">ink on bone</em></span>
-                    </span>
+                    <em class="jukebox-strip-mood" data-lang="jukebox.moodB">ink on bone</em>
                 </button>
             </div>
+
+            <!-- Selector: letter, then number (the keyboard works too) -->
+            <div class="jukebox-selector">
+                <div class="jukebox-keys" role="group" aria-label="Selector keys">
+                    <button type="button" class="jukebox-key" data-jukebox-key="A">A</button>
+                    <button type="button" class="jukebox-key" data-jukebox-key="B">B</button>
+                    <span class="jukebox-keys-gap" aria-hidden="true"></span>
+                    <button type="button" class="jukebox-key" data-jukebox-key="1">1</button>
+                    <button type="button" class="jukebox-key" data-jukebox-key="2">2</button>
+                </div>
+                <p id="jukebox-display" class="jukebox-display" aria-live="polite"><span data-lang="jukebox.select">SELECT</span> <span class="jukebox-display-code">_ _</span></p>
+            </div>
+
             <button type="button" id="jukebox-skip" class="jukebox-skip font-mono" data-lang="jukebox.skip">skip, keep it quiet</button>
         </div>
     </div>
@@ -84,10 +102,10 @@
 
             <!-- Desktop Nav -->
             <div class="hidden md:flex items-center gap-8">
-                <a href="#about" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.about">About</a>
-                <a href="#trajectory" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Trajectory</a>
-                <a href="#work" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Work</a>
-                <a href="#contact" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.contact">Contact</a>
+                <a href="#about" class="nav-link nav-track font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors"><span class="nav-track-code" aria-hidden="true">A1</span><span data-lang="nav.about">About</span><span class="nav-track-time" aria-hidden="true">1:12</span></a>
+                <a href="#trajectory" class="nav-link nav-track font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors"><span class="nav-track-code" aria-hidden="true">A2</span><span data-lang="nav.journey">Trajectory</span><span class="nav-track-time" aria-hidden="true">2:40</span></a>
+                <a href="#work" class="nav-link nav-track font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors"><span class="nav-track-code" aria-hidden="true">B1</span><span data-lang="nav.projects">Work</span><span class="nav-track-time" aria-hidden="true">3:05</span></a>
+                <a href="#contact" class="nav-link nav-track font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors"><span class="nav-track-code" aria-hidden="true">B2</span><span data-lang="nav.contact">Contact</span><span class="nav-track-time" aria-hidden="true">0:45</span></a>
 
                 <!-- Record Flip (theme) -->
                 <button id="theme-flip-desktop" class="theme-flip flex items-center gap-2 font-mono text-[11px] tracking-wider text-gray hover:text-accent transition-colors cursor-pointer" title="Flip the record and the theme follows">
@@ -113,10 +131,10 @@
     <div id="mobile-menu-backdrop" class="fixed inset-0 bg-black/60 z-[105] opacity-0 pointer-events-none transition-opacity duration-300 md:hidden" onclick="closeMobileMenu()"></div>
     <div id="mobile-menu" class="fixed top-0 right-0 h-full w-72 bg-panel z-[108] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden border-l border-white/5">
         <div class="flex flex-col pt-24 px-8 gap-6">
-            <a href="#about" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.about">About</a>
-            <a href="#trajectory" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Trajectory</a>
-            <a href="#work" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Work</a>
-            <a href="#contact" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.contact">Contact</a>
+            <a href="#about" class="mobile-link nav-track font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors"><span class="nav-track-code" aria-hidden="true">A1</span><span data-lang="nav.about">About</span><span class="nav-track-time" aria-hidden="true">1:12</span></a>
+            <a href="#trajectory" class="mobile-link nav-track font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors"><span class="nav-track-code" aria-hidden="true">A2</span><span data-lang="nav.journey">Trajectory</span><span class="nav-track-time" aria-hidden="true">2:40</span></a>
+            <a href="#work" class="mobile-link nav-track font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors"><span class="nav-track-code" aria-hidden="true">B1</span><span data-lang="nav.projects">Work</span><span class="nav-track-time" aria-hidden="true">3:05</span></a>
+            <a href="#contact" class="mobile-link nav-track font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors"><span class="nav-track-code" aria-hidden="true">B2</span><span data-lang="nav.contact">Contact</span><span class="nav-track-time" aria-hidden="true">0:45</span></a>
             <hr class="border-white/5">
             <button id="theme-flip-mobile" class="theme-flip flex items-center gap-2 font-mono text-[11px] tracking-wider text-gray hover:text-accent transition-colors cursor-pointer">
                 <i class="fas fa-record-vinyl text-[12px] theme-flip-icon"></i>
@@ -591,43 +609,56 @@
     </section>
 
 
-    <div id="music-card" class="music-card paused fixed bottom-6 right-6 z-50">
+    <!-- ═══ THE TURNTABLE (the record keeps playing while you read) ═══ -->
+    <div id="music-card" class="music-card turntable paused fixed bottom-6 right-6 z-50">
 
-        <!-- Always-visible row: album art + info + controls + collapse btn -->
-        <div class="flex items-center gap-3">
-            <div id="album-art" class="w-10 h-10 rounded-sm bg-cover bg-center shrink-0 shadow-lg"></div>
-            <div id="music-meta" class="flex-1 min-w-0">
+        <!-- Always-visible row: deck + info + play + collapse btn -->
+        <div class="turntable-row">
+            <div id="turntable-deck" class="turntable-deck" title="Play / pause">
+                <span class="turntable-platter"></span>
+                <span id="turntable-flip" class="turntable-flip">
+                    <span id="turntable-disc" class="turntable-disc">
+                        <span id="album-art" class="turntable-label"></span>
+                    </span>
+                </span>
+                <span class="turntable-spindle"></span>
+                <span id="turntable-arm" class="turntable-arm"></span>
+            </div>
+            <div id="music-meta" class="turntable-meta">
                 <p id="song-title" class="font-heading text-xs text-text font-medium truncate">Oxygen</p>
                 <p id="artist-name" class="font-mono text-[10px] text-gray truncate">Porch Light</p>
+                <p class="turntable-speed">
+                    <span id="turntable-side">SIDE A</span> · 33⅓
+                    <span id="equalizer" class="equalizer" aria-hidden="true">
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                        <span class="eq-bar"></span>
+                    </span>
+                </p>
             </div>
-            <div id="music-nav" class="flex items-center gap-1">
-                <button id="prev-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-backward-step text-[10px]"></i>
-                </button>
-                <button id="play-btn" class="w-8 h-8 flex items-center justify-center text-text hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-play text-xs"></i>
-                </button>
-                <button id="next-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-forward-step text-[10px]"></i>
-                </button>
-            </div>
-            <div id="equalizer" class="flex items-end gap-[2px] h-4 ml-1">
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-            </div>
+            <button id="play-btn" class="turntable-play" aria-label="Play">
+                <i class="fas fa-play text-xs"></i>
+            </button>
             <!-- Collapse toggle -->
-            <button id="collapse-btn" onclick="toggleMusicCollapse()" class="w-6 h-6 flex items-center justify-center text-gray/40 hover:text-accent transition-colors cursor-pointer ml-1 shrink-0" title="Minimize">
+            <button id="collapse-btn" onclick="toggleMusicCollapse()" class="w-6 h-6 flex items-center justify-center text-gray/40 hover:text-accent transition-colors cursor-pointer shrink-0" title="Minimize" aria-label="Minimize player">
                 <i id="collapse-icon" class="fas fa-chevron-down text-[8px] transition-transform duration-300"></i>
             </button>
         </div>
 
         <!-- Collapsible section -->
-        <div id="music-collapsible" class="overflow-hidden transition-all duration-400 ease-in-out" style="max-height: 80px; opacity: 1;">
+        <div id="music-collapsible" class="overflow-hidden transition-all duration-400 ease-in-out" style="max-height: 96px; opacity: 1;">
             <div class="pt-2 flex flex-col gap-1.5">
-                <div id="progress-container" class="w-full h-1 bg-white/5 cursor-pointer rounded-full overflow-hidden">
-                    <div id="progress-bar" class="h-full bg-accent/60 rounded-full transition-all duration-100" style="width: 0%"></div>
+                <div class="turntable-transport">
+                    <button id="prev-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer" aria-label="Previous record">
+                        <i class="fas fa-backward-step text-[10px]"></i>
+                    </button>
+                    <span id="time-current" class="turntable-time">0:00</span>
+                    <input id="progress-range" class="turntable-progress" type="range" min="0" max="1" step="1" value="0" aria-label="Seek">
+                    <span id="time-total" class="turntable-time">0:00</span>
+                    <button id="next-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer" aria-label="Next record">
+                        <i class="fas fa-forward-step text-[10px]"></i>
+                    </button>
                 </div>
                 <!-- Easter egg line — hidden by default, shown on song change -->
                 <p id="music-easter-egg" class="font-mono text-[8px] text-accent/0 text-center tracking-wider italic transition-all duration-700 ease-in-out leading-relaxed" style="max-height:0; overflow:hidden;"></p>
@@ -674,8 +705,8 @@
 
             <!-- Bottom Bar -->
             <div class="mt-24 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="font-mono text-[10px] text-gray/30 tracking-wider" data-lang="footer.copyright">&copy; 2026 Enzo Esmeraldo</p>
-                <p class="font-mono text-[10px] text-gray/30 tracking-wider" data-lang="footer.credits">Crafted with <i class="fas fa-heart text-accent/40 animate-pulse text-[8px]"></i> in Brazil</p>
+                <p class="font-mono text-[10px] text-gray/30 tracking-wider" data-lang="footer.copyright">&#8471; &amp; &copy; 2026 Enzo Esmeraldo</p>
+                <p class="font-mono text-[10px] text-gray/30 tracking-wider" data-lang="footer.credits">Recorded in Fortaleza, BR · Mixed in VS Code · Produced by Enzo Esmeraldo</p>
             </div>
         </div>
     </footer>
