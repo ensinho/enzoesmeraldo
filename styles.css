@@ -4,10 +4,12 @@
    ═══════════════════════════════════════════════════ */
 
 :root {
-    --font-display: 'Syne', sans-serif;
-    --font-heading: 'Syne', sans-serif;
-    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    --font-mono: 'Space Mono', monospace;
+    --font-display: 'Bricolage Grotesque', sans-serif;
+    --font-heading: 'Bricolage Grotesque', sans-serif;
+    --font-body: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'Geist Mono', ui-monospace, monospace;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
     --bg-rgb: 10 10 10;
     --text-rgb: 255 255 255;
@@ -49,8 +51,10 @@ body.modal-open {
     overflow: hidden;
 }
 
-*, *::before, *::after {
-    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+/* Theme colors cross-fade only while a theme change is in flight (body.theme-switching),
+   instead of every element carrying a permanent transition. */
+body.theme-switching *, body.theme-switching *::before, body.theme-switching *::after {
+    transition-property: background-color, border-color, color, fill, stroke;
     transition-duration: 0.4s;
     transition-timing-function: ease;
 }
@@ -110,23 +114,25 @@ body[data-music-theme="deftones"] a.bg-accent span {
     width: 100%;
 }
 
+#navbar {
+    border-bottom: 1px solid transparent;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
 #navbar.scrolled {
-    background: rgba(var(--bg-rgb), 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgb(var(--bg-rgb) / 0.94);
+    border-bottom-color: rgb(var(--text-rgb) / 0.06);
 }
 
 /* ── Bento Cards ── */
 .bento-card {
     border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                box-shadow 0.4s ease;
+    transition: transform 0.35s var(--ease-out);
 }
 
 .bento-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
 }
 
 .bento-card-inner {
@@ -1640,9 +1646,7 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: rgb(var(--panel-rgb) / 0.8);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgb(var(--panel-rgb) / 0.97);
     border-radius: 14px;
     padding: 16px;
     display: flex;
@@ -2323,5 +2327,378 @@ body[data-music-theme="deftones"] .inline-flex.bg-accent.text-black {
         scroll-behavior: auto !important;
         transition-duration: 1ms !important;
         transition-delay: 0ms !important;
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+   Native motion (replaces GSAP + ScrollTrigger)
+   Everything animates transform/opacity only, so it stays on the compositor.
+   ═══════════════════════════════════════════════════ */
+@keyframes rise-in {
+    from { opacity: 0; translate: 0 var(--rise, 1.25rem); }
+    to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes hero-drift {
+    from { transform: scale(1.05) translateY(0); }
+    to   { transform: scale(1.05) translateY(18%); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    /* Hidden under the jukebox until the site starts */
+    body:not(.site-started) .hero-text-anim,
+    body:not(.site-started) .gs-fade-in {
+        opacity: 0;
+    }
+
+    body.site-started .hero-text-anim {
+        animation: rise-in 0.9s var(--ease-out) both;
+        animation-delay: calc(var(--i, 0) * 90ms + 60ms);
+    }
+
+    body.site-started .gs-fade-in {
+        animation: rise-in 0.9s var(--ease-out) 0.45s both;
+    }
+
+    /* Scroll reveals: scroll-driven where supported (Chrome/Edge/Safari 26+) */
+    @supports (animation-timeline: view()) {
+        .gs-reveal {
+            animation: rise-in linear both;
+            animation-timeline: view();
+            animation-range: entry 0% entry 35%;
+            --rise: 2rem;
+        }
+
+        /* Subtle hero parallax, desktop pointers only */
+        @media (min-width: 769px) and (pointer: fine) {
+            #hero-bg {
+                animation: hero-drift linear both;
+                animation-timeline: scroll(root);
+                animation-range: 0 100vh;
+            }
+        }
+    }
+
+    /* Fallback: one-shot IntersectionObserver toggles .is-revealed */
+    body.reveal-fallback .gs-reveal {
+        opacity: 0;
+        translate: 0 2rem;
+        transition: opacity 0.7s var(--ease-out), translate 0.7s var(--ease-out);
+    }
+
+    body.reveal-fallback .gs-reveal.is-revealed {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+#hero-bg {
+    transform: scale(1.05);
+}
+
+#back-to-top {
+    opacity: 0;
+    translate: 0 1rem;
+    pointer-events: none;
+    transition: opacity 0.25s ease, translate 0.25s var(--ease-out), color 0.2s ease, border-color 0.2s ease;
+}
+
+#back-to-top.is-visible {
+    opacity: 1;
+    translate: 0 0;
+    pointer-events: auto;
+}
+
+/* ═══════════════════════════════════════════════════
+   Calmer layout pass (inspired by plain, text-first résumés)
+   ═══════════════════════════════════════════════════ */
+body {
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.005em;
+}
+
+.font-display,
+.font-heading {
+    font-optical-sizing: auto;
+    letter-spacing: -0.025em;
+}
+
+/* Accent lines in headings switch to an editorial serif italic */
+h1 .italic.text-accent,
+h2 .italic.text-accent,
+h2 .text-accent.italic {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.hero-headline {
+    padding-bottom: 0.08em; /* room for g/ç/p descenders */
+    text-wrap: balance;
+}
+
+.hero-headline .italic {
+    font-size: 1.08em;
+    line-height: 0.95;
+}
+
+/* //label section kickers */
+.section-label {
+    letter-spacing: 0.08em !important;
+    text-transform: lowercase !important;
+    font-size: 13px !important;
+    opacity: 0.85;
+}
+
+.section-label::before {
+    content: "//";
+    margin-right: 0.15em;
+    opacity: 0.55;
+}
+
+section > div > .gs-reveal:first-child h2 {
+    padding-bottom: 0.06em;
+}
+
+.bento-card-inner {
+    border-color: rgb(var(--text-rgb) / 0.06);
+}
+
+p {
+    text-wrap: pretty;
+}
+
+/* Quieter mono: wide tracking reads as noise at small sizes */
+body .font-mono[class*="tracking-"] {
+    letter-spacing: 0.06em;
+}
+
+/* Hero backdrop sits further back and fades into the page */
+#hero-bg {
+    opacity: 0.3;
+}
+
+#hero::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 40%;
+    background: linear-gradient(to bottom, transparent, rgb(var(--bg-rgb)));
+    pointer-events: none;
+}
+
+/* Running text: Bricolage at its text optical size, a touch looser */
+body {
+    font-variation-settings: "opsz" 14;
+    letter-spacing: 0;
+}
+
+.font-display, .font-heading, h1, h2, h3 {
+    font-variation-settings: normal;
+}
+
+/* ═══════════════════════════════════════════════════
+   Project deep dive (Pokémon battle AI)
+   ═══════════════════════════════════════════════════ */
+.deep-dive {
+    margin-top: 1.25rem;
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    border-top: 1px solid rgb(var(--text-rgb) / 0.08);
+    display: grid;
+    gap: 2rem;
+}
+
+.deep-dive-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: rgb(var(--accent-rgb) / 0.85);
+    margin-bottom: 0.75rem;
+}
+
+.deep-dive-label::before {
+    content: "//";
+    margin-right: 0.2em;
+    opacity: 0.55;
+}
+
+.deep-dive-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
+    margin-bottom: 0.9rem;
+}
+
+.deep-dive-intro {
+    max-width: 68ch;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgb(var(--gray-rgb));
+}
+
+.deep-dive-intro strong,
+.deep-dive-step-text strong {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.deep-dive-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    border: 1px solid rgb(var(--text-rgb) / 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.deep-dive-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem 1.1rem;
+    border-right: 1px solid rgb(var(--text-rgb) / 0.06);
+    border-bottom: 1px solid rgb(var(--text-rgb) / 0.06);
+    margin: 0 -1px -1px 0;
+}
+
+.deep-dive-metric-value {
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--text-color);
+    font-variant-numeric: tabular-nums;
+}
+
+.deep-dive-metric-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.45;
+    color: rgb(var(--gray-rgb) / 0.85);
+}
+
+.deep-dive-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 2.5rem;
+}
+
+.deep-dive-pipeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.15rem;
+}
+
+.deep-dive-step {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    gap: 0.5rem;
+}
+
+.deep-dive-step-index {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgb(var(--accent-rgb) / 0.8);
+    padding-top: 0.2rem;
+}
+
+.deep-dive-step-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.2rem;
+}
+
+.deep-dive-step-text {
+    font-size: 0.93rem;
+    line-height: 1.6;
+    color: rgb(var(--gray-rgb));
+}
+
+.deep-dive-side {
+    display: grid;
+    gap: 2rem;
+    align-content: start;
+}
+
+.deep-dive-bar {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr 3.2rem;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.45rem 0;
+}
+
+.deep-dive-bar-name {
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.deep-dive-bar-name em {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgb(var(--gray-rgb) / 0.75);
+    margin-left: 0.25rem;
+}
+
+.deep-dive-bar-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgb(var(--text-rgb) / 0.07);
+    overflow: hidden;
+}
+
+.deep-dive-bar-fill {
+    display: block;
+    height: 100%;
+    width: var(--rate);
+    border-radius: inherit;
+    background: rgb(var(--accent-rgb) / 0.85);
+    transform-origin: left center;
+}
+
+.deep-dive-bar-value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-align: right;
+    color: rgb(var(--gray-rgb));
+    font-variant-numeric: tabular-nums;
+}
+
+@keyframes bar-grow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+        .deep-dive-bar-fill {
+            animation: bar-grow linear both;
+            animation-timeline: view();
+            animation-range: entry 10% cover 35%;
+        }
+    }
+}
+
+.deep-dive-footnote {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgb(var(--gray-rgb) / 0.6);
+}
+
+@media (max-width: 860px) {
+    .deep-dive-body {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .deep-dive-bar {
+        grid-template-columns: 6rem 1fr 2.8rem;
     }
 }

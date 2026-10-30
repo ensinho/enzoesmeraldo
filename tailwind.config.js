@@ -4,10 +4,11 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                display: ['"Syne"', 'sans-serif'],
-                heading: ['"Syne"', 'sans-serif'],
-                body: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Helvetica', 'Arial', 'sans-serif'],
-                mono: ['"Space Mono"', 'monospace'],
+                display: ['"Bricolage Grotesque"', 'sans-serif'],
+                heading: ['"Bricolage Grotesque"', 'sans-serif'],
+                body: ['"Bricolage Grotesque"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+                mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
+                serif: ['"Instrument Serif"', 'Georgia', 'serif'],
             },
             colors: {
                 bg: 'rgb(var(--bg-rgb) / <alpha-value>)',

@@ -2,104 +2,53 @@
 // ENZO.DEV — Script v2.0
 // ═══════════════════════════════════════════════════
 
-gsap.registerPlugin(ScrollTrigger);
-
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-// Phones and touch devices get lighter motion: no parallax scrub, one-shot reveals.
-const isLightMotion = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+const supportsScrollTimeline = window.CSS && CSS.supports('animation-timeline: view()');
 
 // ── Site start (called once the jukebox is dismissed) ──
+// All motion is native CSS (see "Native motion" in styles.css). JS only flips a class
+// and, on browsers without scroll-driven animations, falls back to a one-shot observer.
 let siteStarted = false;
 function startSite() {
     if (siteStarted) return;
     siteStarted = true;
-    initScrollAnimations();
+    document.querySelectorAll('.hero-text-anim').forEach((el, i) => el.style.setProperty('--i', i));
+    document.body.classList.add('site-started');
+    initRevealFallback();
 }
 
-// ── Scroll Animations ──
-function initScrollAnimations() {
-    if (prefersReducedMotion) {
-        gsap.set(".hero-text-anim", { y: 0 });
-        gsap.set(".gs-fade-in, .gs-reveal", { y: 0, opacity: 1 });
-        window.addEventListener('scroll', () => {
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
-        }, { passive: true });
-        return;
-    }
-
-    // Parallax Hero (desktop only: a scrubbed full-bleed background is the priciest effect on phones)
-    if (!isLightMotion) {
-        gsap.to("#hero-bg", {
-            yPercent: 25,
-            ease: "none",
-            scrollTrigger: {
-                trigger: "body",
-                start: "top top",
-                end: "bottom top",
-                scrub: true
-            }
+function initRevealFallback() {
+    if (prefersReducedMotion || supportsScrollTimeline || !('IntersectionObserver' in window)) return;
+    document.body.classList.add('reveal-fallback');
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-revealed');
+            observer.unobserve(entry.target);
         });
-    }
-
-    // Hero Text Stagger
-    gsap.to(".hero-text-anim", {
-        y: 0,
-        duration: 1.4,
-        stagger: 0.2,
-        ease: "power4.out",
-        delay: 0.1
-    });
-
-    // Fade In Elements
-    gsap.utils.toArray('.gs-fade-in').forEach(element => {
-        gsap.to(element, {
-            y: 0,
-            opacity: 1,
-            duration: 1.2,
-            ease: "power3.out",
-            delay: 0.6
-        });
-    });
-
-    // Reveal Sections
-    gsap.utils.toArray('.gs-reveal').forEach(element => {
-        gsap.fromTo(element,
-            { y: isLightMotion ? 28 : 60, opacity: 0 },
-            {
-                y: 0,
-                opacity: 1,
-                duration: isLightMotion ? 0.7 : 1,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: element,
-                    start: "top 88%",
-                    // On phones, reveal once and stop tracking instead of replaying on every scroll back
-                    once: isLightMotion,
-                    toggleActions: isLightMotion ? "play none none none" : "play none none reverse"
-                }
-            }
-        );
-    });
-
-    // Navbar scroll state
-    ScrollTrigger.create({
-        start: 'top -60',
-        end: 99999,
-        onEnter: () => document.getElementById('navbar').classList.add('scrolled'),
-        onLeaveBack: () => document.getElementById('navbar').classList.remove('scrolled'),
-    });
+    }, { rootMargin: '0px 0px -12% 0px' });
+    document.querySelectorAll('.gs-reveal').forEach(el => observer.observe(el));
 }
 
-// ── Back to Top ──
+// ── Navbar state + Back to Top (one rAF-throttled passive listener) ──
+const navbar = document.getElementById('navbar');
 const backToTopBtn = document.getElementById('back-to-top');
+let scrollTicking = false;
+function syncScrollState() {
+    scrollTicking = false;
+    const y = window.scrollY;
+    navbar.classList.toggle('scrolled', y > 60);
+    if (backToTopBtn) backToTopBtn.classList.toggle('is-visible', y > window.innerHeight * 0.5);
+}
+window.addEventListener('scroll', () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(syncScrollState);
+}, { passive: true });
+syncScrollState();
 if (backToTopBtn) {
-    window.addEventListener('scroll', () => {
-        const show = window.scrollY > window.innerHeight * 0.5;
-        backToTopBtn.classList.toggle('translate-y-20', !show);
-        backToTopBtn.classList.toggle('opacity-0', !show);
-    }, { passive: true });
     backToTopBtn.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
     });
 }
 
@@ -269,7 +218,11 @@ function showEasterEgg(msgObj) {
 
 // ── Theme veil: a brief accent wash that makes the flip feel like a moment ──
 let themeLoadedOnce = false;
+let themeSwitchTimer = null;
 function flashThemeVeil() {
+    document.body.classList.add('theme-switching');
+    clearTimeout(themeSwitchTimer);
+    themeSwitchTimer = setTimeout(() => document.body.classList.remove('theme-switching'), 600);
     if (prefersReducedMotion) return;
     let veil = document.querySelector('.theme-veil');
     if (!veil) {
@@ -522,7 +475,7 @@ let heatTooltip = null;
 // decoration into proof-of-work. Dates are ISO (YYYY-MM-DD); fill these in as
 // milestones land. Self-aware entries (e.g. "finals week — I'm a student") welcome.
 const CONTRIB_STORIES = [
-    // { date: '2026-01-12', en: 'QAssistant v1 shipped', pt: 'QAssistant v1 lançado' },
+    // { date: '2026-10-21', en: 'QAssistant v2 on the VS Code Marketplace', pt: 'QAssistant v2 no Marketplace do VS Code' },
 ];
 
 const PEAK_MARKER_COUNT = 3;
@@ -823,22 +776,63 @@ const featuredProjects = [
             alt: 'Pokémon Team Builder logo'
         },
         description: {
-            en: 'Competitive team building usually lives across five tabs: Pikalytics, a damage calc, Showdown, a spreadsheet and Discord. <strong>pokemonbuilder.app puts all of it in one place</strong>. You get a builder with live analysis, <strong>real ladder usage from 1M+ games</strong> (Smogon, VGCPastes, Pikalytics), tournament-winning teams, a full <strong>damage calculator</strong>, speed tiers, and a <em>forum where shared teams import in one click</em>.',
-            pt: 'Montar time competitivo normalmente fica espalhado em cinco abas: Pikalytics, uma calc de dano, o Showdown, uma planilha e o Discord. O <strong>pokemonbuilder.app junta tudo num lugar só</strong>. Tem builder com análise ao vivo, <strong>uso real de ladder de mais de 1M de partidas</strong> (Smogon, VGCPastes, Pikalytics), times campeões de torneios, <strong>calculadora de dano</strong> completa, speed tiers e um <em>fórum onde qualquer time compartilhado importa em um clique</em>.'
+            en: 'Competitive team building usually lives across five tabs: Pikalytics, a damage calc, Showdown, a spreadsheet and Discord. <strong>pokemonbuilder.app puts all of it in one place</strong>. You get a builder with live analysis, <strong>real ladder usage from 1M+ games</strong> (Smogon, VGCPastes, Pikalytics), tournament-winning teams, a full <strong>damage calculator</strong>, speed tiers, a <em>forum where shared teams import in one click</em>, and a daily <strong>battle against Cynthia driven by a battle AI I built</strong> on top of the Showdown engine.',
+            pt: 'Montar time competitivo normalmente fica espalhado em cinco abas: Pikalytics, uma calc de dano, o Showdown, uma planilha e o Discord. O <strong>pokemonbuilder.app junta tudo num lugar só</strong>. Tem builder com análise ao vivo, <strong>uso real de ladder de mais de 1M de partidas</strong> (Smogon, VGCPastes, Pikalytics), times campeões de torneios, <strong>calculadora de dano</strong> completa, speed tiers, um <em>fórum onde qualquer time compartilhado importa em um clique</em> e uma <strong>batalha diária contra a Cynthia, movida por uma IA de batalha que eu construí</strong> em cima do motor do Showdown.'
         },
         narrative: {
             en: {
                 problem: 'Going from "team idea" to "importable team" meant jumping between tools that don\'t talk to each other, and none of them knew what the meta was actually running.',
                 decision: 'Make real data the spine, not a feature: monthly ladder usage, Smogon sets, and tournament teams feed the builder, so every suggestion is one click from a slot.',
-                outcome: 'A live product with 15+ sections, EN/PT, light and dark themes, guest-to-cloud accounts and PWA install, where a tournament team becomes your editable draft in one click.'
+                outcome: 'A live product with 15+ sections, EN/PT, light and dark themes, guest-to-cloud accounts and PWA install, where a tournament team becomes your editable draft in one click, and a daily AI battle gives people a reason to come back.'
             },
             pt: {
                 problem: 'Sair da "ideia de time" até um "time importável" era pular entre ferramentas que não conversam entre si, e nenhuma delas sabia o que o meta estava jogando de verdade.',
                 decision: 'Fazer dos dados reais a base, não uma feature: uso mensal de ladder, sets do Smogon e times de torneio alimentam o builder, então toda sugestão está a um clique de virar slot.',
-                outcome: 'Um produto no ar com 15+ seções, EN/PT, tema claro e escuro, contas de convidado que sobem pra nuvem e instalação como PWA, onde um time de torneio vira seu rascunho editável em um clique.'
+                outcome: 'Um produto no ar com 15+ seções, EN/PT, tema claro e escuro, contas de convidado que sobem pra nuvem e instalação como PWA, onde um time de torneio vira seu rascunho editável em um clique, e uma batalha diária contra a IA dá motivo pra voltar todo dia.'
             }
         },
-        technologies: ['React', 'TypeScript', 'Vite', 'PWA', 'PokéAPI', 'Smogon Data'],
+        technologies: ['React 19', 'Vite', 'Firebase', 'Vercel Functions', '@pkmn/sim', 'PWA', 'Smogon Data'],
+        deepDive: {
+            kicker: { en: 'Deep dive · Battle AI', pt: 'Deep dive · IA de batalha' },
+            title: { en: 'Champion Challenge: a Cynthia that plays fair', pt: 'Desafio da Campeã: uma Cynthia que joga limpo' },
+            intro: {
+                en: 'Once a day you battle Cynthia, and a <strong>server-side AI</strong> picks her move every turn. It\'s not a brute-force search: it scores every legal option with explicit rules, simulates the best few one turn ahead, and judges those futures with a <strong>win-probability model I trained from scratch</strong>. She only knows what the battle has revealed, and she gets harder as the week goes on.',
+                pt: 'Uma vez por dia você enfrenta a Cynthia, e uma <strong>IA no servidor</strong> escolhe o golpe dela a cada turno. Não é força bruta: ela pontua cada opção legal com regras explícitas, simula as melhores um turno à frente e avalia esses futuros com um <strong>modelo de chance de vitória que treinei do zero</strong>. Ela só sabe o que a batalha já revelou, e fica mais difícil ao longo da semana.'
+            },
+            pipeline: [
+                { en: ['Fog of war', 'Builds a copy of the battle with only what was revealed. Hidden items, EVs and moves get neutral defaults, and a test proves your hidden info never changes her choice.'], pt: ['Névoa de guerra', 'Monta uma cópia da batalha só com o que foi revelado. Item, EVs e golpes escondidos viram padrões neutros, e um teste garante que sua info oculta nunca muda a escolha dela.'] },
+                { en: ['Read the player', 'Predicts your move with a softmax over expected damage, and learns during the match how often you switch or repeat moves.'], pt: ['Ler o jogador', 'Prevê seu golpe com um softmax sobre o dano esperado e aprende, durante a partida, o quanto você troca ou repete golpes.'] },
+                { en: ['Score every option', 'Pure evaluators (attack, setup, status, recovery, switch) score each move in "% of HP" points, using cached damage estimates from the simulator.'], pt: ['Pontuar cada opção', 'Avaliadores puros (ataque, setup, status, cura, troca) pontuam cada golpe em pontos de "% de HP", com estimativas de dano cacheadas do simulador.'] },
+                { en: ['Look one turn ahead', 'On the hardest days: top 3–4 candidates × your 3 likeliest replies × 2 seeded samples, up to 24 simulated futures per turn.'], pt: ['Olhar um turno à frente', 'Nos dias mais difíceis: as 3–4 melhores opções × suas 3 respostas mais prováveis × 2 amostras com seed, até 24 futuros simulados por turno.'] },
+                { en: ['Judge with M1', 'A logistic-regression win-chance model (no ML library) scores each future, and switches her to gamble mode below 25% or safe mode above 75%.'], pt: ['Julgar com o M1', 'Um modelo de regressão logística de chance de vitória (sem biblioteca de ML) avalia cada futuro e coloca ela em modo arriscado abaixo de 25% ou seguro acima de 75%.'] },
+                { en: ['Decide, explain, replay', 'A weighted pick among the best few, from a seeded RNG. Same input, same move, and every decision stores a readable trace.'], pt: ['Decidir, explicar, reproduzir', 'Escolha ponderada entre as melhores, com RNG de seed. Mesma entrada, mesmo golpe, e toda decisão guarda um trace legível.'] }
+            ],
+            metrics: [
+                { value: '24', en: 'simulated futures per turn, max', pt: 'futuros simulados por turno, no máximo' },
+                { value: '21 ms', en: 'median decision on the hardest level (p95 37 ms)', pt: 'decisão mediana no nível mais difícil (p95 37 ms)' },
+                { value: '75%', en: 'win-model accuracy, calibration error 0.029', pt: 'acerto do modelo de vitória, erro de calibração 0,029' },
+                { value: '24.4k', en: 'training positions from 1,500 self-play battles', pt: 'posições de treino de 1.500 batalhas de autojogo' },
+                { value: '0', en: 'illegal moves in the calibration arena', pt: 'jogadas ilegais na arena de calibração' },
+                { value: '~1.2k', en: 'test cases in CI across the whole app', pt: 'casos de teste na CI no app inteiro' }
+            ],
+            difficulty: {
+                label: { en: 'Cynthia\'s win rate vs a greedy bot, by weekday', pt: 'Vitórias da Cynthia contra um bot guloso, por dia da semana' },
+                levels: [
+                    { name: 'DP', days: { en: 'Mon–Tue', pt: 'seg–ter' }, rate: 43.8 },
+                    { name: 'Platinum', days: { en: 'Wed–Thu', pt: 'qua–qui' }, rate: 61.3 },
+                    { name: 'Rematch', days: { en: 'Fri–Sat', pt: 'sex–sáb' }, rate: 68.3 },
+                    { name: 'World', days: { en: 'Sun', pt: 'dom' }, rate: 88.8 }
+                ]
+            },
+            skills: {
+                en: ['Game AI design', 'Hidden-information reasoning', 'Logistic regression from scratch', 'Model calibration', 'Self-play evaluation', 'Deterministic systems', 'Serverless on Vercel', 'Scenario & invariant testing'],
+                pt: ['Design de IA para jogos', 'Raciocínio com informação oculta', 'Regressão logística do zero', 'Calibração de modelo', 'Avaliação por autojogo', 'Sistemas determinísticos', 'Serverless na Vercel', 'Testes de cenário e invariantes']
+            },
+            footnote: {
+                en: '698 commits · 173 React components · win rates and timings from the AI design doc, measured over 80–120 games per level.',
+                pt: '698 commits · 173 componentes React · taxas de vitória e tempos do design doc da IA, medidos em 80–120 partidas por nível.'
+            }
+        },
         images: [
             {
                 type: 'video',
@@ -923,66 +917,61 @@ const featuredProjects = [
             src: 'assets/icons/qassistant-logo.png',
             alt: 'QAssistant logo'
         },
+        status: {
+            en: 'v2.0.1 · VS Code Marketplace',
+            pt: 'v2.0.1 · VS Code Marketplace'
+        },
         description: {
-            en: 'QA handoffs died the same death every sprint: evidence in screenshots, context in someone\'s head, tickets somewhere else. QAssistant is a <strong>VS Code extension</strong> that turns selected commits into <strong>traceable validation packages</strong> with AI-written summaries, test prompts, OpenProject tasks and <em>agent-ready context docs</em>.',
-            pt: 'Os handoffs de QA morriam da mesma forma a cada sprint: evidência em screenshots, contexto na cabeça de alguém, tarefas em outro lugar. O QAssistant é uma <strong>extensão do VS Code</strong> que transforma commits selecionados em <strong>pacotes rastreáveis de validação</strong>, com resumos escritos por IA, prompts de teste, tarefas no OpenProject e <em>docs de contexto prontos pra agentes</em>.'
+            en: 'A <strong>VS Code extension</strong>, published on the Marketplace, that brings the QA loop into the editor: a <strong>live OpenProject feed</strong>, a terminal that launches <em>Claude Code, Gemini CLI or Aider</em> with the task\'s context already loaded, and a <strong>QA Runner</strong> that runs your shell checks and posts the report back to the ticket.',
+            pt: 'Uma <strong>extensão do VS Code</strong>, publicada no Marketplace, que traz o ciclo de QA pra dentro do editor: <strong>feed do OpenProject em tempo real</strong>, um terminal que abre <em>Claude Code, Gemini CLI ou Aider</em> já com o contexto da tarefa carregado e um <strong>QA Runner</strong> que roda seus scripts de verificação e publica o relatório direto na tarefa.'
         },
         narrative: {
             en: {
-                problem: 'Commits, evidence, and tickets lived in separate places, so every QA handoff was a back-and-forth thread.',
-                decision: 'Generate context agents can use, not just summaries for humans. The same package feeds the QA analyst and the automation that pre-checks the build.',
-                outcome: 'A handoff that took a thread now takes one command, with traceability for free.'
+                problem: 'Tickets lived in the browser, agents in the terminal, and test evidence in screenshots. Every task meant copying context between three places.',
+                decision: 'v2 dropped the opinionated scaffolding and rebuilt around the ticket: live-synced tasks, agents that start with the spec loaded, and a runner that uses whatever .sh scripts the repo already has.',
+                outcome: 'Pick a task, branch off as feat/OP-{id}-{slug}, run verify.sh, and the result lands on the ticket without leaving VS Code.'
             },
             pt: {
-                problem: 'Commits, evidências e tarefas viviam em lugares separados, então todo handoff de QA virava uma thread de ida e volta.',
-                decision: 'Gerar contexto que agentes conseguem usar, não só resumo pra humano. O mesmo pacote alimenta o analista de QA e a automação que pré-valida a build.',
-                outcome: 'Um handoff que custava uma thread agora custa um comando, com rastreabilidade de graça.'
+                problem: 'A tarefa ficava no navegador, o agente no terminal e a evidência de teste em screenshot. Toda task virava copiar contexto entre três lugares.',
+                decision: 'A v2 removeu o scaffolding engessado e foi reconstruída em torno da tarefa: tarefas sincronizadas ao vivo, agentes que já abrem com a especificação carregada e um runner que usa os .sh que o repo já tem.',
+                outcome: 'Escolhe a tarefa, abre a branch feat/OP-{id}-{slug}, roda o verify.sh e o resultado cai na tarefa, sem sair do VS Code.'
             }
         },
-        technologies: ['TypeScript', 'VS Code API', 'React', 'Vite', 'OpenProject', 'AI'],
+        technologies: ['TypeScript', 'VS Code API', 'React 19', 'Vite', 'OpenProject API v3', 'AI Agents', 'GitHub Actions'],
         images: [
             {
-                src: 'assets/projectCovers/qassistant/QASSISTANT1.jpeg',
-                alt: 'QAssistant dashboard with telemetry and validation actions',
+                src: 'assets/projectCovers/qassistant/screenshot-feed-clean.png',
+                alt: 'QAssistant OpenProject task feed with status filters and compact cards',
                 fit: 'contain',
                 position: 'center top',
                 caption: {
-                    en: 'Dashboard: telemetry and validation actions right inside the editor, not in yet another browser tab.',
-                    pt: 'Dashboard: telemetria e ações de validação direto no editor, não em mais uma aba do navegador.'
+                    en: 'Live OpenProject feed: filter chips with counts, toasts when a status changes, and quick actions on every card.',
+                    pt: 'Feed do OpenProject ao vivo: filtros com contador, toast quando o status muda e ações rápidas em cada card.'
                 }
             },
             {
-                src: 'assets/projectCovers/qassistant/qassistant0.jpeg',
-                alt: 'QAssistant guided onboarding setup screen',
+                src: 'assets/projectCovers/qassistant/screenshot-terminal-agents.png',
+                alt: 'QAssistant agent terminal with branch creation and AI agent launchers',
                 fit: 'contain',
                 position: 'center top',
                 caption: {
-                    en: 'Guided onboarding with zero config, made for QA folks who don\'t live in settings files.',
-                    pt: 'Onboarding guiado e sem configuração, feito pra quem não vive em arquivo de settings.'
+                    en: 'Agent terminal: start Claude Code, Gemini CLI or Aider with the task loaded, on a branch named after it.',
+                    pt: 'Terminal de agentes: abre Claude Code, Gemini CLI ou Aider com a tarefa carregada, numa branch com o nome dela.'
                 }
             },
             {
-                src: 'assets/projectCovers/qassistant/qassistant2.jpeg',
-                alt: 'QAssistant commit selection workflow for validation packages',
+                src: 'assets/projectCovers/qassistant/screenshot-qa-runner.png',
+                alt: 'QAssistant QA Runner discovering shell scripts and streaming logs',
                 fit: 'contain',
                 position: 'center top',
                 caption: {
-                    en: 'Pick your commits and get a traceable validation package. The whole core loop fits in one screen.',
-                    pt: 'Escolhe os commits e recebe um pacote de validação rastreável. O loop principal inteiro cabe numa tela.'
-                }
-            },
-            {
-                src: 'assets/projectCovers/qassistant/qassistant3.jpeg',
-                alt: 'QAssistant tests and artifacts runner screen',
-                fit: 'contain',
-                position: 'center top',
-                caption: {
-                    en: 'Test runner with artifacts attached straight to the evidence trail.',
-                    pt: 'Runner de testes com artefatos anexados direto à trilha de evidências.'
+                    en: 'QA Runner: finds verify.sh / test.sh anywhere in the repo, streams the logs, and publishes the report to the task.',
+                    pt: 'QA Runner: acha verify.sh / test.sh em qualquer lugar do repo, mostra o log ao vivo e publica o relatório na tarefa.'
                 }
             }
         ],
         links: {
+            marketplace: 'https://marketplace.visualstudio.com/items?itemName=EnzoEsmeraldo.qassistant-vscode',
             github: 'https://github.com/ensinho/QAssistant'
         }
     },
@@ -1149,6 +1138,11 @@ const featuredProjectLinks = {
         className: 'is-primary',
         labelKey: 'featuredWork.viewDemo'
     },
+    marketplace: {
+        icon: 'fas fa-puzzle-piece',
+        className: 'is-primary',
+        labelKey: 'featuredWork.viewMarketplace'
+    },
     github: {
         icon: 'fab fa-github',
         className: '',
@@ -1183,6 +1177,7 @@ function getFeaturedProjectCopy() {
         singleView: activeTranslations['featuredWork.singleView'],
         viewDemo: activeTranslations['featuredWork.viewDemo'],
         viewGithub: activeTranslations['featuredWork.viewGithub'],
+        viewMarketplace: activeTranslations['featuredWork.viewMarketplace'],
         viewCaseStudy: activeTranslations['featuredWork.viewCaseStudy']
     };
 }
@@ -1260,7 +1255,7 @@ function buildFeaturedProjectLinks(project) {
     if (!project || !project.links) return '';
 
     const copy = getFeaturedProjectCopy();
-    const orderedLinks = ['demo', 'github', 'caseStudy']
+    const orderedLinks = ['demo', 'marketplace', 'github', 'caseStudy']
         .filter(type => project.links[type])
         .map(type => {
             const linkMeta = featuredProjectLinks[type];
@@ -1311,6 +1306,68 @@ function buildFeaturedProjectNarrative(project) {
                 </div>
             `).join('')}
         </div>
+    `;
+}
+
+function buildFeaturedProjectDeepDive(project) {
+    const dive = project && project.deepDive;
+    if (!dive) return '';
+    const lang = currentLang === 'pt' ? 'pt' : 'en';
+    const pick = value => (value && (value[lang] || value.en)) || '';
+
+    const steps = dive.pipeline.map((step, index) => {
+        const [title, text] = step[lang] || step.en;
+        return `
+            <li class="deep-dive-step">
+                <span class="deep-dive-step-index">${String(index + 1).padStart(2, '0')}</span>
+                <div>
+                    <p class="deep-dive-step-title">${title}</p>
+                    <p class="deep-dive-step-text">${text}</p>
+                </div>
+            </li>
+        `;
+    }).join('');
+
+    const metrics = dive.metrics.map(metric => `
+        <div class="deep-dive-metric">
+            <span class="deep-dive-metric-value">${metric.value}</span>
+            <span class="deep-dive-metric-label">${metric[lang] || metric.en}</span>
+        </div>
+    `).join('');
+
+    const levels = dive.difficulty ? `
+        <div class="deep-dive-difficulty">
+            <p class="deep-dive-label">${pick(dive.difficulty.label)}</p>
+            ${dive.difficulty.levels.map(level => `
+                <div class="deep-dive-bar">
+                    <span class="deep-dive-bar-name">${level.name} <em>${pick(level.days)}</em></span>
+                    <span class="deep-dive-bar-track"><span class="deep-dive-bar-fill" style="--rate:${level.rate}%"></span></span>
+                    <span class="deep-dive-bar-value">${level.rate.toFixed(1)}%</span>
+                </div>
+            `).join('')}
+        </div>
+    ` : '';
+
+    return `
+        <section class="deep-dive" aria-label="${pick(dive.kicker)}">
+            <div class="deep-dive-head">
+                <p class="deep-dive-label">${pick(dive.kicker)}</p>
+                <h4 class="deep-dive-title">${pick(dive.title)}</h4>
+                <p class="deep-dive-intro">${pick(dive.intro)}</p>
+            </div>
+            <div class="deep-dive-metrics">${metrics}</div>
+            <div class="deep-dive-body">
+                <ol class="deep-dive-pipeline">${steps}</ol>
+                <div class="deep-dive-side">
+                    ${levels}
+                    <div>
+                        <p class="deep-dive-label">Skills</p>
+                        <div class="featured-project-tech">${(dive.skills[lang] || dive.skills.en).map(skill => `<span class="project-tag">${skill}</span>`).join('')}</div>
+                    </div>
+                </div>
+            </div>
+            <p class="deep-dive-footnote">${pick(dive.footnote)}</p>
+        </section>
     `;
 }
 
@@ -1523,6 +1580,7 @@ function renderFeaturedProjectStage() {
                 ${linkMarkup}
             </div>
         </div>
+        ${buildFeaturedProjectDeepDive(project)}
     `;
 
     stage.querySelectorAll('[data-featured-image-index]').forEach(button => {
@@ -1660,6 +1718,7 @@ const translations = {
         "featuredWork.singleView": "Single view",
         "featuredWork.viewGithub": "GitHub",
         "featuredWork.viewDemo": "Website",
+        "featuredWork.viewMarketplace": "Marketplace",
         "featuredWork.viewCaseStudy": "Case Study",
         "featuredWork.expandImage": "Expand",
         "featuredWork.problem": "Problem",
@@ -1775,6 +1834,7 @@ const translations = {
         "featuredWork.singleView": "Visual único",
         "featuredWork.viewGithub": "GitHub",
         "featuredWork.viewDemo": "Website",
+        "featuredWork.viewMarketplace": "Marketplace",
         "featuredWork.viewCaseStudy": "Case Study",
         "featuredWork.expandImage": "Expandir",
         "featuredWork.problem": "Problema",
