@@ -4753,6 +4753,7 @@ body[data-music-theme="deftones"] .art-full::before {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin: 0;
 }
 
 .about-note .fav-pokemon-icon {
@@ -5263,11 +5264,17 @@ body[data-music-theme="oxygen"] .sleeve-cover img {
 }
 
 #about {
-    padding-bottom: clamp(72px, 8vw, 104px);
+    padding-bottom: clamp(48px, 5vw, 72px);
 }
 
 #about .about-notes {
-    margin-top: 64px;
+    margin-top: 48px;
+    gap: 32px 40px;
+}
+
+#about .about-note {
+    padding-top: 20px;
+    gap: 10px;
 }
 
 @media (max-width: 1023px) {
