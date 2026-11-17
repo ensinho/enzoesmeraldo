@@ -795,6 +795,11 @@ const featuredProjects = [
         deepDive: {
             kicker: { en: 'Deep dive · Battle AI', pt: 'Deep dive · IA de batalha' },
             title: { en: 'Champion Challenge: a Cynthia that plays fair', pt: 'Desafio da Campeã: uma Cynthia que joga limpo' },
+            teaser: {
+                en: 'How the server-side AI picks Cynthia\'s move every turn: fog of war, a one-turn lookahead and a win-probability model trained from scratch.',
+                pt: 'Como a IA no servidor escolhe o golpe da Cynthia a cada turno: névoa de guerra, um turno de lookahead e um modelo de chance de vitória treinado do zero.'
+            },
+            cta: { en: 'Read the algorithm breakdown', pt: 'Ler a análise do algoritmo' },
             intro: {
                 en: 'Once a day you battle Cynthia, and a <strong>server-side AI</strong> picks her move every turn. It\'s not a brute-force search: it scores every legal option with explicit rules, simulates the best few one turn ahead, and judges those futures with a <strong>win-probability model I trained from scratch</strong>. She only knows what the battle has revealed, and she gets harder as the week goes on.',
                 pt: 'Uma vez por dia você enfrenta a Cynthia, e uma <strong>IA no servidor</strong> escolhe o golpe dela a cada turno. Não é força bruta: ela pontua cada opção legal com regras explícitas, simula as melhores um turno à frente e avalia esses futuros com um <strong>modelo de chance de vitória que treinei do zero</strong>. Ela só sabe o que a batalha já revelou, e fica mais difícil ao longo da semana.'
@@ -1371,6 +1376,95 @@ function buildFeaturedProjectDeepDive(project) {
     `;
 }
 
+// The deep dive is long, so the page only shows a teaser and the full breakdown opens in a modal.
+function buildFeaturedProjectDeepDiveCta(project) {
+    const dive = project && project.deepDive;
+    if (!dive) return '';
+    const lang = currentLang === 'pt' ? 'pt' : 'en';
+    const pick = value => (value && (value[lang] || value.en)) || '';
+    const highlights = dive.metrics.slice(0, 3).map(metric => `
+        <div class="deep-dive-cta-metric">
+            <span class="deep-dive-metric-value">${metric.value}</span>
+            <span class="deep-dive-metric-label">${metric[lang] || metric.en}</span>
+        </div>
+    `).join('');
+
+    return `
+        <div class="deep-dive-cta">
+            <div class="deep-dive-cta-copy">
+                <p class="deep-dive-label">${pick(dive.kicker)}</p>
+                <h4 class="deep-dive-cta-title">${pick(dive.title)}</h4>
+                <p class="deep-dive-cta-text">${pick(dive.teaser)}</p>
+            </div>
+            <div class="deep-dive-cta-metrics">${highlights}</div>
+            <button type="button" class="deep-dive-cta-btn" data-deep-dive-open aria-haspopup="dialog">
+                <span>${pick(dive.cta)}</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </button>
+        </div>
+    `;
+}
+
+let deepDiveReturnFocus = null;
+
+function ensureDeepDiveModal() {
+    let modal = document.getElementById('deep-dive-modal');
+    if (modal) return modal;
+
+    modal = document.createElement('div');
+    modal.id = 'deep-dive-modal';
+    modal.className = 'featured-image-modal deep-dive-modal';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+        <div class="featured-image-modal-backdrop" data-deep-dive-close></div>
+        <div class="featured-image-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="deep-dive-modal-title">
+            <div class="featured-image-modal-header">
+                <div>
+                    <p class="featured-image-modal-kicker" id="deep-dive-modal-kicker"></p>
+                    <h3 class="featured-image-modal-title" id="deep-dive-modal-title"></h3>
+                </div>
+                <button type="button" class="featured-image-modal-close" data-deep-dive-close aria-label="Close">
+                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="deep-dive-modal-body" id="deep-dive-modal-body"></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelectorAll('[data-deep-dive-close]').forEach(element => {
+        element.addEventListener('click', closeDeepDiveModal);
+    });
+    return modal;
+}
+
+function openDeepDiveModal(project, trigger) {
+    if (!project || !project.deepDive) return;
+    const lang = currentLang === 'pt' ? 'pt' : 'en';
+    const modal = ensureDeepDiveModal();
+    modal.querySelector('#deep-dive-modal-kicker').textContent = project.title;
+    modal.querySelector('#deep-dive-modal-title').textContent = project.deepDive.title[lang] || project.deepDive.title.en;
+    modal.querySelector('.featured-image-modal-close').setAttribute('aria-label', lang === 'pt' ? 'Fechar' : 'Close');
+    const body = modal.querySelector('#deep-dive-modal-body');
+    body.innerHTML = buildFeaturedProjectDeepDive(project);
+    body.scrollTop = 0;
+
+    deepDiveReturnFocus = trigger || document.activeElement;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    modal.querySelector('.featured-image-modal-close').focus();
+}
+
+function closeDeepDiveModal() {
+    const modal = document.getElementById('deep-dive-modal');
+    if (!modal || !modal.classList.contains('is-open')) return;
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    if (deepDiveReturnFocus && document.contains(deepDiveReturnFocus)) deepDiveReturnFocus.focus();
+    deepDiveReturnFocus = null;
+}
+
 function ensureFeaturedImageModal() {
     let modal = document.getElementById('featured-image-modal');
     if (modal) return modal;
@@ -1580,8 +1674,13 @@ function renderFeaturedProjectStage() {
                 ${linkMarkup}
             </div>
         </div>
-        ${buildFeaturedProjectDeepDive(project)}
+        ${buildFeaturedProjectDeepDiveCta(project)}
     `;
+
+    const deepDiveButton = stage.querySelector('[data-deep-dive-open]');
+    if (deepDiveButton) {
+        deepDiveButton.addEventListener('click', () => openDeepDiveModal(project, deepDiveButton));
+    }
 
     stage.querySelectorAll('[data-featured-image-index]').forEach(button => {
         button.addEventListener('click', () => {
@@ -1990,6 +2089,7 @@ document.addEventListener('DOMContentLoaded', renderAboutInterests);
 document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
         closeFeaturedImageModal();
+        closeDeepDiveModal();
         // Escape on the jukebox = the quiet skip
         if (document.getElementById('jukebox')) {
             chooseRecord(0, { withMusic: false });
