@@ -2808,7 +2808,7 @@ body {
 }
 
 .journey-now .bento-card-inner,
-.journey-card .bento-card-inner {
+.journey-entry .bento-card-inner {
     border-color: rgb(var(--text-rgb) / 0.06);
 }
 
@@ -2921,73 +2921,112 @@ body {
     color: rgb(var(--gray-rgb));
 }
 
-.journey-grid {
+/* The timeline: one rail on the left, every role a wide card with its full context */
+.journey-timeline {
     position: relative;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 20px;
+    gap: 16px;
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 0 0 34px;
 }
 
-/* The rail: one line through every card's dot */
-.journey-grid::before {
+.journey-timeline::before {
     content: '';
     position: absolute;
-    left: 28px;
-    right: 28px;
-    top: 31px;
-    height: 1px;
-    background: linear-gradient(90deg, rgb(var(--text-rgb) / 0.1), rgb(var(--accent-rgb) / 0.5));
-    pointer-events: none;
-    z-index: 2;
+    left: 6px;
+    top: 14px;
+    bottom: 14px;
+    width: 1px;
+    background: linear-gradient(180deg, rgb(var(--accent-rgb) / 0.55), rgb(var(--text-rgb) / 0.08));
 }
 
-.journey-card-inner {
+.journey-item {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 1.6rem 1.6rem 1.5rem;
 }
 
-.journey-dot {
-    position: relative;
-    z-index: 3;
-    width: 11px;
-    height: 11px;
-    margin-bottom: 8px;
+.journey-item-dot {
+    position: absolute;
+    left: -34px;
+    top: 30px;
+    width: 13px;
+    height: 13px;
     border-radius: 999px;
     background: rgb(var(--bg-rgb));
-    border: 2px solid rgb(var(--accent-rgb) / 0.6);
+    border: 2px solid rgb(var(--accent-rgb) / 0.55);
 }
 
-.journey-card:last-child .journey-dot {
+.journey-item:first-child .journey-item-dot {
     background: rgb(var(--accent-rgb));
     border-color: rgb(var(--accent-rgb));
+    box-shadow: 0 0 0 4px rgb(var(--accent-rgb) / 0.15);
+}
+
+.journey-entry-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: 36px;
+    padding: 1.75rem 2rem;
+}
+
+.journey-entry-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.journey-entry-meta .journey-tags {
+    margin-top: 6px;
+    padding-top: 0;
+}
+
+.journey-entry-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 .journey-role {
     font-family: var(--font-heading);
-    font-size: 1.15rem;
+    font-size: 1.3rem;
     font-weight: 600;
     line-height: 1.2;
     color: rgb(var(--text-rgb));
 }
 
-.journey-stack {
-    margin-top: auto;
-    padding-top: 12px;
-    border-top: 1px solid rgb(var(--text-rgb) / 0.06);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: rgb(var(--text-rgb) / 0.62);
+.journey-points {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 28px;
+    margin: 0;
+    padding: 14px 0 0;
+    list-style: none;
+    border-top: 1px solid rgb(var(--text-rgb) / 0.07);
 }
 
-.journey-card .journey-desc {
+.journey-points li {
+    position: relative;
+    padding-left: 16px;
     font-size: 13.5px;
+    line-height: 1.6;
+    color: rgb(var(--gray-rgb));
+}
+
+.journey-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgb(var(--accent-rgb) / 0.6);
+}
+
+.journey-points strong {
+    color: rgb(var(--text-rgb));
+    font-weight: 600;
 }
 
 #trajectory .bento-card:hover {
@@ -2997,16 +3036,6 @@ body {
 
 #trajectory .bento-card:hover .bento-card-inner {
     border-color: rgb(var(--accent-rgb) / 0.35);
-}
-
-@media (max-width: 1180px) {
-    .journey-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .journey-grid::before {
-        display: none;
-    }
 }
 
 @media (max-width: 1024px) {
@@ -3021,16 +3050,144 @@ body {
         border-left: 0;
         border-top: 1px solid rgb(var(--text-rgb) / 0.07);
     }
+
+    .journey-entry-inner {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+    }
 }
 
 @media (max-width: 640px) {
-    .journey-now-inner {
+    .journey-now-inner,
+    .journey-entry-inner {
         padding: 1.5rem;
     }
 
     .journey-now-list,
-    .journey-grid {
+    .journey-points {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .journey-timeline {
+        padding-left: 24px;
+    }
+
+    .journey-timeline::before {
+        left: 5px;
+    }
+
+    .journey-item-dot {
+        left: -24px;
+        width: 11px;
+        height: 11px;
+    }
+}
+
+/* ═══ Desk details on the dark page: dotted ground, objects with weight ═══ */
+#about,
+#trajectory,
+#work,
+#contact {
+    background-image: radial-gradient(rgb(var(--text-rgb) / 0.075) 1px, transparent 1.6px);
+    background-size: 24px 24px;
+    background-position: center top;
+}
+
+#about .bento-card-inner,
+#trajectory .bento-card-inner,
+#work .featured-project-spotlight {
+    background: rgb(var(--panel-rgb) / 0.92);
+    border-radius: 16px;
+    box-shadow: inset 0 1px 0 rgb(var(--text-rgb) / 0.04), 0 22px 44px -26px rgba(0, 0, 0, 0.7);
+}
+
+#about .bento-card,
+#trajectory .bento-card {
+    border-radius: 16px;
+}
+
+/* A printed photo with a sticker on it */
+.about-desk {
+    position: relative;
+    flex-shrink: 0;
+    width: 196px;
+    padding: 6px 0 22px;
+}
+
+.desk-polaroid {
+    margin: 0;
+    padding: 10px 10px 34px;
+    background: #f7f7f5;
+    border-radius: 6px;
+    box-shadow: 0 18px 36px -14px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.25);
+    transform: rotate(-4deg);
+    transition: transform 0.4s ease;
+    position: relative;
+}
+
+.desk-polaroid img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 20%;
+    border-radius: 3px;
+}
+
+.desk-polaroid-note {
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #5b6370;
+}
+
+.desk-sticker {
+    position: absolute;
+    right: -22px;
+    bottom: -8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px 6px 8px;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #141a22;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    transform: rotate(3deg);
+    box-shadow: 0 10px 22px -8px rgba(0, 0, 0, 0.55);
+    transition: transform 0.4s ease;
+}
+
+.desk-sticker img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+.about-card-main:hover .desk-polaroid {
+    transform: rotate(-2deg) translateY(-3px);
+}
+
+.about-card-main:hover .desk-sticker {
+    transform: rotate(1deg) translateY(-2px);
+}
+
+@media (max-width: 767px) {
+    .about-desk {
+        width: 168px;
+        margin-inline: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .desk-polaroid,
+    .desk-sticker {
+        transition: none;
     }
 }
 

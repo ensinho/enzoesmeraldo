@@ -80,7 +80,7 @@
 
     <!-- ═══ NAVBAR ═══ -->
     <nav id="navbar" class="fixed top-0 left-0 right-0 z-[100] transition-all duration-500">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
+        <div class="max-w-[1280px] mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
             <!-- Logo -->
             <a href="#" class="font-heading text-xl tracking-tight text-white hover:text-accent transition-colors">
                 ENZO<span class="text-accent">.</span>DEV
@@ -138,7 +138,7 @@
         <!-- Background Image -->
         <div id="hero-bg" class="absolute inset-0 bg-cover bg-center opacity-45 transition-opacity duration-500" style="background-image: url('assets/backgrounds/catwhaleshark.jpg');"></div>
 
-        <div class="relative z-10 max-w-[1160px] mx-auto px-6 md:px-10 w-full pt-32 pb-20">
+        <div class="relative z-10 max-w-[1280px] mx-auto px-6 md:px-10 w-full pt-32 pb-20">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-end">
                 <!-- Main Content -->
                 <div class="lg:col-span-8 space-y-8">
@@ -256,7 +256,7 @@
 
     <!-- ═══ ABOUT ═══ -->
     <section id="about" class="relative py-24 md:py-28">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10">
+        <div class="max-w-[1280px] mx-auto px-6 md:px-10">
             <!-- Section Header -->
             <div class="gs-reveal section-head">
                 <div>
@@ -274,13 +274,16 @@
 
                 <!-- Card 1 — Main bio (spans 2 cols) -->
                 <div class="gs-reveal bento-card about-card about-card-main md:col-span-2 lg:col-span-2 group">
-                    <div class="bento-card-inner p-8 md:p-9 h-full flex flex-col md:flex-row gap-8 items-start">
-                        <div class="about-avatar-stack">
-                            <img loading="lazy" decoding="async" src="assets/EnzoKorea.jpeg" alt="Enzo Esmeraldo smiling with arms crossed" width="96" height="96" class="about-avatar-image w-24 h-24 rounded-full object-cover border-2 border-accent/20 transition-all duration-500 shrink-0" />
-                            <div class="about-avatar-note" aria-label="And by the way, that's me">
-                                <img loading="lazy" decoding="async" src="assets/icons/mudkipicon.png" alt="" class="about-avatar-note-icon" />
+                    <div class="bento-card-inner p-8 md:p-9 h-full flex flex-col md:flex-row gap-10 items-start">
+                        <!-- Desk objects: a printed photo with a sticker on it -->
+                        <div class="about-desk">
+                            <figure class="desk-polaroid">
+                                <img loading="lazy" decoding="async" src="assets/EnzoKorea-portrait.jpeg" alt="Enzo Esmeraldo smiling with arms crossed" width="400" height="483" />
+                                <span class="desk-polaroid-note">fortaleza, 2026</span>
+                            </figure>
+                            <div class="desk-sticker" aria-label="And by the way, that's me">
+                                <img loading="lazy" decoding="async" src="assets/icons/mudkipicon.png" alt="" />
                                 <span data-lang="about.avatarJoke">btw, that's me</span>
-                                <span class="about-theme-mark about-theme-mark-deftones" aria-hidden="true"><i class="fas fa-circle-half-stroke"></i></span>
                             </div>
                         </div>
                         <div class="flex-1 space-y-4">
@@ -354,7 +357,7 @@
 
     <!-- ═══ TRAJECTORY ═══ -->
     <section id="trajectory" class="relative py-24 md:py-28">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10">
+        <div class="max-w-[1280px] mx-auto px-6 md:px-10">
             <!-- Section Header -->
             <div class="gs-reveal section-head">
                 <div>
@@ -364,7 +367,7 @@
                         <span class="text-accent italic" data-lang="journey.title">Journey.</span>
                     </h2>
                 </div>
-                <p class="section-head-lead" data-lang="journey.lead">From intern in 2024 to project leader in 2026, and now <strong>Developer III at Radix</strong>.</p>
+                <p class="section-head-lead" data-lang="journey.lead">From PET Computação in 2022 to project leader in 2026, and now <strong>Developer III at Radix</strong>.</p>
             </div>
 
             <!-- Now: Radix -->
@@ -402,51 +405,119 @@
                 </div>
             </article>
 
-            <!-- Before: four equal cards on one rail, oldest to newest -->
+            <!-- Before: the full timeline, newest first, every role with its context -->
             <div class="journey-rail-head gs-reveal">
                 <p class="journey-label" data-lang="journey.before">How I got here</p>
-                <span class="journey-rail-years">2024 → 2026</span>
+                <span class="journey-rail-years">2022 → 2026</span>
             </div>
-            <ol class="journey-grid">
-                <li class="gs-reveal bento-card journey-card">
-                    <div class="bento-card-inner journey-card-inner">
-                        <span class="journey-dot" aria-hidden="true"></span>
-                        <span class="journey-date" data-lang="journey.date4">Apr. 2024 to Dec. 2024</span>
-                        <h3 class="journey-role" data-lang="journey.role4">FullStack Intern</h3>
-                        <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>Exitus</span></p>
-                        <p class="journey-desc" data-lang="journey.desc4">Where it started: <strong>Exitus features</strong> in Angular and TypeScript on the front and Spring Boot on the back, with an eye on usability and accessibility.</p>
-                        <p class="journey-stack">Angular · Spring Boot</p>
-                    </div>
+            <ol class="journey-timeline">
+                <li class="gs-reveal journey-item">
+                    <span class="journey-item-dot" aria-hidden="true"></span>
+                    <article class="bento-card journey-entry">
+                        <div class="bento-card-inner journey-entry-inner">
+                            <div class="journey-entry-meta">
+                                <span class="journey-date" data-lang="journey.date1">Aug. 2026 to Nov. 2026</span>
+                                <h3 class="journey-role" data-lang="journey.role1">Project Leader</h3>
+                                <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>Exitus · Exitus Gestor</span></p>
+                                <div class="journey-tags"><span class="project-tag">Angular</span><span class="project-tag">TypeScript</span><span class="project-tag">Spring Boot</span><span class="project-tag">PostgreSQL</span><span class="project-tag">Keycloak</span></div>
+                            </div>
+                            <div class="journey-entry-body">
+                                <p class="journey-desc" data-lang="journey.desc1">Led the technical development of <strong>Exitus Gestor</strong>, an educational management platform that pulls the institution's administrative and academic workflows into one place.</p>
+                                <ul class="journey-points">
+                                <li data-lang="journey.role1.item1"><strong>Owned the platform end to end</strong>, from architecture and technical decisions to implementation and delivery</li>
+                                <li data-lang="journey.role1.item2"><strong>Set the architecture, standards and reusable components</strong>, with Domain-Driven Design, TDD and Flyway migrations</li>
+                                <li data-lang="journey.role1.item3"><strong>Built authentication and authorization with Keycloak</strong>, plus integrations, data management and enterprise workflows</li>
+                                <li data-lang="journey.role1.item4"><strong>Coordinated tasks, technical decisions and priorities</strong> with stakeholders and the development team</li>
+                                <li data-lang="journey.role1.item5"><strong>Drove CI/CD, code quality, automated tests and security</strong>, with Claude Code agents helping from spec to pull request review</li>
+                                <li data-lang="journey.role1.item6"><strong>Turned institutional requirements into technical solutions</strong> built for usability, maintainability and scale</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
                 </li>
-                <li class="gs-reveal bento-card journey-card">
-                    <div class="bento-card-inner journey-card-inner">
-                        <span class="journey-dot" aria-hidden="true"></span>
-                        <span class="journey-date" data-lang="journey.date3">Jan. 2025 to Mar. 2026</span>
-                        <h3 class="journey-role" data-lang="journey.role3">FullStack Developer</h3>
-                        <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>Exitus</span></p>
-                        <p class="journey-desc" data-lang="journey.desc3">Owned <strong>Exitus Educacional</strong> across front, back and database, plus its visual identity and <strong>AI-powered question validation</strong>.</p>
-                        <p class="journey-stack">Angular · Java · Spring Boot</p>
-                    </div>
+                <li class="gs-reveal journey-item">
+                    <span class="journey-item-dot" aria-hidden="true"></span>
+                    <article class="bento-card journey-entry">
+                        <div class="bento-card-inner journey-entry-inner">
+                            <div class="journey-entry-meta">
+                                <span class="journey-date" data-lang="journey.date2">Jan. 2026 to Aug. 2026</span>
+                                <h3 class="journey-role" data-lang="journey.role2">Project Leader</h3>
+                                <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>Colégio Christus</span></p>
+                                <div class="journey-tags"><span class="project-tag">React</span><span class="project-tag">Node.js</span><span class="project-tag">PostgreSQL</span><span class="project-tag">AI</span></div>
+                            </div>
+                            <div class="journey-entry-body">
+                                <p class="journey-desc" data-lang="journey.desc2">Led the end-to-end technical development of an <strong>AI-powered medical platform</strong> for clinical decision support, owning <strong>team, architecture and delivery</strong>.</p>
+                                <ul class="journey-points">
+                                <li data-lang="journey.role2.item1"><strong>Architected the full stack solution</strong> (React, Node.js, PostgreSQL) for scalability, performance and easy maintenance</li>
+                                <li data-lang="journey.role2.item2"><strong>Created the visual identity and component library</strong>, designing the UI/UX from scratch</li>
+                                <li data-lang="journey.role2.item3"><strong>Built AI automations</strong> for consultations and for the team's development routines</li>
+                                <li data-lang="journey.role2.item4"><strong>Ran the Git workflow and mentored the team</strong> on clean code, code review and design patterns</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
                 </li>
-                <li class="gs-reveal bento-card journey-card">
-                    <div class="bento-card-inner journey-card-inner">
-                        <span class="journey-dot" aria-hidden="true"></span>
-                        <span class="journey-date" data-lang="journey.date2">Jan. 2026 to Aug. 2026</span>
-                        <h3 class="journey-role" data-lang="journey.role2">Project Leader</h3>
-                        <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>Colégio Christus</span></p>
-                        <p class="journey-desc" data-lang="journey.desc2">Led an <strong>AI-powered medical platform</strong> for clinical decision support end to end: architecture, UI/UX from scratch and <strong>mentoring the team</strong>.</p>
-                        <p class="journey-stack">React · Node.js · PostgreSQL</p>
-                    </div>
+                <li class="gs-reveal journey-item">
+                    <span class="journey-item-dot" aria-hidden="true"></span>
+                    <article class="bento-card journey-entry">
+                        <div class="bento-card-inner journey-entry-inner">
+                            <div class="journey-entry-meta">
+                                <span class="journey-date" data-lang="journey.date3">Jan. 2025 to Mar. 2026</span>
+                                <h3 class="journey-role" data-lang="journey.role3">FullStack Developer</h3>
+                                <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>Exitus · Exitus Educacional</span></p>
+                                <div class="journey-tags"><span class="project-tag">Angular</span><span class="project-tag">TypeScript</span><span class="project-tag">Java</span><span class="project-tag">Spring Boot</span></div>
+                            </div>
+                            <div class="journey-entry-body">
+                                <p class="journey-desc" data-lang="journey.desc3">Worked across the whole of <strong>Exitus Educacional</strong>, from interfaces to business logic, and was <strong>promoted to Full Stack Developer 2</strong> in Oct. 2025.</p>
+                                <ul class="journey-points">
+                                <li data-lang="journey.role3.item1"><strong>Designed and built interfaces in Angular and TypeScript</strong> for an intuitive, responsive experience</li>
+                                <li data-lang="journey.role3.item2"><strong>Helped define the system's visual identity</strong>, keeping it consistent with the company's values</li>
+                                <li data-lang="journey.role3.item3"><strong>Wrote secure business logic in Java and Spring Boot</strong>, API integrations and faster relational database access</li>
+                                <li data-lang="journey.role3.item4"><strong>Integrated AI services</strong> for automated question validation, plus webhooks for cloud deployment management</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
                 </li>
-                <li class="gs-reveal bento-card journey-card">
-                    <div class="bento-card-inner journey-card-inner">
-                        <span class="journey-dot" aria-hidden="true"></span>
-                        <span class="journey-date" data-lang="journey.date1">Aug. 2026 to Nov. 2026</span>
-                        <h3 class="journey-role" data-lang="journey.role1">Project Leader</h3>
-                        <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>Exitus</span></p>
-                        <p class="journey-desc" data-lang="journey.desc1">Led <strong>Exitus Gestor</strong>, an educational management platform: architecture, standards, auth with Keycloak and <strong>delivery with the team</strong>.</p>
-                        <p class="journey-stack">Angular · Spring Boot · Keycloak</p>
-                    </div>
+                <li class="gs-reveal journey-item">
+                    <span class="journey-item-dot" aria-hidden="true"></span>
+                    <article class="bento-card journey-entry">
+                        <div class="bento-card-inner journey-entry-inner">
+                            <div class="journey-entry-meta">
+                                <span class="journey-date" data-lang="journey.date4">Apr. 2024 to Dec. 2024</span>
+                                <h3 class="journey-role" data-lang="journey.role4">FullStack Intern</h3>
+                                <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>Exitus</span></p>
+                                <div class="journey-tags"><span class="project-tag">Angular</span><span class="project-tag">TypeScript</span><span class="project-tag">Spring Boot</span></div>
+                            </div>
+                            <div class="journey-entry-body">
+                                <p class="journey-desc" data-lang="journey.desc4">Where it started: the base that turned into <strong>project leadership 21 months later</strong>.</p>
+                                <ul class="journey-points is-short">
+                                <li data-lang="journey.role4.item1"><strong>Built Exitus features</strong> with Angular and TypeScript on the front and Spring Boot on the back</li>
+                                <li data-lang="journey.role4.item2"><strong>Focused on usability and accessibility</strong> in the screens I shipped</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+                <li class="gs-reveal journey-item">
+                    <span class="journey-item-dot" aria-hidden="true"></span>
+                    <article class="bento-card journey-entry">
+                        <div class="bento-card-inner journey-entry-inner">
+                            <div class="journey-entry-meta">
+                                <span class="journey-date" data-lang="journey.date5">Aug. 2022 to Oct. 2023</span>
+                                <h3 class="journey-role" data-lang="journey.role5">Scholarship Holder</h3>
+                                <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>PET Computação UFC</span></p>
+                                <div class="journey-tags"><span class="project-tag">Outreach</span><span class="project-tag">Olympiad</span></div>
+                            </div>
+                            <div class="journey-entry-body">
+                                <p class="journey-desc" data-lang="journey.desc5">Part of <strong>PET Computação</strong>, the Computer Science tutorial education program at UFC, on the outreach team.</p>
+                                <ul class="journey-points is-short">
+                                <li data-lang="journey.role5.item1"><strong>Created educational posts</strong> about technology and the computer science world</li>
+                                <li data-lang="journey.role5.item2"><strong>Helped organize the Ceará Informatics Olympiad</strong>, writing and running exams across programming levels</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
                 </li>
             </ol>
         </div>
@@ -454,7 +525,7 @@
 
     <!-- ═══ SELECTED WORK ═══ -->
     <section id="work" class="relative py-24 md:py-28">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10">
+        <div class="max-w-[1280px] mx-auto px-6 md:px-10">
             <!-- Section Header -->
             <div class="gs-reveal featured-project-header mb-8 md:mb-10">
                 <div class="featured-project-header-copy">
@@ -535,7 +606,7 @@
 
     <!-- ═══ FOOTER / CONTACT ═══ -->
     <footer id="contact" class="relative py-24 md:py-28 border-t border-white/5">
-        <div class="max-w-[1160px] mx-auto px-6 md:px-10">
+        <div class="max-w-[1280px] mx-auto px-6 md:px-10">
             <div class="gs-reveal text-center space-y-8">
                 <p class="section-label font-mono text-[11px] tracking-[0.3em] uppercase text-accent" data-lang="footer.label">Get In Touch</p>
                 <h2 class="font-display text-4xl sm:text-5xl md:text-7xl font-light leading-[1.1]">
