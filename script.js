@@ -1662,8 +1662,6 @@ function renderFeaturedProjectStage() {
 
                 <p class="featured-project-description">${getFeaturedProjectDescription(project)}</p>
 
-                ${narrativeMarkup}
-
                 <div class="featured-project-section">
                     <p class="featured-project-section-label">${copy.stack}</p>
                     <div class="featured-project-tech">
@@ -1674,6 +1672,7 @@ function renderFeaturedProjectStage() {
                 ${linkMarkup}
             </div>
         </div>
+        ${narrativeMarkup ? `<div class="featured-project-narrative-row">${narrativeMarkup}</div>` : ''}
         ${buildFeaturedProjectDeepDiveCta(project)}
     `;
 
@@ -1828,6 +1827,8 @@ const translations = {
         "projects.visitGithub": "Explore more on GitHub",
         // Journey
         "journey.subtitle": "Career Path",
+        "journey.more": "See 3 earlier roles",
+        "journey.less": "Show fewer roles",
         "journey.role1.item1": "<strong>Owned the platform end to end</strong>, from architecture and technical decisions to implementation and delivery",
         "journey.role1.item2": "<strong>Set the architecture, standards and reusable components</strong>, with Domain-Driven Design, TDD and Flyway migrations",
         "journey.role1.item3": "<strong>Built authentication and authorization with Keycloak</strong>, plus integrations, data management and enterprise workflows",
@@ -1963,6 +1964,8 @@ const translations = {
         "projects.visitGithub": "Explore mais no GitHub",
         // Journey
         "journey.subtitle": "Trajetória Profissional",
+        "journey.more": "Ver mais 3 experiências",
+        "journey.less": "Mostrar menos",
         "journey.role1.item1": "<strong>Fui dono da plataforma de ponta a ponta</strong>, da arquitetura e das decisões técnicas até a implementação e a entrega",
         "journey.role1.item2": "<strong>Defini arquitetura, padrões e componentes reutilizáveis</strong>, com Domain-Driven Design, TDD e migrations Flyway",
         "journey.role1.item3": "<strong>Construí autenticação e autorização com Keycloak</strong>, além de integrações, gestão de dados e fluxos corporativos",
@@ -2086,6 +2089,18 @@ document.addEventListener('DOMContentLoaded', initHeatmapTooltip);
 document.addEventListener('DOMContentLoaded', loadHeatmap);
 document.addEventListener('DOMContentLoaded', renderTechStack);
 document.addEventListener('DOMContentLoaded', renderAboutInterests);
+
+// Journey: only the two latest past roles show at first; the rest load on demand.
+document.addEventListener('DOMContentLoaded', () => {
+    const button = document.querySelector('[data-cv-more]');
+    const list = document.getElementById('cv-list');
+    if (!button || !list) return;
+    button.addEventListener('click', () => {
+        const expanded = list.classList.toggle('is-expanded');
+        button.setAttribute('aria-expanded', String(expanded));
+        if (!expanded) button.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    });
+});
 document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
         closeFeaturedImageModal();

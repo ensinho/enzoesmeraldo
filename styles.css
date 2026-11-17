@@ -3204,10 +3204,7 @@ body {
         gap: 32px;
     }
 
-    /* Media rides along while the case study is read */
     .featured-project-media-shell {
-        position: sticky;
-        top: 96px;
         width: 100%;
         margin-inline: 0;
     }
@@ -3225,9 +3222,9 @@ body {
 
 /* ── Deep dive: a teaser on the page, the full breakdown in a modal ── */
 .deep-dive-cta {
-    margin-top: 1.25rem;
-    padding: 1.5rem clamp(1.25rem, 3vw, 2rem);
-    border-top: 1px solid rgb(var(--text-rgb) / 0.08);
+    margin-top: 1.5rem;
+    padding: 1.5rem 0 0.5rem;
+    border-top: 1px solid rgb(var(--text-rgb) / 0.07);
     display: grid;
     grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) auto;
     align-items: center;
@@ -3362,6 +3359,118 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .deep-dive-cta-btn,
     .deep-dive-cta-btn i {
+        transition: none;
+    }
+}
+
+/* ── Journey: two past roles first, the rest on demand ── */
+.cv-list:not(.is-expanded) .cv-item.is-extra {
+    display: none;
+}
+
+.cv-list:not(.is-expanded) .cv-item:nth-child(2) {
+    border-left-style: dashed;
+    padding-bottom: 28px;
+}
+
+.cv-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    margin: 4px 0 0 40px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid rgb(var(--text-rgb) / 0.12);
+    background: rgb(var(--panel-rgb) / 0.8);
+    color: rgb(var(--text-rgb) / 0.82);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.cv-more:hover,
+.cv-more:focus-visible {
+    border-color: rgb(var(--accent-rgb) / 0.5);
+    color: rgb(var(--text-rgb));
+    transform: translateY(-1px);
+}
+
+.cv-more:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.cv-more i {
+    font-size: 10px;
+    transition: transform 0.25s ease;
+}
+
+.cv-more[aria-expanded="true"] i {
+    transform: rotate(180deg);
+}
+
+.cv-more .cv-more-close,
+.cv-more[aria-expanded="true"] .cv-more-open {
+    display: none;
+}
+
+.cv-more[aria-expanded="true"] .cv-more-close {
+    display: inline;
+}
+
+@media (max-width: 768px) {
+    .cv-more {
+        margin-left: 24px;
+    }
+}
+
+/* ── Work: problem / decision / outcome as one even row under both columns ── */
+.featured-project-narrative-row {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid rgb(var(--text-rgb) / 0.07);
+}
+
+.featured-project-narrative-row .featured-project-narrative {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px 36px;
+    padding: 0;
+    border: 0;
+}
+
+.featured-project-narrative-row .featured-project-narrative-item {
+    padding: 0;
+    border: 0;
+}
+
+.featured-project-narrative-row .featured-project-narrative-label {
+    font-size: 11px;
+    margin-bottom: 8px;
+    color: rgb(var(--accent-rgb) / 0.85);
+}
+
+.featured-project-narrative-row .featured-project-narrative-item p {
+    font-size: 13px;
+    line-height: 1.65;
+    color: rgb(var(--text-rgb) / 0.66);
+}
+
+.featured-project-description {
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+@media (max-width: 900px) {
+    .featured-project-narrative-row .featured-project-narrative {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cv-more,
+    .cv-more i {
         transition: none;
     }
 }

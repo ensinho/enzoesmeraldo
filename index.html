@@ -410,7 +410,7 @@
                 <p class="journey-label" data-lang="journey.before">How I got here</p>
                 <span class="journey-rail-years">2022 → 2026</span>
             </div>
-            <ol class="cv-list">
+            <ol class="cv-list" id="cv-list">
                 <li class="gs-reveal cv-item">
                     <span class="cv-dot" aria-hidden="true"></span>
                     <div class="cv-head">
@@ -449,7 +449,7 @@
                         <li data-lang="journey.role2.item4"><strong>Ran the Git workflow and mentored the team</strong> on clean code, code review and design patterns</li>
                     </ul>
                 </li>
-                <li class="gs-reveal cv-item">
+                <li class="gs-reveal cv-item is-extra">
                     <span class="cv-dot" aria-hidden="true"></span>
                     <div class="cv-head">
                         <div class="cv-title">
@@ -467,7 +467,7 @@
                         <li data-lang="journey.role3.item4"><strong>Integrated AI services</strong> for automated question validation, plus webhooks for cloud deployment management</li>
                     </ul>
                 </li>
-                <li class="gs-reveal cv-item">
+                <li class="gs-reveal cv-item is-extra">
                     <span class="cv-dot" aria-hidden="true"></span>
                     <div class="cv-head">
                         <div class="cv-title">
@@ -483,7 +483,7 @@
                         <li data-lang="journey.role4.item2"><strong>Focused on usability and accessibility</strong> in the screens I shipped</li>
                     </ul>
                 </li>
-                <li class="gs-reveal cv-item">
+                <li class="gs-reveal cv-item is-extra">
                     <span class="cv-dot" aria-hidden="true"></span>
                     <div class="cv-head">
                         <div class="cv-title">
@@ -500,6 +500,11 @@
                     </ul>
                 </li>
             </ol>
+            <button type="button" class="cv-more" data-cv-more aria-controls="cv-list" aria-expanded="false">
+                <span class="cv-more-open" data-lang="journey.more">See 3 earlier roles</span>
+                <span class="cv-more-close" data-lang="journey.less">Show fewer roles</span>
+                <i class="fas fa-chevron-down" aria-hidden="true"></i>
+            </button>
         </div>
     </section>
 
