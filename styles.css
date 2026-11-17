@@ -4701,7 +4701,7 @@ body[data-music-theme="deftones"] .art-full::before {
 }
 
 .about-bio p {
-    font-size: 16px;
+    font-size: 15.2px;
     line-height: 1.85;
     color: rgb(var(--gray-rgb));
 }
@@ -4939,8 +4939,17 @@ body[data-music-theme="deftones"] .art-full::before {
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .about-main .about-desk {
-        margin-inline: auto;
+    .about-side {
+        justify-items: center;
+    }
+
+    .about-stack {
+        justify-items: center;
+        text-align: center;
+    }
+
+    .about-stack .tech-icons {
+        justify-content: center;
     }
 
     .bonus-bar {
@@ -5114,15 +5123,31 @@ body[data-music-theme="oxygen"] .sleeve-cover img {
     color: rgb(var(--gray-rgb));
 }
 
-.about-stack {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px 20px;
+/* Polaroid column: the photo, then the stack underneath it */
+.about-side {
+    display: grid;
+    gap: 44px;
+    justify-items: start;
 }
 
-.about-stack .about-stat-head {
-    margin-bottom: 0;
+.about-stack {
+    display: grid;
+    gap: 12px;
+    width: 196px;
+}
+
+.about-stack-label {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(var(--gray-rgb));
+}
+
+/* The commit graph, a little smaller */
+.about-activity {
+    max-width: 600px;
 }
 
 /* Tracklist: the Pokémon builder's spotlight (reel + notes) */
