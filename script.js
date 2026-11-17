@@ -1620,18 +1620,20 @@ function renderTrackPreview() {
 function cueTrack(index) {
     if (index === featuredProjectState.cuedIndex) return;
     featuredProjectState.cuedIndex = index;
-    document.querySelectorAll('#tracklist .track').forEach(track => {
-        track.classList.toggle('is-cued', Number(track.dataset.track) === index);
-    });
-    renderTrackPreview();
+    renderTracklist();
+    const selected = document.querySelector(`#tracklist .track[data-track="${index}"]`);
+    if (selected) selected.focus({ preventScroll: true });
 }
 
 function renderTracklist() {
     const list = document.getElementById('tracklist');
     if (!list) return;
-    list.innerHTML = featuredProjects.map((project, index) => `
-        <li>
-            <button type="button" class="track ${index === featuredProjectState.cuedIndex ? 'is-cued' : ''}" data-track="${index}" aria-haspopup="dialog">
+    const t = translations[currentLang] || translations.en;
+    list.innerHTML = featuredProjects.map((project, index) => {
+        const selected = index === featuredProjectState.cuedIndex;
+        return `
+        <li class="track-row ${selected ? 'is-cued' : ''}">
+            <button type="button" class="track" data-track="${index}" aria-pressed="${selected}">
                 <span class="track-n" aria-hidden="true">
                     <span class="track-num">${trackNumber(index)}</span>
                     <span class="track-eq"><i></i><i></i><i></i></span>
@@ -1642,16 +1644,20 @@ function renderTracklist() {
                 </span>
                 <span class="track-stack">${project.track.stack}</span>
                 <span class="track-tag">${pickLang(project.track.tag)}</span>
-                <span class="track-go" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
             </button>
-        </li>
-    `).join('');
+            ${selected ? `
+            <button type="button" class="track-more" data-track-open="${index}" aria-haspopup="dialog">
+                <span>${t['liner.open']}</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </button>` : ''}
+        </li>`;
+    }).join('');
 
     list.querySelectorAll('.track').forEach(track => {
-        const index = Number(track.dataset.track);
-        track.addEventListener('click', () => openLiner(index, track));
-        track.addEventListener('pointerenter', () => cueTrack(index));
-        track.addEventListener('focus', () => cueTrack(index));
+        track.addEventListener('click', () => cueTrack(Number(track.dataset.track)));
+    });
+    list.querySelectorAll('[data-track-open]').forEach(button => {
+        button.addEventListener('click', () => openLiner(Number(button.dataset.trackOpen), button));
     });
     renderTrackPreview();
 }
@@ -1828,6 +1834,7 @@ function initDiscography() {
 // ── Translation System ──
 const translations = {
     en: {
+        "liner.open": "Liner notes",
         "rel.disc2": "Disc 2",
         "rel.disc1": "Disc 1",
         "rel.now.sub": "since Nov. 2026",
@@ -1986,6 +1993,7 @@ const translations = {
         "music.hint": "Flip the record and the theme follows"
     },
     pt: {
+        "liner.open": "Ver encarte",
         "rel.disc2": "Disco 2",
         "rel.disc1": "Disco 1",
         "rel.now.sub": "desde nov. 2026",

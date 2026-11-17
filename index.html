@@ -88,9 +88,9 @@
 
             <!-- Desktop Nav -->
             <div class="hidden md:flex items-center gap-8">
-                <a href="#work" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Tracklist</a>
-                <a href="#trajectory" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Discography</a>
                 <a href="#about" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.about">About</a>
+                <a href="#trajectory" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Discography</a>
+                <a href="#work" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Tracklist</a>
                 <a href="#contact" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.contact">Contact</a>
 
                 <!-- Record Flip (theme) -->
@@ -117,9 +117,9 @@
     <div id="mobile-menu-backdrop" class="fixed inset-0 bg-black/60 z-[105] opacity-0 pointer-events-none transition-opacity duration-300 md:hidden" onclick="closeMobileMenu()"></div>
     <div id="mobile-menu" class="fixed top-0 right-0 h-full w-72 bg-panel z-[108] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden border-l border-white/5">
         <div class="flex flex-col pt-24 px-8 gap-6">
-            <a href="#work" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Tracklist</a>
-            <a href="#trajectory" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Discography</a>
             <a href="#about" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.about">About</a>
+            <a href="#trajectory" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Discography</a>
+            <a href="#work" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Tracklist</a>
             <a href="#contact" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.contact">Contact</a>
             <hr class="border-white/5">
             <button id="theme-flip-mobile" class="theme-flip flex items-center gap-2 font-mono text-[11px] tracking-wider text-gray hover:text-accent transition-colors cursor-pointer">
@@ -179,23 +179,77 @@
         </div>
     </section>
 
-    <!-- ═══ WORK · the tracklist ═══ -->
-    <section id="work" class="lp-section">
+    <!-- ═══ ABOUT · about the artist ═══ -->
+    <section id="about" class="lp-section">
         <div class="max-w-[1280px] mx-auto px-6 md:px-10">
-            <div class="tracklist">
-                <div class="tracklist-head">
-                    <p class="section-kicker" data-lang="work.label">5 tracks · 2024 to 2026</p>
-                    <h2 class="section-title"><span data-lang="work.title1">Track</span><em data-lang="work.title2">list.</em></h2>
-                    <p class="section-lead" data-lang="work.subtitle">Every project here does the same thing: it takes work scattered across tabs, spreadsheets and stuff only one person knows, and gives it one clear interface.</p>
-                    <div class="tracklist-preview" id="tracklist-preview" aria-hidden="true"></div>
+            <div class="about-head">
+                <div>
+                    <p class="section-kicker" data-lang="about.label">About the artist</p>
+                    <h2 class="section-title"><span data-lang="about.title1">The interface is</span> <em data-lang="about.title2">the product.</em></h2>
                 </div>
-                <div class="tracklist-body">
-                    <ol class="tracklist-rows" id="tracklist"></ol>
-                    <a href="https://github.com/ensinho" target="_blank" rel="noreferrer" class="text-link tracklist-more">
-                        <i class="fab fa-github" aria-hidden="true"></i>
-                        <span data-lang="projects.visitGithub">Explore more on GitHub</span>
-                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                    </a>
+                <p class="section-lead" data-lang="about.lead">Full stack by trade, interface first by habit. Here's the short version of who's behind the code.</p>
+            </div>
+
+            <div class="about-main">
+                <div class="about-desk">
+                    <figure class="desk-polaroid">
+                        <img loading="lazy" decoding="async" src="assets/EnzoKorea-portrait.jpeg" alt="Enzo Esmeraldo smiling with arms crossed" width="400" height="483" />
+                        <span class="desk-polaroid-note">fortaleza, 2026</span>
+                    </figure>
+                    <div class="desk-sticker" aria-label="And by the way, that's me">
+                        <img loading="lazy" decoding="async" src="assets/icons/mudkipicon.png" alt="" />
+                        <span data-lang="about.avatarJoke">btw, that's me</span>
+                    </div>
+                </div>
+                <div class="about-bio">
+                    <p data-lang="about.description">I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.</p>
+                    <p data-lang="about.bio2">I've led teams, handling architecture, the design system, Git strategy and mentoring, and I never stopped <strong>shipping every week</strong>. Today I'm a <strong>Developer III at Radix</strong>, with an <strong>AI-native</strong> workflow: Claude Code, custom agents and skills that take me from spec to tests to pull request review.</p>
+                </div>
+            </div>
+
+            <div class="about-notes">
+                <div class="about-note">
+                    <h3 data-lang="about.current.title">Developer III at Radix</h3>
+                    <p data-lang="about.current.desc">Building <strong>full stack web apps, APIs and system integrations</strong>, with Clean Architecture, automated tests and CI/CD keeping it all scalable.</p>
+                    <p class="about-note-meta" data-lang="about.current.status">Since Nov. 2026 · Fortaleza</p>
+                </div>
+                <div class="about-note">
+                    <h3 class="fav-pokemon-heading"><span data-lang="about.funfact.title">Fav. Pokémon is Lugia</span> <img loading="lazy" decoding="async" src="assets/icons/LugiaLittleIcon.png" alt="" class="fav-pokemon-icon" /></h3>
+                    <p data-lang="about.funfact.desc">Psychic-type elegance and legendary rarity. Basically my design philosophy, but as a Pokémon.</p>
+                    <p class="about-note-meta">Pokémon 2000</p>
+                </div>
+                <div class="about-note">
+                    <h3 data-lang="about.interests.title">Outside the editor</h3>
+                    <p id="about-interest-text" class="about-interest-text"><strong>Pokemon and sharks</strong> are my main hype focus: <strong>Lugia</strong>, <strong>Gengar</strong>, and <strong>Arcanine</strong> for personality and style; <strong>whale sharks</strong> and <strong>hammerheads</strong> for calm scale, sharp silhouettes, and natural design energy.</p>
+                    <div id="about-interest-buttons" class="about-interest-buttons" role="tablist" aria-label="Personal interests"></div>
+                </div>
+            </div>
+
+            <div class="about-stats">
+                <div class="about-activity">
+                    <div class="about-stat-head">
+                        <h3 data-lang="contrib.label">Contribution activity</h3>
+                        <span id="contrib-total" class="about-stat-total">&nbsp;</span>
+                    </div>
+                    <div class="contrib" role="img" aria-label="GitHub contribution activity over the past year">
+                        <div class="contrib-months" id="contrib-months" aria-hidden="true"></div>
+                        <div class="contrib-grid" id="contrib-grid" aria-hidden="true"></div>
+                        <div class="contrib-footer">
+                            <div class="contrib-legend" aria-hidden="true">
+                                <span data-lang="contrib.less">Less</span>
+                                <span class="contrib-swatch" style="background:var(--heat-0)"></span>
+                                <span class="contrib-swatch" style="background:var(--heat-1)"></span>
+                                <span class="contrib-swatch" style="background:var(--heat-2)"></span>
+                                <span class="contrib-swatch" style="background:var(--heat-3)"></span>
+                                <span class="contrib-swatch" style="background:var(--heat-4)"></span>
+                                <span data-lang="contrib.more">More</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stack">
+                    <div class="about-stat-head"><h3 data-lang="tech.label">Core stack</h3></div>
+                    <div id="tech-icons" class="tech-icons" aria-label="Core technology stack"></div>
                 </div>
             </div>
         </div>
@@ -351,82 +405,27 @@
         </div>
     </section>
 
-    <!-- ═══ ABOUT · about the artist ═══ -->
-    <section id="about" class="lp-section">
+    <!-- ═══ WORK · the tracklist ═══ -->
+    <section id="work" class="lp-section">
         <div class="max-w-[1280px] mx-auto px-6 md:px-10">
-            <div class="about-head">
-                <div>
-                    <p class="section-kicker" data-lang="about.label">About the artist</p>
-                    <h2 class="section-title"><span data-lang="about.title1">The interface is</span> <em data-lang="about.title2">the product.</em></h2>
+            <div class="tracklist">
+                <div class="tracklist-head">
+                    <p class="section-kicker" data-lang="work.label">5 tracks · 2024 to 2026</p>
+                    <h2 class="section-title"><span data-lang="work.title1">Track</span><em data-lang="work.title2">list.</em></h2>
+                    <p class="section-lead" data-lang="work.subtitle">Every project here does the same thing: it takes work scattered across tabs, spreadsheets and stuff only one person knows, and gives it one clear interface.</p>
+                    <div class="tracklist-preview" id="tracklist-preview" aria-hidden="true"></div>
                 </div>
-                <p class="section-lead" data-lang="about.lead">Full stack by trade, interface first by habit. Here's the short version of who's behind the code.</p>
-            </div>
-
-            <div class="about-main">
-                <div class="about-desk">
-                    <figure class="desk-polaroid">
-                        <img loading="lazy" decoding="async" src="assets/EnzoKorea-portrait.jpeg" alt="Enzo Esmeraldo smiling with arms crossed" width="400" height="483" />
-                        <span class="desk-polaroid-note">fortaleza, 2026</span>
-                    </figure>
-                    <div class="desk-sticker" aria-label="And by the way, that's me">
-                        <img loading="lazy" decoding="async" src="assets/icons/mudkipicon.png" alt="" />
-                        <span data-lang="about.avatarJoke">btw, that's me</span>
-                    </div>
-                </div>
-                <div class="about-bio">
-                    <p data-lang="about.description">I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.</p>
-                    <p data-lang="about.bio2">I've led teams, handling architecture, the design system, Git strategy and mentoring, and I never stopped <strong>shipping every week</strong>. Today I'm a <strong>Developer III at Radix</strong>, with an <strong>AI-native</strong> workflow: Claude Code, custom agents and skills that take me from spec to tests to pull request review.</p>
-                </div>
-            </div>
-
-            <div class="about-notes">
-                <div class="about-note">
-                    <h3 data-lang="about.current.title">Developer III at Radix</h3>
-                    <p data-lang="about.current.desc">Building <strong>full stack web apps, APIs and system integrations</strong>, with Clean Architecture, automated tests and CI/CD keeping it all scalable.</p>
-                    <p class="about-note-meta" data-lang="about.current.status">Since Nov. 2026 · Fortaleza</p>
-                </div>
-                <div class="about-note">
-                    <h3 class="fav-pokemon-heading"><span data-lang="about.funfact.title">Fav. Pokémon is Lugia</span> <img loading="lazy" decoding="async" src="assets/icons/LugiaLittleIcon.png" alt="" class="fav-pokemon-icon" /></h3>
-                    <p data-lang="about.funfact.desc">Psychic-type elegance and legendary rarity. Basically my design philosophy, but as a Pokémon.</p>
-                    <p class="about-note-meta">Pokémon 2000</p>
-                </div>
-                <div class="about-note">
-                    <h3 data-lang="about.interests.title">Outside the editor</h3>
-                    <p id="about-interest-text" class="about-interest-text"><strong>Pokemon and sharks</strong> are my main hype focus: <strong>Lugia</strong>, <strong>Gengar</strong>, and <strong>Arcanine</strong> for personality and style; <strong>whale sharks</strong> and <strong>hammerheads</strong> for calm scale, sharp silhouettes, and natural design energy.</p>
-                    <div id="about-interest-buttons" class="about-interest-buttons" role="tablist" aria-label="Personal interests"></div>
-                </div>
-            </div>
-
-            <div class="about-stats">
-                <div class="about-activity">
-                    <div class="about-stat-head">
-                        <h3 data-lang="contrib.label">Contribution activity</h3>
-                        <span id="contrib-total" class="about-stat-total">&nbsp;</span>
-                    </div>
-                    <div class="contrib" role="img" aria-label="GitHub contribution activity over the past year">
-                        <div class="contrib-months" id="contrib-months" aria-hidden="true"></div>
-                        <div class="contrib-grid" id="contrib-grid" aria-hidden="true"></div>
-                        <div class="contrib-footer">
-                            <div class="contrib-legend" aria-hidden="true">
-                                <span data-lang="contrib.less">Less</span>
-                                <span class="contrib-swatch" style="background:var(--heat-0)"></span>
-                                <span class="contrib-swatch" style="background:var(--heat-1)"></span>
-                                <span class="contrib-swatch" style="background:var(--heat-2)"></span>
-                                <span class="contrib-swatch" style="background:var(--heat-3)"></span>
-                                <span class="contrib-swatch" style="background:var(--heat-4)"></span>
-                                <span data-lang="contrib.more">More</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-stack">
-                    <div class="about-stat-head"><h3 data-lang="tech.label">Core stack</h3></div>
-                    <div id="tech-icons" class="tech-icons" aria-label="Core technology stack"></div>
+                <div class="tracklist-body">
+                    <ol class="tracklist-rows" id="tracklist"></ol>
+                    <a href="https://github.com/ensinho" target="_blank" rel="noreferrer" class="text-link tracklist-more">
+                        <i class="fab fa-github" aria-hidden="true"></i>
+                        <span data-lang="projects.visitGithub">Explore more on GitHub</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
-
 
     <!-- ═══ PLAYER ═══
          One element, two states: a full dock under the hero (Spotify-style), folding into a

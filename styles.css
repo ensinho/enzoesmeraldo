@@ -4155,11 +4155,10 @@ body.site-started.is-music-playing .sleeve-disc {
 .track {
     width: 100%;
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) auto auto 20px;
+    grid-template-columns: 44px minmax(0, 1fr) auto auto;
     align-items: center;
     gap: 24px;
     padding: 26px 4px 26px 0;
-    border-top: 1px solid rgb(var(--text-rgb) / 0.08);
     text-align: left;
     color: rgb(var(--gray-rgb));
     background: transparent;
@@ -4198,20 +4197,20 @@ body.site-started.is-music-playing .sleeve-disc {
 .track-eq i:nth-child(2) { height: 100%; }
 .track-eq i:nth-child(3) { height: 65%; }
 
-.track.is-cued .track-num {
+.track-row.is-cued .track-num {
     visibility: hidden;
 }
 
-.track.is-cued .track-eq {
+.track-row.is-cued .track-eq {
     display: flex;
 }
 
-body.is-music-playing .track.is-cued .track-eq i {
+body.is-music-playing .track-row.is-cued .track-eq i {
     animation: track-eq 0.9s ease-in-out infinite;
 }
 
-body.is-music-playing .track.is-cued .track-eq i:nth-child(2) { animation-delay: 0.18s; }
-body.is-music-playing .track.is-cued .track-eq i:nth-child(3) { animation-delay: 0.36s; }
+body.is-music-playing .track-row.is-cued .track-eq i:nth-child(2) { animation-delay: 0.18s; }
+body.is-music-playing .track-row.is-cued .track-eq i:nth-child(3) { animation-delay: 0.36s; }
 
 @keyframes track-eq {
     0%, 100% { height: 30%; }
@@ -4255,23 +4254,11 @@ body.is-music-playing .track.is-cued .track-eq i:nth-child(3) { animation-delay:
     border: 1px solid rgb(var(--text-rgb) / 0.16);
 }
 
-.track-go {
-    opacity: 0;
-    translate: -6px 0;
-    font-size: 12px;
-    color: rgb(var(--text-rgb));
-    transition: opacity 0.25s ease, translate 0.3s var(--ease-out);
-}
 
-.track.is-cued .track-title {
+.track-row.is-cued .track-title {
     color: rgb(var(--accent-rgb));
 }
 
-.track:hover .track-go,
-.track:focus-visible .track-go {
-    opacity: 1;
-    translate: 0 0;
-}
 
 .tracklist-more {
     margin-top: 28px;
@@ -4940,8 +4927,7 @@ body[data-music-theme="deftones"] .art-full::before {
         padding: 22px 0;
     }
 
-    .track-stack,
-    .track-go {
+    .track-stack {
         display: none;
     }
 
@@ -5009,7 +4995,8 @@ body[data-music-theme="deftones"] .art-full::before {
     .btn,
     .btn i,
     .text-link,
-    .track-go,
+    .track-more,
+    .track-more i,
     .sleeve-cover img,
     .tracklist-preview img,
     .release:not([hidden]) {
@@ -5025,4 +5012,83 @@ body[data-music-theme="deftones"] .art-full::before {
 
 #navbar > div > a.font-heading:hover {
     color: rgb(var(--accent-rgb));
+}
+
+/* Tracklist: a click selects a track; the selected one offers its liner notes */
+.track-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 150px;
+    align-items: center;
+    border-top: 1px solid rgb(var(--text-rgb) / 0.08);
+}
+
+.track-row > .track {
+    grid-column: 1;
+}
+
+.track:hover .track-title {
+    color: rgb(var(--text-rgb) / 0.82);
+}
+
+.track-row.is-cued .track:hover .track-title {
+    color: rgb(var(--accent-rgb));
+}
+
+.track-more {
+    grid-column: 2;
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: rgb(var(--bg-rgb));
+    background: rgb(var(--text-rgb));
+    cursor: pointer;
+    animation: track-more-in 0.35s var(--ease-out);
+    transition: transform 0.2s var(--ease-out);
+}
+
+.track-more i {
+    font-size: 10px;
+    transition: translate 0.25s var(--ease-out);
+}
+
+.track-more:hover {
+    transform: translateY(-1px);
+}
+
+.track-more:hover i {
+    translate: 3px 0;
+}
+
+.track-more:active {
+    transform: scale(0.97);
+}
+
+.track-more:focus-visible {
+    outline: 2px solid rgb(var(--accent-rgb));
+    outline-offset: 3px;
+}
+
+@keyframes track-more-in {
+    from { opacity: 0; translate: -8px 0; }
+}
+
+@media (max-width: 767px) {
+    .track-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .track-more {
+        grid-column: 1;
+        justify-self: start;
+        margin: -6px 0 22px 46px;
+    }
 }
