@@ -204,6 +204,33 @@
                 <div class="about-bio">
                     <p data-lang="about.description">I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.</p>
                     <p data-lang="about.bio2">I've led teams, handling architecture, the design system, Git strategy and mentoring, and I never stopped <strong>shipping every week</strong>. Today I'm a <strong>Developer III at Radix</strong>, with an <strong>AI-native</strong> workflow: Claude Code, custom agents and skills that take me from spec to tests to pull request review.</p>
+                    <div class="about-stats">
+                        <div class="about-activity">
+                            <div class="about-stat-head">
+                                <h3 data-lang="contrib.label">Contribution activity</h3>
+                                <span id="contrib-total" class="about-stat-total">&nbsp;</span>
+                            </div>
+                            <div class="contrib" role="img" aria-label="GitHub contribution activity over the past year">
+                                <div class="contrib-months" id="contrib-months" aria-hidden="true"></div>
+                                <div class="contrib-grid" id="contrib-grid" aria-hidden="true"></div>
+                                <div class="contrib-footer">
+                                    <div class="contrib-legend" aria-hidden="true">
+                                        <span data-lang="contrib.less">Less</span>
+                                        <span class="contrib-swatch" style="background:var(--heat-0)"></span>
+                                        <span class="contrib-swatch" style="background:var(--heat-1)"></span>
+                                        <span class="contrib-swatch" style="background:var(--heat-2)"></span>
+                                        <span class="contrib-swatch" style="background:var(--heat-3)"></span>
+                                        <span class="contrib-swatch" style="background:var(--heat-4)"></span>
+                                        <span data-lang="contrib.more">More</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="about-stack">
+                            <div class="about-stat-head"><h3 data-lang="tech.label">Core stack</h3></div>
+                            <div id="tech-icons" class="tech-icons" aria-label="Core technology stack"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -225,33 +252,6 @@
                 </div>
             </div>
 
-            <div class="about-stats">
-                <div class="about-activity">
-                    <div class="about-stat-head">
-                        <h3 data-lang="contrib.label">Contribution activity</h3>
-                        <span id="contrib-total" class="about-stat-total">&nbsp;</span>
-                    </div>
-                    <div class="contrib" role="img" aria-label="GitHub contribution activity over the past year">
-                        <div class="contrib-months" id="contrib-months" aria-hidden="true"></div>
-                        <div class="contrib-grid" id="contrib-grid" aria-hidden="true"></div>
-                        <div class="contrib-footer">
-                            <div class="contrib-legend" aria-hidden="true">
-                                <span data-lang="contrib.less">Less</span>
-                                <span class="contrib-swatch" style="background:var(--heat-0)"></span>
-                                <span class="contrib-swatch" style="background:var(--heat-1)"></span>
-                                <span class="contrib-swatch" style="background:var(--heat-2)"></span>
-                                <span class="contrib-swatch" style="background:var(--heat-3)"></span>
-                                <span class="contrib-swatch" style="background:var(--heat-4)"></span>
-                                <span data-lang="contrib.more">More</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-stack">
-                    <div class="about-stat-head"><h3 data-lang="tech.label">Core stack</h3></div>
-                    <div id="tech-icons" class="tech-icons" aria-label="Core technology stack"></div>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -267,28 +267,28 @@
             </div>
 
             <div class="shelf" role="tablist" aria-label="Career releases">
-                <button type="button" class="release-tab" role="tab" id="tab-pet" aria-controls="release-pet" aria-selected="false" tabindex="-1">
-                    <span class="art art-pet"><small>2022</small><b>PET<br>Computação</b></span>
-                    <span class="release-cap"><b data-lang="rel.pet">Demo</b><span data-lang="rel.pet.sub">outreach and olympiad</span></span>
-                </button>
-                <button type="button" class="release-tab" role="tab" id="tab-intern" aria-controls="release-intern" aria-selected="false" tabindex="-1">
-                    <span class="art art-intern"><small>2024</small><b data-lang="rel.intern.title">Intern</b></span>
-                    <span class="release-cap"><b>EP</b><span data-lang="rel.intern.sub">front and back</span></span>
-                </button>
-                <button type="button" class="release-tab" role="tab" id="tab-full" aria-controls="release-full" aria-selected="false" tabindex="-1">
-                    <span class="art art-full"><small>2025</small><b>Fullstack<br>Dev</b></span>
-                    <span class="release-cap"><b>LP</b><span data-lang="rel.full.sub">product end to end</span></span>
-                </button>
-                <button type="button" class="release-tab" role="tab" id="tab-lead" aria-controls="release-lead" aria-selected="false" tabindex="-1">
-                    <span class="art art-lead"><small>2026</small><b data-lang="rel.lead.title">Project<br>Lead</b></span>
-                    <span class="release-cap"><b data-lang="rel.lead">Double album</b><span data-lang="rel.lead.sub">medical AI and Exitus</span></span>
-                </button>
                 <button type="button" class="release-tab is-now" role="tab" id="tab-now" aria-controls="release-now" aria-selected="true">
                     <span class="art-slot">
                         <span class="art-vinyl" aria-hidden="true"></span>
                         <span class="art art-now"><small data-lang="journey.now">Now</small><b>Dev III<br>@ Radix</b></span>
                     </span>
                     <span class="release-cap"><b data-lang="rel.now">Out now</b><span data-lang="rel.now.sub">since Nov. 2026</span></span>
+                </button>
+                <button type="button" class="release-tab" role="tab" id="tab-lead" aria-controls="release-lead" aria-selected="false" tabindex="-1">
+                    <span class="art art-lead"><small>2026</small><b data-lang="rel.lead.title">Project<br>Lead</b></span>
+                    <span class="release-cap"><b data-lang="rel.lead">Double album</b><span data-lang="rel.lead.sub">medical AI and Exitus</span></span>
+                </button>
+                <button type="button" class="release-tab" role="tab" id="tab-full" aria-controls="release-full" aria-selected="false" tabindex="-1">
+                    <span class="art art-full"><small>2025</small><b>Fullstack<br>Dev</b></span>
+                    <span class="release-cap"><b>LP</b><span data-lang="rel.full.sub">product end to end</span></span>
+                </button>
+                <button type="button" class="release-tab" role="tab" id="tab-intern" aria-controls="release-intern" aria-selected="false" tabindex="-1">
+                    <span class="art art-intern"><small>2024</small><b data-lang="rel.intern.title">Intern</b></span>
+                    <span class="release-cap"><b>EP</b><span data-lang="rel.intern.sub">front and back</span></span>
+                </button>
+                <button type="button" class="release-tab" role="tab" id="tab-pet" aria-controls="release-pet" aria-selected="false" tabindex="-1">
+                    <span class="art art-pet"><small>2022</small><b>PET<br>Computação</b></span>
+                    <span class="release-cap"><b data-lang="rel.pet">Demo</b><span data-lang="rel.pet.sub">outreach and olympiad</span></span>
                 </button>
             </div>
 
@@ -413,7 +413,8 @@
                     <p class="section-kicker" data-lang="work.label">5 tracks · 2024 to 2026</p>
                     <h2 class="section-title"><span data-lang="work.title1">Track</span><em data-lang="work.title2">list.</em></h2>
                     <p class="section-lead" data-lang="work.subtitle">Every project here does the same thing: it takes work scattered across tabs, spreadsheets and stuff only one person knows, and gives it one clear interface.</p>
-                    <div class="tracklist-preview" id="tracklist-preview" aria-hidden="true"></div>
+                    <div class="tracklist-preview" id="tracklist-preview"></div>
+                    <div class="tracklist-feature" id="tracklist-feature" hidden></div>
                 </div>
                 <div class="tracklist-body">
                     <ol class="tracklist-rows" id="tracklist"></ol>

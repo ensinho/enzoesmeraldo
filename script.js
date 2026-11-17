@@ -829,6 +829,16 @@ const featuredProjects = [
         title: 'Pokémon Team Builder',
         track: {
             sub: { en: 'pokemonbuilder.app · builder, calc and battle AI', pt: 'pokemonbuilder.app · builder, calc e IA de batalha' },
+            feature: {
+                text: {
+                    en: 'The one I care about most. A team builder real players open every day: live analysis, usage from <strong>1M+ ladder games</strong>, tournament teams that become your draft in one click, and a daily battle against a Cynthia run by <strong>an AI I built and trained myself</strong>.',
+                    pt: 'O projeto que eu mais tenho carinho. Um team builder que jogadores de verdade abrem todo dia: análise ao vivo, uso de <strong>mais de 1M de partidas do ladder</strong>, times de torneio que viram seu rascunho em um clique e uma batalha diária contra uma Cynthia comandada por <strong>uma IA que eu construí e treinei</strong>.'
+                },
+                facts: {
+                    en: ['1M+ ladder games', '15+ sections', 'EN / PT · PWA', 'Daily AI battle'],
+                    pt: ['1M+ partidas', '15+ seções', 'EN / PT · PWA', 'Batalha diária com IA']
+                }
+            },
             tag: { en: 'live', pt: 'no ar' },
             stack: 'React · Firebase'
         },
@@ -1606,15 +1616,82 @@ function getTrackCover(project) {
     return still ? still.src : (reel && reel.poster) || null;
 }
 
+// Only a project with a `feature` (the Pokémon builder) gets the full spotlight:
+// its demo reel plays in the preview, with a few more lines about it underneath.
+let previewVideoObserver = null;
+let previewPausedByUser = false;
+
 function renderTrackPreview() {
     const preview = document.getElementById('tracklist-preview');
+    const feature = document.getElementById('tracklist-feature');
     if (!preview) return;
     const project = featuredProjects[featuredProjectState.cuedIndex];
     const t = translations[currentLang] || translations.en;
+    const reel = project.track.feature && project.images.find(image => image.type === 'video');
+
+    if (previewVideoObserver) {
+        previewVideoObserver.disconnect();
+        previewVideoObserver = null;
+    }
+    preview.classList.toggle('is-feature', !!reel);
+
+    if (reel) {
+        preview.innerHTML = `
+            <video src="${reel.src}" poster="${reel.poster || ''}" muted loop playsinline preload="none" aria-label="${reel.alt}"></video>
+            <button type="button" class="preview-toggle"></button>
+        `;
+        const video = preview.querySelector('video');
+        const toggle = preview.querySelector('.preview-toggle');
+        const syncToggle = () => {
+            const paused = video.paused;
+            toggle.innerHTML = `<i class="fas fa-${paused ? 'play' : 'pause'}" aria-hidden="true"></i>`;
+            toggle.setAttribute('aria-label', paused ? t['preview.play'] : t['preview.pause']);
+        };
+        video.addEventListener('play', syncToggle);
+        video.addEventListener('pause', syncToggle);
+        toggle.addEventListener('click', () => {
+            if (video.paused) {
+                previewPausedByUser = false;
+                video.play().catch(() => {});
+            } else {
+                previewPausedByUser = true;
+                video.pause();
+            }
+        });
+        syncToggle();
+
+        // Plays only while on screen, never under reduced motion, never after a manual pause
+        if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+            previewVideoObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !previewPausedByUser) video.play().catch(() => {});
+                    else if (!entry.isIntersecting) video.pause();
+                });
+            }, { threshold: 0.4 });
+            previewVideoObserver.observe(video);
+        }
+
+        if (feature) {
+            const facts = (project.track.feature.facts[currentLang] || project.track.feature.facts.en)
+                .map(fact => `<li>${fact}</li>`).join('');
+            feature.innerHTML = `
+                <p class="feature-kicker">${t['feature.kicker']}</p>
+                <p class="feature-text">${pickLang(project.track.feature.text)}</p>
+                <ul class="feature-facts">${facts}</ul>
+            `;
+            feature.hidden = false;
+        }
+        return;
+    }
+
     const cover = getTrackCover(project);
     preview.innerHTML = cover
         ? `<img src="${cover}" alt="" decoding="async">`
-        : `<div class="tracklist-preview-locked"><i class="fas fa-lock"></i><span>${t['featuredWork.lockedTitle']}</span></div>`;
+        : `<div class="tracklist-preview-locked"><i class="fas fa-lock" aria-hidden="true"></i><span>${t['featuredWork.lockedTitle']}</span></div>`;
+    if (feature) {
+        feature.hidden = true;
+        feature.innerHTML = '';
+    }
 }
 
 function cueTrack(index) {
@@ -1823,17 +1900,14 @@ function initDiscography() {
             select(next, true);
         });
     });
-    // On a phone the shelf scrolls sideways: start it on the current release
-    const shelf = document.querySelector('.shelf');
-    const current = tabs.find(tab => tab.getAttribute('aria-selected') === 'true');
-    if (shelf && current && shelf.scrollWidth > shelf.clientWidth) {
-        shelf.scrollLeft = current.offsetLeft - shelf.offsetLeft;
-    }
 }
 
 // ── Translation System ──
 const translations = {
     en: {
+        "feature.kicker": "Favorite track",
+        "preview.pause": "Pause the demo",
+        "preview.play": "Play the demo",
         "liner.open": "Liner notes",
         "rel.disc2": "Disc 2",
         "rel.disc1": "Disc 1",
@@ -1993,6 +2067,9 @@ const translations = {
         "music.hint": "Flip the record and the theme follows"
     },
     pt: {
+        "feature.kicker": "Faixa favorita",
+        "preview.pause": "Pausar o demo",
+        "preview.play": "Tocar o demo",
         "liner.open": "Ver encarte",
         "rel.disc2": "Disco 2",
         "rel.disc1": "Disco 1",
