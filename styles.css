@@ -5252,3 +5252,31 @@ body[data-music-theme="oxygen"] .sleeve-cover img {
         transition: none !important;
     }
 }
+
+/* About: the lead reads in two lines, and the notes row sits closer */
+.about-head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 560px);
+}
+
+.about-head .section-lead {
+    max-width: 60ch;
+}
+
+#about {
+    padding-bottom: clamp(72px, 8vw, 104px);
+}
+
+#about .about-notes {
+    margin-top: 64px;
+}
+
+@media (max-width: 1023px) {
+    .about-head {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* The Lugia icon must not push its heading below its neighbours */
+.about-note .fav-pokemon-icon {
+    margin-block: -6px;
+}

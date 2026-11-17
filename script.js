@@ -551,16 +551,16 @@ const monthLabels = {
 
 const TECH_ICON_BASE = 'https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons';
 const techStack = [
-
     { name: 'TypeScript', label: 'TS', icon: `${TECH_ICON_BASE}/typescript.png` },
     { name: 'JavaScript', label: 'JS', icon: `${TECH_ICON_BASE}/javascript.png` },
-    { name: 'Tailwind CSS', label: 'Tailwind', icon: `${TECH_ICON_BASE}/tailwind_css.png` },
     { name: 'React', label: 'React', icon: `${TECH_ICON_BASE}/react.png` },
     { name: 'Angular', label: 'Angular', icon: `${TECH_ICON_BASE}/angular.png` },
+    { name: 'Tailwind CSS', label: 'Tailwind', icon: `${TECH_ICON_BASE}/tailwind_css.png` },
     { name: 'Node.js', label: 'Node.js', icon: `${TECH_ICON_BASE}/node_js.png` },
     { name: 'Spring Boot', label: 'Spring Boot', icon: `${TECH_ICON_BASE}/spring_boot.png` },
     { name: 'PostgreSQL', label: 'PostgreSQL', icon: `${TECH_ICON_BASE}/postgresql.png` },
-    { name: 'Google Cloud Platform', label: 'GCP', icon: `${TECH_ICON_BASE}/gcp.png` },
+    { name: 'Firebase', label: 'Firebase', icon: `${TECH_ICON_BASE}/firebase.png` },
+    { name: 'Google Cloud Platform', label: 'GCP', icon: `${TECH_ICON_BASE}/gcp.png` }
 ];
 
 function countToLevel(count) {
@@ -1963,8 +1963,8 @@ const translations = {
         "about.title2": "the product.",
         "about.offCode": "About the Developer",
         "about.title": "Enzo Esmeraldo",
-        "about.description": "I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.",
-        "about.bio2": "As <strong>lead developer</strong>, I owned the technical side end to end: architecture, the design system, Git strategy and code review, while still <strong>shipping code every week</strong>. Today I'm a <strong>Developer III at Radix</strong>, with an <strong>AI-native</strong> workflow: Claude Code, custom agents and skills that take me from spec to tests to pull request review.",
+        "about.description": "I went from <strong>intern to project leader in 21 months</strong>, I think because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.",
+        "about.bio2": "As <strong>lead developer</strong>, I led the technical side: architecture, the design system, Git strategy and code review, while still <strong>shipping code every week</strong>. Today I'm a <strong>Developer III at Radix</strong>, with an <strong>AI-native</strong> workflow: Claude Code, custom agents and skills that take me from spec to pull request review.",
         "about.avatarJoke": "btw, that's me",
         "about.interests.label": "Interests",
         "about.interests.title": "Outside the editor",
@@ -2125,8 +2125,8 @@ const translations = {
         "about.title2": "o produto.",
         "about.offCode": "Sobre o Desenvolvedor",
         "about.title": "Enzo Esmeraldo",
-        "about.description": "Fui de <strong>estagiário a líder de projeto em 21 meses</strong>, e sinceramente acho que é porque trato a interface como o produto, não como a pintura. Seja uma plataforma de IA ajudando médicos em decisões clínicas ou uma extensão do VS Code que empacota commits em evidência de QA, o trabalho é o mesmo: <strong>achar a parte do fluxo que todo mundo odeia em silêncio e deixar ela óbvia</strong>.",
-        "about.bio2": "Como <strong>lead developer</strong>, cuidei da parte técnica de ponta a ponta: arquitetura, design system, estratégia de Git e code review, sem parar de <strong>escrever código toda semana</strong>. Hoje sou <strong>Desenvolvedor III na Radix</strong>, com um workflow <strong>AI-native</strong>: Claude Code, agentes customizados e skills que me levam da spec aos testes até a revisão de pull request.",
+        "about.description": "Fui de <strong>estagiário a líder de projeto em 21 meses</strong>, acho que porque trato a interface como o produto, não como a pintura. Seja uma plataforma de IA ajudando médicos em decisões clínicas ou uma extensão do VS Code que empacota commits em evidência de QA, o trabalho é o mesmo: <strong>achar a parte do fluxo que todo mundo odeia em silêncio e deixar ela óbvia</strong>.",
+        "about.bio2": "Como <strong>lead developer</strong>, conduzi a parte técnica: arquitetura, design system, estratégia de Git e code review, sem parar de <strong>escrever código toda semana</strong>. Hoje sou <strong>Desenvolvedor III na Radix</strong>, com um workflow <strong>AI-native</strong>: Claude Code, agentes customizados e skills que me levam da spec à revisão de pull request.",
         "about.avatarJoke": "e sim, esse sou eu",
         "about.interests.label": "Interesses",
         "about.interests.title": "Fora do editor",
