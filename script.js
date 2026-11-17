@@ -33,13 +33,22 @@ function initRevealFallback() {
 // ── Navbar state + Back to Top (one rAF-throttled passive listener) ──
 const navbar = document.getElementById('navbar');
 const backToTopBtn = document.getElementById('back-to-top');
+const heroSection = document.getElementById('hero');
+const playerDock = document.getElementById('music-card');
 let scrollTicking = false;
 function syncScrollState() {
     scrollTicking = false;
     const y = window.scrollY;
     navbar.classList.toggle('scrolled', y > 60);
     if (backToTopBtn) backToTopBtn.classList.toggle('is-visible', y > window.innerHeight * 0.5);
+    // The player sits as a full dock while the hero is on screen, and folds into the
+    // compact wave pill once the hero is mostly scrolled away.
+    if (playerDock && heroSection) {
+        const heroEnd = heroSection.offsetHeight - window.innerHeight * 0.55;
+        playerDock.classList.toggle('is-mini', y > Math.max(120, heroEnd));
+    }
 }
+window.addEventListener('resize', () => requestAnimationFrame(syncScrollState), { passive: true });
 window.addEventListener('scroll', () => {
     if (scrollTicking) return;
     scrollTicking = true;
@@ -151,11 +160,19 @@ const songs = [
     }
 ];
 
+// Waveforms are pre-computed from the two mp3s in assets/songs (ffmpeg → 112 loudness
+// buckets), so the bars are the real shape of each track without fetching 5 MB on load.
+const songWaves = [
+    { duration: 186, wave: [0.14,0.14,0.14,0.14,0.14,0.14,0.14,0.18,0.2,0.26,0.19,0.22,0.21,0.25,0.19,0.59,0.53,0.49,0.55,0.45,0.64,0.5,0.76,0.74,0.85,0.19,0.93,0.98,0.72,0.37,0.86,0.82,0.73,0.77,1,0.85,0.79,0.81,0.92,0.77,0.88,0.87,0.91,0.79,0.57,0.8,0.73,0.68,0.81,0.83,0.82,0.95,0.65,0.84,0.79,0.91,0.75,0.85,0.81,0.75,0.75,0.72,0.66,0.79,0.87,0.87,0.9,0.88,0.88,0.81,0.81,0.9,0.88,0.77,0.48,0.82,0.72,0.72,0.79,0.86,0.87,0.86,0.7,0.17,0.19,0.14,0.17,0.18,0.21,0.14,0.77,0.86,0.61,0.78,0.85,0.8,0.79,0.9,0.88,0.72,0.82,0.86,0.8,0.79,0.84,0.84,0.6,0.73,0.24,0.14,0.14,0.16] },
+    { duration: 300, wave: [0.14,0.14,0.14,0.21,0.19,0.33,0.58,0.65,0.62,0.62,0.74,0.74,0.62,0.71,0.64,0.8,0.72,0.89,0.74,0.72,0.76,0.88,0.7,0.61,0.7,0.79,0.7,0.47,0.7,0.69,0.87,0.75,0.66,0.67,0.75,0.55,0.73,0.59,0.85,0.92,0.74,0.92,0.77,0.83,0.65,0.9,0.83,0.71,0.85,0.64,1,0.79,0.96,0.91,0.76,0.92,0.63,0.2,0.4,0.47,0.61,0.48,0.33,0.37,0.68,0.64,0.32,0.46,0.84,0.95,0.88,0.97,0.94,0.74,0.92,0.82,0.9,0.71,0.77,0.96,0.73,0.96,0.76,0.92,0.86,0.72,0.94,0.85,0.91,0.86,0.79,0.72,0.74,0.84,0.66,0.92,0.69,0.69,0.6,0.74,0.67,0.81,0.71,0.74,0.75,0.64,0.45,0.33,0.36,0.14,0.14,0.14] }
+];
+
 let currentSongIndex = 0;
 let isPlaying = false;
 const audioPlayer = new Audio();
 // Don't pull a 4–7 MB track on page load; fetch it when the visitor actually hits play.
 audioPlayer.preload = 'none';
+audioPlayer.volume = 0.4;
 
 const musicCard = document.getElementById('music-card');
 const albumArt = document.getElementById('album-art');
@@ -164,55 +181,82 @@ const artistName = document.getElementById('artist-name');
 const playBtn = document.getElementById('play-btn');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
-const equalizer = document.getElementById('equalizer');
 const heroBg = document.getElementById('hero-bg');
-const progressContainer = document.getElementById('progress-container');
-const progressBar = document.getElementById('progress-bar');
-const musicCollapsible = document.getElementById('music-collapsible');
-const collapseIcon = document.getElementById('collapse-icon');
-const musicEasterEgg = document.getElementById('music-easter-egg');
+const waveEl = document.getElementById('player-wave');
+const timeCurrent = document.getElementById('time-current');
+const timeTotal = document.getElementById('time-total');
+const muteBtn = document.getElementById('mute-btn');
+const volumeInput = document.getElementById('volume');
 
-let isMusicCollapsed = false;
 let easterEggTimeout = null;
 
-// ── Music Collapse ──
-function toggleMusicCollapse() {
-    isMusicCollapsed = !isMusicCollapsed;
-    if (isMusicCollapsed) {
-        musicCollapsible.style.maxHeight = '0px';
-        musicCollapsible.style.opacity = '0';
-        collapseIcon.style.transform = 'rotate(180deg)';
-        musicCard.classList.add('collapsed');
-    } else {
-        musicCollapsible.style.maxHeight = '80px';
-        musicCollapsible.style.opacity = '1';
-        collapseIcon.style.transform = 'rotate(0deg)';
-        musicCard.classList.remove('collapsed');
-    }
+function formatTime(sec) {
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-// ── Easter Egg: in-card message ──
+function songDuration() {
+    return isFinite(audioPlayer.duration) && audioPlayer.duration > 0
+        ? audioPlayer.duration
+        : songWaves[currentSongIndex].duration;
+}
+
+// ── Waveform: three stacked copies of the same bars (base, hover preview, played) ──
+function renderWave(index) {
+    const bars = songWaves[index].wave;
+    const step = 4;
+    const rects = bars.map((v, i) => {
+        const h = Math.max(3, v * 40);
+        return `<rect x="${i * step + 0.8}" y="${(40 - h) / 2}" width="2.4" height="${h}" rx="1.2"/>`;
+    }).join('');
+    const svg = cls => `<svg class="${cls}" viewBox="0 0 ${bars.length * step} 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">${rects}</svg>`;
+    waveEl.innerHTML = svg('player-wave-base') + svg('player-wave-hover') + svg('player-wave-fill') + '<span class="player-wave-head" aria-hidden="true"></span>';
+}
+
+function paintProgress() {
+    const dur = songDuration();
+    const pct = dur ? Math.min(100, (audioPlayer.currentTime / dur) * 100) : 0;
+    waveEl.style.setProperty('--p', `${pct}%`);
+    waveEl.setAttribute('aria-valuenow', String(Math.round(pct)));
+    waveEl.setAttribute('aria-valuetext', `${formatTime(audioPlayer.currentTime)} of ${formatTime(dur)}`);
+    timeCurrent.textContent = formatTime(audioPlayer.currentTime);
+}
+
+// rAF only while playing, so the fill glides instead of stepping 4× a second
+let progressFrame = null;
+function progressLoop() {
+    paintProgress();
+    progressFrame = isPlaying ? requestAnimationFrame(progressLoop) : null;
+}
+
+function setPlayingState(playing) {
+    isPlaying = playing;
+    const icon = playBtn.querySelector('i');
+    icon.classList.toggle('fa-pause', playing);
+    icon.classList.toggle('fa-play', !playing);
+    playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    musicCard.classList.toggle('is-playing', playing);
+    document.body.classList.toggle('is-music-playing', playing);
+    if (playing && !progressFrame) progressFrame = requestAnimationFrame(progressLoop);
+}
+
+function playAudio() {
+    const p = audioPlayer.play();
+    setPlayingState(true);
+    if (p !== undefined) p.catch(() => setPlayingState(false));
+}
+
+// ── Easter egg: the artist line briefly carries the record's note ──
 function showEasterEgg(msgObj) {
-    if (!musicEasterEgg) return;
-    if (easterEggTimeout) clearTimeout(easterEggTimeout);
-
-    const msg = msgObj[currentLang] || msgObj['en'];
-
-    // Reset
-    musicEasterEgg.style.maxHeight = '0';
-    musicEasterEgg.style.color = 'rgba(var(--accent-rgb), 0)';
-    musicEasterEgg.textContent = msg;
-
-    // Fade in after tiny delay
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-        musicEasterEgg.style.maxHeight = '30px';
-        musicEasterEgg.style.color = 'rgba(var(--accent-rgb), 0.5)';
-    }));
-
-    // Fade out after 4s
+    clearTimeout(easterEggTimeout);
+    const song = songs[currentSongIndex];
+    artistName.classList.add('is-note');
+    artistName.textContent = msgObj[currentLang] || msgObj.en;
     easterEggTimeout = setTimeout(() => {
-        musicEasterEgg.style.color = 'rgba(var(--accent-rgb), 0)';
-        setTimeout(() => { musicEasterEgg.style.maxHeight = '0'; }, 700);
+        artistName.classList.remove('is-note');
+        artistName.textContent = song.artist;
     }, 4000);
 }
 
@@ -238,11 +282,17 @@ function flashThemeVeil() {
 function loadSong(index) {
     const song = songs[index];
     const isThemeSwitch = themeLoadedOnce;
-    songTitle.innerText = song.title;
-    artistName.innerText = song.artist;
+    clearTimeout(easterEggTimeout);
+    artistName.classList.remove('is-note');
+    songTitle.textContent = song.title;
+    artistName.textContent = song.artist;
     albumArt.style.backgroundImage = song.cover;
-    albumArt.style.backgroundSize = "cover";
+    albumArt.setAttribute('title', `${song.title} · ${song.artist}`);
+    albumArt.setAttribute('aria-label', `${song.title} by ${song.artist}, album cover`);
     audioPlayer.src = song.file;
+    renderWave(index);
+    timeTotal.textContent = formatTime(songWaves[index].duration);
+    paintProgress();
 
     if (heroBg) {
         if (!isThemeSwitch || prefersReducedMotion) {
@@ -298,76 +348,93 @@ function updateFavicon(color) {
 }
 
 function togglePlay() {
-    const icon = playBtn.querySelector('i');
     if (isPlaying) {
         audioPlayer.pause();
-        isPlaying = false;
-        icon.classList.remove('fa-pause');
-        icon.classList.add('fa-play');
-        musicCard.classList.add('paused');
+        setPlayingState(false);
     } else {
-        audioPlayer.play();
-        isPlaying = true;
-        icon.classList.remove('fa-play');
-        icon.classList.add('fa-pause');
-        musicCard.classList.remove('paused');
+        playAudio();
     }
 }
 
-function nextSong() {
-    currentSongIndex = (currentSongIndex + 1) % songs.length;
+function changeSong(delta) {
+    currentSongIndex = (currentSongIndex + delta + songs.length) % songs.length;
     loadSong(currentSongIndex);
-    audioPlayer.play();
-    isPlaying = true;
-    const icon = playBtn.querySelector('i');
-    icon.classList.remove('fa-play');
-    icon.classList.add('fa-pause');
-    musicCard.classList.remove('paused');
-
-    // Easter eggs
+    playAudio();
     const song = songs[currentSongIndex];
     showEasterEgg(song.easterEgg);
     console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
 }
-
+function nextSong() { changeSong(1); }
 function prevSong() {
-    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-    loadSong(currentSongIndex);
-    audioPlayer.play();
-    isPlaying = true;
-    const icon = playBtn.querySelector('i');
-    icon.classList.remove('fa-play');
-    icon.classList.add('fa-pause');
-    musicCard.classList.remove('paused');
-
-    // Easter eggs
-    const song = songs[currentSongIndex];
-    showEasterEgg(song.easterEgg);
-    console.log(`%c${song.consoleMsg[1]}`, song.consoleMsg[0]);
+    // Like any player: past the first seconds, "previous" restarts the track
+    if (audioPlayer.currentTime > 4) {
+        audioPlayer.currentTime = 0;
+        paintProgress();
+        return;
+    }
+    changeSong(-1);
 }
 
-function updateProgress(e) {
-    const { duration, currentTime } = e.srcElement;
-    if (isNaN(duration)) return;
-    const progressPercent = (currentTime / duration) * 100;
-    progressBar.style.width = `${progressPercent}%`;
+// ── Seeking on the waveform (pointer + keyboard) ──
+function seekTo(ratio) {
+    const dur = songDuration();
+    ratio = Math.min(1, Math.max(0, ratio));
+    try { audioPlayer.currentTime = ratio * dur; } catch (_) { /* metadata not loaded yet */ }
+    if (!isPlaying) playAudio();
+    paintProgress();
 }
+function waveRatio(e) {
+    const r = waveEl.getBoundingClientRect();
+    return (e.clientX - r.left) / r.width;
+}
+waveEl.addEventListener('click', e => seekTo(waveRatio(e)));
+waveEl.addEventListener('pointermove', e => waveEl.style.setProperty('--h', `${Math.min(100, Math.max(0, waveRatio(e) * 100))}%`));
+waveEl.addEventListener('pointerleave', () => waveEl.style.setProperty('--h', '0%'));
+waveEl.addEventListener('keydown', e => {
+    const jump = { ArrowRight: 5, ArrowUp: 5, ArrowLeft: -5, ArrowDown: -5 }[e.key];
+    if (jump === undefined && e.key !== 'Home' && e.key !== 'End') return;
+    e.preventDefault();
+    if (e.key === 'Home') return seekTo(0);
+    if (e.key === 'End') return seekTo(0.999);
+    seekTo((audioPlayer.currentTime + jump) / songDuration());
+});
 
-function setProgress(e) {
-    const width = this.clientWidth;
-    const clickX = e.offsetX;
-    const duration = audioPlayer.duration;
-    audioPlayer.currentTime = (clickX / width) * duration;
+// ── Volume ──
+let lastVolume = 0.4;
+function syncVolumeUI() {
+    const v = audioPlayer.muted ? 0 : audioPlayer.volume;
+    volumeInput.value = String(v);
+    volumeInput.style.setProperty('--v', `${v * 100}%`);
+    muteBtn.querySelector('i').className = `fas ${v === 0 ? 'fa-volume-xmark' : v < 0.5 ? 'fa-volume-low' : 'fa-volume-high'}`;
+    muteBtn.setAttribute('aria-label', v === 0 ? 'Unmute' : 'Mute');
 }
+volumeInput.addEventListener('input', () => {
+    audioPlayer.muted = false;
+    audioPlayer.volume = Number(volumeInput.value);
+    if (audioPlayer.volume > 0) lastVolume = audioPlayer.volume;
+    syncVolumeUI();
+});
+muteBtn.addEventListener('click', () => {
+    if (audioPlayer.muted || audioPlayer.volume === 0) {
+        audioPlayer.muted = false;
+        audioPlayer.volume = lastVolume || 0.4;
+    } else {
+        audioPlayer.muted = true;
+    }
+    syncVolumeUI();
+});
+syncVolumeUI();
 
 audioPlayer.addEventListener('ended', nextSong);
-audioPlayer.addEventListener('timeupdate', updateProgress);
-progressContainer.addEventListener('click', setProgress);
-
-audioPlayer.addEventListener('error', (e) => {
+audioPlayer.addEventListener('timeupdate', () => { if (!isPlaying) paintProgress(); });
+audioPlayer.addEventListener('loadedmetadata', () => { timeTotal.textContent = formatTime(audioPlayer.duration); });
+// Keep the UI honest when the OS / headset pauses or resumes playback
+audioPlayer.addEventListener('pause', () => { if (isPlaying && !audioPlayer.ended) setPlayingState(false); });
+audioPlayer.addEventListener('play', () => { if (!isPlaying) setPlayingState(true); });
+audioPlayer.addEventListener('error', () => {
+    if (!audioPlayer.getAttribute('src')) return;
     console.error("Error loading audio:", audioPlayer.src);
-    const icon = playBtn.querySelector('i');
-    icon.className = 'fas fa-exclamation-triangle text-red-500';
+    setPlayingState(false);
 });
 
 playBtn.addEventListener('click', togglePlay);
@@ -378,13 +445,6 @@ prevBtn.addEventListener('click', prevSong);
 // No autoplay — music only starts from the visitor's own click on a record.
 const jukebox = document.getElementById('jukebox');
 
-function setPlayingState(playing) {
-    isPlaying = playing;
-    const icon = playBtn.querySelector('i');
-    icon.classList.toggle('fa-pause', playing);
-    icon.classList.toggle('fa-play', !playing);
-    musicCard.classList.toggle('paused', !playing);
-}
 
 function dismissJukebox(immediate = false) {
     if (!jukebox || !document.body.contains(jukebox)) {
@@ -409,11 +469,7 @@ function chooseRecord(index, options = {}) {
     loadSong(currentSongIndex);
 
     if (withMusic) {
-        audioPlayer.volume = 0.4;
-        const playPromise = audioPlayer.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => setPlayingState(true)).catch(() => setPlayingState(false));
-        }
+        playAudio();
     }
 
     dismissJukebox();
@@ -771,6 +827,11 @@ const featuredProjects = [
     {
         id: 'pokemon-team-builder',
         title: 'Pokémon Team Builder',
+        track: {
+            sub: { en: 'pokemonbuilder.app · builder, calc and battle AI', pt: 'pokemonbuilder.app · builder, calc e IA de batalha' },
+            tag: { en: 'live', pt: 'no ar' },
+            stack: 'React · Firebase'
+        },
         logo: {
             src: 'assets/icons/teamBuilderLogo.png',
             alt: 'Pokémon Team Builder logo'
@@ -918,6 +979,11 @@ const featuredProjects = [
     {
         id: 'qassistant',
         title: 'QAssistant',
+        track: {
+            sub: { en: 'the QA loop inside VS Code', pt: 'o ciclo de QA dentro do VS Code' },
+            tag: { en: 'v2.0.1', pt: 'v2.0.1' },
+            stack: 'TypeScript · VS Code API'
+        },
         logo: {
             src: 'assets/icons/qassistant-logo.png',
             alt: 'QAssistant logo'
@@ -983,6 +1049,11 @@ const featuredProjects = [
     {
         id: 'medical-platform',
         title: 'AI Medical Platform',
+        track: {
+            sub: { en: 'clinical decision support · tech lead', pt: 'apoio à decisão clínica · liderança técnica' },
+            tag: { en: 'NDA', pt: 'NDA' },
+            stack: 'React · PostgreSQL'
+        },
         logo: null,
         locked: true,
         status: {
@@ -1012,6 +1083,11 @@ const featuredProjects = [
     {
         id: 'dino-library',
         title: 'Dino Library',
+        track: {
+            sub: { en: 'a paleontology catalog in two languages', pt: 'catálogo de paleontologia em dois idiomas' },
+            tag: { en: 'live', pt: 'no ar' },
+            stack: 'React · Leaflet'
+        },
         logo: {
             src: 'assets/icons/dinoLibraryLogo.png',
             alt: 'Dino Library logo'
@@ -1097,6 +1173,11 @@ const featuredProjects = [
     {
         id: 'aqua-census',
         title: 'AquaCensus',
+        track: {
+            sub: { en: 'marine field research, one ledger', pt: 'pesquisa marinha de campo num registro só' },
+            tag: { en: 'live', pt: 'no ar' },
+            stack: 'Node.js · Supabase'
+        },
         logo: {
             src: 'assets/icons/fish.svg',
             alt: 'AquaCensus logo'
@@ -1160,17 +1241,7 @@ const featuredProjectLinks = {
     }
 };
 
-const featuredProjectState = {
-    activeProjectIndex: 0,
-    activeImageIndex: 0
-};
 
-function getFeaturedProjectElements() {
-    return {
-        switcher: document.getElementById('featured-project-switcher'),
-        stage: document.getElementById('featured-project-stage')
-    };
-}
 
 function getFeaturedProjectCopy() {
     const activeTranslations = translations[currentLang] || translations.en;
@@ -1197,64 +1268,8 @@ function getFeaturedProjectNarrative(project) {
     return project.narrative[currentLang] || project.narrative.en || null;
 }
 
-function getFeaturedProjectLogoMarkup(project, variant) {
-    const wrapperClass = variant === 'switcher' ? 'featured-project-switch-icon' : 'featured-project-logo-wrap';
 
-    if (project && project.locked) {
-        return `
-            <span class="${wrapperClass} is-locked">
-                <i class="fas fa-lock"></i>
-            </span>
-        `;
-    }
 
-    if (!project || !project.logo || !project.logo.src) return '';
-
-    const imageClass = variant === 'switcher' ? 'featured-project-switch-logo' : 'featured-project-logo';
-
-    return `
-        <span class="${wrapperClass}">
-            <img class="${imageClass}" src="${project.logo.src}" alt="${project.logo.alt}" decoding="async">
-        </span>
-    `;
-}
-
-function buildFeaturedProjectSwitcher() {
-    return `
-        <div class="featured-project-switcher" role="tablist" aria-label="Featured projects">
-            ${featuredProjects.map((project, index) => {
-        const isActive = index === featuredProjectState.activeProjectIndex;
-
-        return `
-            <button
-                type="button"
-                class="featured-project-switch-btn ${isActive ? 'is-active' : ''}"
-                data-featured-project-index="${index}"
-                aria-pressed="${isActive}"
-            >
-                ${getFeaturedProjectLogoMarkup(project, 'switcher')}
-                <span class="featured-project-switch-copy">
-                    <span class="featured-project-switch-title">${project.title}</span>
-                </span>
-            </button>
-        `;
-    }).join('')}
-        </div>
-    `;
-}
-
-function renderFeaturedProjectSwitcher() {
-    const { switcher } = getFeaturedProjectElements();
-    if (!switcher) return;
-
-    switcher.innerHTML = buildFeaturedProjectSwitcher();
-
-    switcher.querySelectorAll('[data-featured-project-index]').forEach(button => {
-        button.addEventListener('click', () => {
-            selectFeaturedProject(Number(button.dataset.featuredProjectIndex));
-        });
-    });
-}
 
 function buildFeaturedProjectLinks(project) {
     if (!project || !project.links) return '';
@@ -1376,94 +1391,10 @@ function buildFeaturedProjectDeepDive(project) {
     `;
 }
 
-// The deep dive is long, so the page only shows a teaser and the full breakdown opens in a modal.
-function buildFeaturedProjectDeepDiveCta(project) {
-    const dive = project && project.deepDive;
-    if (!dive) return '';
-    const lang = currentLang === 'pt' ? 'pt' : 'en';
-    const pick = value => (value && (value[lang] || value.en)) || '';
-    const highlights = dive.metrics.slice(0, 3).map(metric => `
-        <div class="deep-dive-cta-metric">
-            <span class="deep-dive-metric-value">${metric.value}</span>
-            <span class="deep-dive-metric-label">${metric[lang] || metric.en}</span>
-        </div>
-    `).join('');
 
-    return `
-        <div class="deep-dive-cta">
-            <div class="deep-dive-cta-copy">
-                <p class="deep-dive-label">${pick(dive.kicker)}</p>
-                <h4 class="deep-dive-cta-title">${pick(dive.title)}</h4>
-                <p class="deep-dive-cta-text">${pick(dive.teaser)}</p>
-            </div>
-            <div class="deep-dive-cta-metrics">${highlights}</div>
-            <button type="button" class="deep-dive-cta-btn" data-deep-dive-open aria-haspopup="dialog">
-                <span>${pick(dive.cta)}</span>
-                <i class="fas fa-arrow-right" aria-hidden="true"></i>
-            </button>
-        </div>
-    `;
-}
 
-let deepDiveReturnFocus = null;
 
-function ensureDeepDiveModal() {
-    let modal = document.getElementById('deep-dive-modal');
-    if (modal) return modal;
 
-    modal = document.createElement('div');
-    modal.id = 'deep-dive-modal';
-    modal.className = 'featured-image-modal deep-dive-modal';
-    modal.setAttribute('aria-hidden', 'true');
-    modal.innerHTML = `
-        <div class="featured-image-modal-backdrop" data-deep-dive-close></div>
-        <div class="featured-image-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="deep-dive-modal-title">
-            <div class="featured-image-modal-header">
-                <div>
-                    <p class="featured-image-modal-kicker" id="deep-dive-modal-kicker"></p>
-                    <h3 class="featured-image-modal-title" id="deep-dive-modal-title"></h3>
-                </div>
-                <button type="button" class="featured-image-modal-close" data-deep-dive-close aria-label="Close">
-                    <i class="fas fa-xmark" aria-hidden="true"></i>
-                </button>
-            </div>
-            <div class="deep-dive-modal-body" id="deep-dive-modal-body"></div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    modal.querySelectorAll('[data-deep-dive-close]').forEach(element => {
-        element.addEventListener('click', closeDeepDiveModal);
-    });
-    return modal;
-}
-
-function openDeepDiveModal(project, trigger) {
-    if (!project || !project.deepDive) return;
-    const lang = currentLang === 'pt' ? 'pt' : 'en';
-    const modal = ensureDeepDiveModal();
-    modal.querySelector('#deep-dive-modal-kicker').textContent = project.title;
-    modal.querySelector('#deep-dive-modal-title').textContent = project.deepDive.title[lang] || project.deepDive.title.en;
-    modal.querySelector('.featured-image-modal-close').setAttribute('aria-label', lang === 'pt' ? 'Fechar' : 'Close');
-    const body = modal.querySelector('#deep-dive-modal-body');
-    body.innerHTML = buildFeaturedProjectDeepDive(project);
-    body.scrollTop = 0;
-
-    deepDiveReturnFocus = trigger || document.activeElement;
-    modal.classList.add('is-open');
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-open');
-    modal.querySelector('.featured-image-modal-close').focus();
-}
-
-function closeDeepDiveModal() {
-    const modal = document.getElementById('deep-dive-modal');
-    if (!modal || !modal.classList.contains('is-open')) return;
-    modal.classList.remove('is-open');
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('modal-open');
-    if (deepDiveReturnFocus && document.contains(deepDiveReturnFocus)) deepDiveReturnFocus.focus();
-    deepDiveReturnFocus = null;
-}
 
 function ensureFeaturedImageModal() {
     let modal = document.getElementById('featured-image-modal');
@@ -1627,73 +1558,6 @@ function buildFeaturedProjectMedia(project) {
     `;
 }
 
-function renderFeaturedProjectStage() {
-    const { stage } = getFeaturedProjectElements();
-    if (!stage) return;
-
-    const project = featuredProjects[featuredProjectState.activeProjectIndex];
-    if (!project || (!project.locked && (!project.images || !project.images.length))) {
-        stage.innerHTML = '';
-        return;
-    }
-
-    const copy = getFeaturedProjectCopy();
-    const linkMarkup = buildFeaturedProjectLinks(project);
-    const narrativeMarkup = buildFeaturedProjectNarrative(project);
-    const statusMarkup = project.status
-        ? `<span class="featured-project-stat">${project.status[currentLang] || project.status.en}</span>`
-        : '';
-
-    stage.innerHTML = `
-        <div class="featured-project-layout">
-            ${buildFeaturedProjectMedia(project)}
-
-            <div class="featured-project-panel">
-                <div class="featured-project-panel-top">
-                    <div class="featured-project-heading">
-                        ${getFeaturedProjectLogoMarkup(project, 'panel')}
-                        <div>
-                            <p class="font-mono text-[11px] tracking-[0.22em] uppercase text-gray/65 mb-3">${String(featuredProjectState.activeProjectIndex + 1).padStart(2, '0')} / ${String(featuredProjects.length).padStart(2, '0')}</p>
-                            <h3 class="featured-project-title">${project.title}</h3>
-                        </div>
-                    </div>
-                    ${statusMarkup}
-                </div>
-
-                <p class="featured-project-description">${getFeaturedProjectDescription(project)}</p>
-
-                <div class="featured-project-section">
-                    <p class="featured-project-section-label">${copy.stack}</p>
-                    <div class="featured-project-tech">
-                        ${project.technologies.map(technology => `<span class="project-tag">${technology}</span>`).join('')}
-                    </div>
-                </div>
-
-                ${linkMarkup}
-            </div>
-        </div>
-        ${narrativeMarkup ? `<div class="featured-project-narrative-row">${narrativeMarkup}</div>` : ''}
-        ${buildFeaturedProjectDeepDiveCta(project)}
-    `;
-
-    const deepDiveButton = stage.querySelector('[data-deep-dive-open]');
-    if (deepDiveButton) {
-        deepDiveButton.addEventListener('click', () => openDeepDiveModal(project, deepDiveButton));
-    }
-
-    stage.querySelectorAll('[data-featured-image-index]').forEach(button => {
-        button.addEventListener('click', () => {
-            selectFeaturedImage(Number(button.dataset.featuredImageIndex));
-        });
-    });
-
-    const expandButton = stage.querySelector('[data-featured-expand]');
-    if (expandButton) {
-        expandButton.addEventListener('click', openFeaturedImageModal);
-    }
-
-    watchFeaturedVideo(stage.querySelector('video.featured-project-primary-image'));
-}
 
 // The demo reel only downloads and plays while it's actually on screen
 let featuredVideoObserver = null;
@@ -1721,55 +1585,283 @@ function watchFeaturedVideo(video) {
     featuredVideoObserver.observe(video);
 }
 
-function renderFeaturedProjects() {
-    const { switcher, stage } = getFeaturedProjectElements();
-    if (!switcher || !stage) return;
 
-    renderFeaturedProjectSwitcher();
-    renderFeaturedProjectStage();
+
+
+
+const featuredProjectState = {
+    activeProjectIndex: 0,
+    activeImageIndex: 0,
+    cuedIndex: 0
+};
+
+const pickLang = value => (value && (value[currentLang] || value.en)) || '';
+const trackNumber = index => String(index + 1).padStart(2, '0');
+
+// ── Tracklist: the projects as numbered tracks; a track opens its liner notes ──
+function getTrackCover(project) {
+    if (!project || project.locked || !project.images) return null;
+    const still = project.images.find(image => image.type !== 'video');
+    const reel = project.images.find(image => image.type === 'video');
+    return still ? still.src : (reel && reel.poster) || null;
 }
 
-function selectFeaturedProject(index) {
-    if (!featuredProjects.length) return;
+function renderTrackPreview() {
+    const preview = document.getElementById('tracklist-preview');
+    if (!preview) return;
+    const project = featuredProjects[featuredProjectState.cuedIndex];
+    const t = translations[currentLang] || translations.en;
+    const cover = getTrackCover(project);
+    preview.innerHTML = cover
+        ? `<img src="${cover}" alt="" decoding="async">`
+        : `<div class="tracklist-preview-locked"><i class="fas fa-lock"></i><span>${t['featuredWork.lockedTitle']}</span></div>`;
+}
 
-    const normalizedIndex = (index + featuredProjects.length) % featuredProjects.length;
+function cueTrack(index) {
+    if (index === featuredProjectState.cuedIndex) return;
+    featuredProjectState.cuedIndex = index;
+    document.querySelectorAll('#tracklist .track').forEach(track => {
+        track.classList.toggle('is-cued', Number(track.dataset.track) === index);
+    });
+    renderTrackPreview();
+}
 
-    featuredProjectState.activeProjectIndex = normalizedIndex;
+function renderTracklist() {
+    const list = document.getElementById('tracklist');
+    if (!list) return;
+    list.innerHTML = featuredProjects.map((project, index) => `
+        <li>
+            <button type="button" class="track ${index === featuredProjectState.cuedIndex ? 'is-cued' : ''}" data-track="${index}" aria-haspopup="dialog">
+                <span class="track-n" aria-hidden="true">
+                    <span class="track-num">${trackNumber(index)}</span>
+                    <span class="track-eq"><i></i><i></i><i></i></span>
+                </span>
+                <span class="track-main">
+                    <span class="track-title">${project.title}</span>
+                    <span class="track-sub">${pickLang(project.track.sub)}</span>
+                </span>
+                <span class="track-stack">${project.track.stack}</span>
+                <span class="track-tag">${pickLang(project.track.tag)}</span>
+                <span class="track-go" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+            </button>
+        </li>
+    `).join('');
+
+    list.querySelectorAll('.track').forEach(track => {
+        const index = Number(track.dataset.track);
+        track.addEventListener('click', () => openLiner(index, track));
+        track.addEventListener('pointerenter', () => cueTrack(index));
+        track.addEventListener('focus', () => cueTrack(index));
+    });
+    renderTrackPreview();
+}
+
+// ── Liner notes: one project in full, opened from the tracklist ──
+let linerReturnFocus = null;
+
+function ensureLinerModal() {
+    let modal = document.getElementById('liner-modal');
+    if (modal) return modal;
+
+    modal = document.createElement('div');
+    modal.id = 'liner-modal';
+    modal.className = 'featured-image-modal liner-modal';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+        <div class="featured-image-modal-backdrop" data-liner-close></div>
+        <div class="featured-image-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="liner-title">
+            <div class="featured-image-modal-header liner-header">
+                <div>
+                    <p class="featured-image-modal-kicker" id="liner-kicker"></p>
+                    <h3 class="liner-title" id="liner-title"></h3>
+                </div>
+                <button type="button" class="featured-image-modal-close" data-liner-close aria-label="Close">
+                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="liner-body" id="liner-body"></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelectorAll('[data-liner-close]').forEach(element => {
+        element.addEventListener('click', closeLiner);
+    });
+    return modal;
+}
+
+function buildLiner(project) {
+    const t = translations[currentLang] || translations.en;
+    const credits = [
+        [t['liner.production'], 'Enzo Esmeraldo'],
+        [t['liner.stack'], project.technologies.join(' · ')],
+        [t['liner.status'], project.status ? pickLang(project.status) : pickLang(project.track.tag)]
+    ];
+    const narrative = buildFeaturedProjectNarrative(project);
+    const hidden = project.deepDive
+        ? `<div class="liner-hidden"><p class="liner-hidden-label">${t['liner.hidden']}</p>${buildFeaturedProjectDeepDive(project)}</div>`
+        : '';
+
+    return `
+        <div class="liner-grid">
+            <div class="liner-media">${buildFeaturedProjectMedia(project)}</div>
+            <div class="liner-panel">
+                <p class="liner-desc">${getFeaturedProjectDescription(project)}</p>
+                <dl class="liner-credits">
+                    ${credits.map(([label, value]) => `<dt>${label}</dt><dd>${value}</dd>`).join('')}
+                </dl>
+                ${buildFeaturedProjectLinks(project)}
+            </div>
+        </div>
+        ${narrative ? `<div class="liner-narrative">${narrative}</div>` : ''}
+        ${hidden}
+    `;
+}
+
+function renderLiner() {
+    const modal = document.getElementById('liner-modal');
+    if (!modal) return;
+    const index = featuredProjectState.activeProjectIndex;
+    const project = featuredProjects[index];
+    const t = translations[currentLang] || translations.en;
+    const body = modal.querySelector('#liner-body');
+    const scroll = body.scrollTop;
+
+    modal.querySelector('#liner-kicker').textContent = `${t['liner.track']} ${trackNumber(index)} · ${t['liner.notes']}`;
+    modal.querySelector('#liner-title').textContent = project.title;
+    modal.querySelector('.featured-image-modal-close').setAttribute('aria-label', t['liner.close']);
+    body.innerHTML = buildLiner(project);
+    body.scrollTop = scroll;
+
+    body.querySelectorAll('[data-featured-image-index]').forEach(button => {
+        button.addEventListener('click', () => selectFeaturedImage(Number(button.dataset.featuredImageIndex)));
+    });
+    const expandButton = body.querySelector('[data-featured-expand]');
+    if (expandButton) expandButton.addEventListener('click', openFeaturedImageModal);
+    watchFeaturedVideo(body.querySelector('video.featured-project-primary-image'));
+}
+
+function openLiner(index, trigger) {
+    const modal = ensureLinerModal();
+    featuredProjectState.activeProjectIndex = index;
     featuredProjectState.activeImageIndex = 0;
-    renderFeaturedProjects();
+    modal.querySelector('#liner-body').scrollTop = 0;
+    renderLiner();
+
+    linerReturnFocus = trigger || document.activeElement;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    modal.querySelector('.featured-image-modal-close').focus();
+}
+
+function isLinerOpen() {
+    const modal = document.getElementById('liner-modal');
+    return !!(modal && modal.classList.contains('is-open'));
+}
+
+function closeLiner() {
+    const modal = document.getElementById('liner-modal');
+    if (!modal || !modal.classList.contains('is-open')) return;
+    const video = modal.querySelector('video');
+    if (video) video.pause();
+    watchFeaturedVideo(null);
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    if (linerReturnFocus && document.contains(linerReturnFocus)) linerReturnFocus.focus();
+    linerReturnFocus = null;
+}
+
+function renderFeaturedProjects() {
+    renderTracklist();
+    if (isLinerOpen()) renderLiner();
 }
 
 function selectFeaturedImage(index) {
     const project = featuredProjects[featuredProjectState.activeProjectIndex];
     if (!project || !project.images || index < 0 || index >= project.images.length) return;
-
     featuredProjectState.activeImageIndex = index;
-    renderFeaturedProjectStage();
+    renderLiner();
 }
 
 function initFeaturedProjects() {
-    const { switcher, stage } = getFeaturedProjectElements();
-    if (!switcher || !stage) return;
+    renderTracklist();
+}
 
-    renderFeaturedProjects();
+// ── Discography: each career phase is a release; a sleeve opens its notes ──
+function initDiscography() {
+    const tabs = Array.from(document.querySelectorAll('.release-tab'));
+    if (!tabs.length) return;
+
+    const select = (tab, focus) => {
+        tabs.forEach(other => {
+            const active = other === tab;
+            other.setAttribute('aria-selected', String(active));
+            other.tabIndex = active ? 0 : -1;
+            const panel = document.getElementById(other.getAttribute('aria-controls'));
+            if (panel) panel.hidden = !active;
+        });
+        if (focus) tab.focus();
+    };
+
+    tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => select(tab, false));
+        tab.addEventListener('keydown', event => {
+            const moves = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+            let next = null;
+            if (event.key in moves) next = tabs[(index + moves[event.key] + tabs.length) % tabs.length];
+            if (event.key === 'Home') next = tabs[0];
+            if (event.key === 'End') next = tabs[tabs.length - 1];
+            if (!next) return;
+            event.preventDefault();
+            select(next, true);
+        });
+    });
+    // On a phone the shelf scrolls sideways: start it on the current release
+    const shelf = document.querySelector('.shelf');
+    const current = tabs.find(tab => tab.getAttribute('aria-selected') === 'true');
+    if (shelf && current && shelf.scrollWidth > shelf.clientWidth) {
+        shelf.scrollLeft = current.offsetLeft - shelf.offsetLeft;
+    }
 }
 
 // ── Translation System ──
 const translations = {
     en: {
+        "rel.disc2": "Disc 2",
+        "rel.disc1": "Disc 1",
+        "rel.now.sub": "since Nov. 2026",
+        "rel.now": "Out now",
+        "rel.lead.sub": "medical AI and Exitus",
+        "rel.lead": "Double album",
+        "rel.lead.title": "Project<br>Lead",
+        "rel.full.sub": "product end to end",
+        "rel.intern.sub": "front and back",
+        "rel.intern.title": "Intern",
+        "rel.pet.sub": "outreach and olympiad",
+        "rel.pet": "Demo",
+        "liner.close": "Close",
+        "liner.hidden": "Hidden track",
+        "liner.status": "Status",
+        "liner.stack": "Stack",
+        "liner.production": "Production",
+        "liner.notes": "Liner notes",
+        "liner.track": "Track",
+        "hero.lede": "I take workflows nobody likes opening, from the clinic to QA, and turn them into software people actually want to use.",
+        "hero.years": "2024 to 2026",
         // Nav
         "nav.about": "About",
-        "nav.projects": "Work",
-        "nav.journey": "Trajectory",
+        "nav.projects": "Tracklist",
+        "nav.journey": "Discography",
         "nav.contact": "Contact",
         // Hero
-        "hero.available": "Now at Radix",
+        "hero.available": "Dev III at Radix",
         "hero.location": "Fortaleza, BR",
         "hero.headline1": "I build interfaces",
         "hero.headline2": "for messy work.",
         "hero.description": "Doctors making calls under pressure. QA teams chasing commits. Researchers buried in field data. I like taking messy workflows like these and turning them into <span class=\"text-accent font-medium\">software people actually want to open</span>, from the database all the way to the screen, with AI helping along the way. <span class=\"text-text\">I started as an intern in 2024, led projects in 2026, and today I'm a Developer III at Radix.</span>",
-        "hero.viewProjects": "VIEW SELECTED WORK",
-        "hero.resume": "DOWNLOAD CV",
+        "hero.viewProjects": "Play the tracklist",
+        "hero.resume": "Download CV",
         "hero.scroll": "Scroll",
         "hero.role": "Software Engineer · Full Stack",
         "hero.subrole": "Developer III @ Radix",
@@ -1785,7 +1877,7 @@ const translations = {
         "jukebox.moodB": "ink on bone",
         "jukebox.skip": "skip, keep it quiet",
         // About
-        "about.label": "About",
+        "about.label": "About the artist",
         "about.title1": "The interface is",
         "about.title2": "the product.",
         "about.offCode": "About the Developer",
@@ -1801,11 +1893,11 @@ const translations = {
         "about.current.label": "Right Now",
         "about.current.desc": "Building <strong>full stack web apps, APIs and system integrations</strong>, with Clean Architecture, automated tests and CI/CD keeping it all scalable.",
         "about.current.status": "Since Nov. 2026 · Fortaleza",
-        "about.downloadCV": "DOWNLOAD CV",
+        "about.downloadCV": "Download CV",
         // Work
-        "work.label": "Portfolio",
-        "work.title1": "My",
-        "work.title2": "Work.",
+        "work.label": "5 tracks · 2024 to 2026",
+        "work.title1": "Track",
+        "work.title2": "list.",
         "work.subtitle": "Every project here does the same thing: it takes work scattered across tabs, spreadsheets and stuff only one person knows, and gives it one clear interface.",
         "featuredWork.label": "Featured Project",
         "featuredWork.subtitle": "A spotlighted case study with a presentation-style gallery, longer project context, and quick switching between featured builds.",
@@ -1826,7 +1918,7 @@ const translations = {
         "featuredWork.lockedSub": "The work is real; the pixels are classified.",
         "projects.visitGithub": "Explore more on GitHub",
         // Journey
-        "journey.subtitle": "Career Path",
+        "journey.subtitle": "2022 to now · 5 releases",
         "journey.more": "See 3 earlier roles",
         "journey.less": "Show fewer roles",
         "journey.role1.item1": "<strong>Owned the platform end to end</strong>, from architecture and technical decisions to implementation and delivery",
@@ -1877,36 +1969,57 @@ const translations = {
         "journey.role4": "FullStack Intern",
         "journey.date4": "Apr. 2024 to Dec. 2024",
         "journey.desc4": "Where it started: the base that turned into <strong>project leadership 21 months later</strong>.",
-        "journey.the": "Professional",
-        "journey.title": "Journey.",
+        "journey.the": "Disco",
+        "journey.title": "graphy.",
         // Footer
-        "footer.label": "Get In Touch",
+        "footer.label": "Bonus track",
         "footer.title1": "Let's build something",
         "footer.title2": "people actually use.",
         "footer.copyright": "&copy; 2026 Enzo Esmeraldo",
-        "footer.credits": "Crafted with <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> in Brazil",
+        "footer.credits": "Crafted in Fortaleza, Brazil",
         // Heatmap / Tech
-        "contrib.label": "Contribution Activity",
+        "contrib.label": "Contribution activity",
         "contrib.less": "Less",
         "contrib.more": "More",
-        "tech.label": "Core Stack",
+        "tech.label": "Core stack",
         // Music
         "music.hint": "Flip the record and the theme follows"
     },
     pt: {
+        "rel.disc2": "Disco 2",
+        "rel.disc1": "Disco 1",
+        "rel.now.sub": "desde nov. 2026",
+        "rel.now": "Lançamento atual",
+        "rel.lead.sub": "IA médica e Exitus",
+        "rel.lead": "Álbum duplo",
+        "rel.lead.title": "Líder de<br>projeto",
+        "rel.full.sub": "produto de ponta a ponta",
+        "rel.intern.sub": "front e back",
+        "rel.intern.title": "Estágio",
+        "rel.pet.sub": "extensão e olimpíada",
+        "rel.pet": "Demo",
+        "liner.close": "Fechar",
+        "liner.hidden": "Faixa escondida",
+        "liner.status": "Status",
+        "liner.stack": "Stack",
+        "liner.production": "Produção",
+        "liner.notes": "Encarte",
+        "liner.track": "Faixa",
+        "hero.lede": "Pego fluxos que ninguém gosta de abrir, da clínica ao QA, e transformo em software que as pessoas querem usar de verdade.",
+        "hero.years": "2024 a 2026",
         // Nav
         "nav.about": "Sobre",
-        "nav.projects": "Trabalhos",
-        "nav.journey": "Trajetória",
+        "nav.projects": "Tracklist",
+        "nav.journey": "Discografia",
         "nav.contact": "Contato",
         // Hero
-        "hero.available": "Hoje na Radix",
+        "hero.available": "Dev III na Radix",
         "hero.location": "Fortaleza, BR",
         "hero.headline1": "Eu construo interfaces",
         "hero.headline2": "para trabalho bagunçado.",
         "hero.description": "Médicos decidindo sob pressão. Times de QA correndo atrás de commits. Pesquisadores soterrados em dados de campo. Eu curto pegar fluxos bagunçados assim e transformar em <span class=\"text-accent font-medium\">software que as pessoas realmente querem abrir</span>, do banco de dados até a tela, com IA ajudando no caminho. <span class=\"text-text\">Entrei como estagiário em 2024, liderei projetos em 2026 e hoje sou Desenvolvedor III na Radix.</span>",
-        "hero.viewProjects": "VER TRABALHOS",
-        "hero.resume": "BAIXAR CV",
+        "hero.viewProjects": "Ouvir os projetos",
+        "hero.resume": "Baixar CV",
         "hero.scroll": "Role",
         "hero.role": "Engenheiro de Software · Full Stack",
         "hero.subrole": "Desenvolvedor III @ Radix",
@@ -1922,7 +2035,7 @@ const translations = {
         "jukebox.moodB": "tinta no osso",
         "jukebox.skip": "pular, sem som",
         // About
-        "about.label": "Sobre",
+        "about.label": "Sobre o artista",
         "about.title1": "A interface é",
         "about.title2": "o produto.",
         "about.offCode": "Sobre o Desenvolvedor",
@@ -1938,11 +2051,11 @@ const translations = {
         "about.current.label": "Agora",
         "about.current.desc": "Construindo <strong>aplicações web full stack, APIs e integrações entre sistemas</strong>, com Clean Architecture, testes automatizados e CI/CD mantendo tudo escalável.",
         "about.current.status": "Desde nov. 2026 · Fortaleza",
-        "about.downloadCV": "BAIXAR CV",
+        "about.downloadCV": "Baixar CV",
         // Work
-        "work.label": "Portfólio",
-        "work.title1": "Meu",
-        "work.title2": "Trabalho.",
+        "work.label": "5 faixas · 2024 a 2026",
+        "work.title1": "Track",
+        "work.title2": "list.",
         "work.subtitle": "Todo projeto aqui faz a mesma coisa: pega um trabalho espalhado em abas, planilhas e coisas que só uma pessoa sabe, e dá a ele uma interface clara.",
         "featuredWork.label": "Projeto em Destaque",
         "featuredWork.subtitle": "Um destaque com galeria em estilo apresentação, contexto maior do projeto e troca rápida entre projetos em destaque.",
@@ -1963,7 +2076,7 @@ const translations = {
         "featuredWork.lockedSub": "O trabalho é real; os pixels são confidenciais.",
         "projects.visitGithub": "Explore mais no GitHub",
         // Journey
-        "journey.subtitle": "Trajetória Profissional",
+        "journey.subtitle": "2022 até hoje · 5 lançamentos",
         "journey.more": "Ver mais 3 experiências",
         "journey.less": "Mostrar menos",
         "journey.role1.item1": "<strong>Fui dono da plataforma de ponta a ponta</strong>, da arquitetura e das decisões técnicas até a implementação e a entrega",
@@ -2014,19 +2127,19 @@ const translations = {
         "journey.role4": "Estagiário FullStack",
         "journey.date4": "Abr. 2024 a Dez. 2024",
         "journey.desc4": "Onde tudo começou: a base que virou <strong>liderança de projeto 21 meses depois</strong>.",
-        "journey.the": "Jornada",
-        "journey.title": "Profissional.",
+        "journey.the": "Disco",
+        "journey.title": "grafia.",
         // Footer
-        "footer.label": "Entre em Contato",
+        "footer.label": "Faixa bônus",
         "footer.title1": "Vamos construir algo",
         "footer.title2": "que as pessoas realmente usem.",
         "footer.copyright": "&copy; 2026 Enzo Esmeraldo",
-        "footer.credits": "Criado com <i class=\"fas fa-heart text-accent/40 animate-pulse text-[8px]\"></i> no Brasil",
+        "footer.credits": "Feito em Fortaleza, Brasil",
         // Heatmap / Tech
-        "contrib.label": "Atividade de Contribuição",
+        "contrib.label": "Atividade de contribuição",
         "contrib.less": "Menos",
         "contrib.more": "Mais",
-        "tech.label": "Stack Principal",
+        "tech.label": "Stack principal",
         // Music
         "music.hint": "Vire o disco e o tema acompanha"
     }
@@ -2090,21 +2203,15 @@ document.addEventListener('DOMContentLoaded', loadHeatmap);
 document.addEventListener('DOMContentLoaded', renderTechStack);
 document.addEventListener('DOMContentLoaded', renderAboutInterests);
 
-// Journey: only the two latest past roles show at first; the rest load on demand.
-document.addEventListener('DOMContentLoaded', () => {
-    const button = document.querySelector('[data-cv-more]');
-    const list = document.getElementById('cv-list');
-    if (!button || !list) return;
-    button.addEventListener('click', () => {
-        const expanded = list.classList.toggle('is-expanded');
-        button.setAttribute('aria-expanded', String(expanded));
-        if (!expanded) button.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion ? 'auto' : 'smooth' });
-    });
-});
+document.addEventListener('DOMContentLoaded', initDiscography);
 document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
-        closeFeaturedImageModal();
-        closeDeepDiveModal();
+        const imageModal = document.getElementById('featured-image-modal');
+        if (imageModal && imageModal.classList.contains('is-open')) {
+            closeFeaturedImageModal();
+        } else {
+            closeLiner();
+        }
         // Escape on the jukebox = the quiet skip
         if (document.getElementById('jukebox')) {
             chooseRecord(0, { withMusic: false });

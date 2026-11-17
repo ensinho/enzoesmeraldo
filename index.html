@@ -88,9 +88,9 @@
 
             <!-- Desktop Nav -->
             <div class="hidden md:flex items-center gap-8">
+                <a href="#work" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Tracklist</a>
+                <a href="#trajectory" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Discography</a>
                 <a href="#about" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.about">About</a>
-                <a href="#trajectory" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Trajectory</a>
-                <a href="#work" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Work</a>
                 <a href="#contact" class="nav-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.contact">Contact</a>
 
                 <!-- Record Flip (theme) -->
@@ -117,9 +117,9 @@
     <div id="mobile-menu-backdrop" class="fixed inset-0 bg-black/60 z-[105] opacity-0 pointer-events-none transition-opacity duration-300 md:hidden" onclick="closeMobileMenu()"></div>
     <div id="mobile-menu" class="fixed top-0 right-0 h-full w-72 bg-panel z-[108] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden border-l border-white/5">
         <div class="flex flex-col pt-24 px-8 gap-6">
+            <a href="#work" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Tracklist</a>
+            <a href="#trajectory" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Discography</a>
             <a href="#about" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.about">About</a>
-            <a href="#trajectory" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.journey">Trajectory</a>
-            <a href="#work" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.projects">Work</a>
             <a href="#contact" class="mobile-link font-mono text-[11px] tracking-[0.2em] uppercase text-gray hover:text-accent transition-colors" data-lang="nav.contact">Contact</a>
             <hr class="border-white/5">
             <button id="theme-flip-mobile" class="theme-flip flex items-center gap-2 font-mono text-[11px] tracking-wider text-gray hover:text-accent transition-colors cursor-pointer">
@@ -133,501 +133,363 @@
         </div>
     </div>
 
-    <!-- ═══ HERO ═══ -->
-    <section id="hero" class="relative min-h-screen flex items-center overflow-hidden">
-        <!-- Background Image -->
+    <!-- ═══ HERO · the cover ═══ -->
+    <section id="hero" class="hero-cover relative min-h-screen flex items-center overflow-hidden">
         <div id="hero-bg" class="absolute inset-0 bg-cover bg-center opacity-45 transition-opacity duration-500" style="background-image: url('assets/backgrounds/catwhaleshark.jpg');"></div>
+        <div class="hero-shade" aria-hidden="true"></div>
 
         <div class="relative z-10 max-w-[1280px] mx-auto px-6 md:px-10 w-full pt-32 pb-20">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-end">
-                <!-- Main Content -->
-                <div class="lg:col-span-8 space-y-8">
-                    <!-- Eyebrow / Status -->
-                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
-                        <span class="hero-text-anim font-mono text-[11px] tracking-[0.2em] uppercase text-text">Enzo Esmeraldo</span>
-                        <div class="hero-text-anim hidden sm:block text-white/10 font-light">|</div>
-                        <span class="hero-text-anim font-mono text-[11px] tracking-[0.2em] uppercase text-gray" data-lang="hero.role">Software Engineer · Full Stack</span>
-                        <div class="hero-text-anim hidden sm:block text-white/10 font-light">|</div>
-                        <div class="hero-text-anim flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                            <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-gray" data-lang="hero.available">Now at Radix</span>
-                        </div>
-                        <div class="hero-text-anim hidden md:flex items-center gap-2">
-                            <i class="fas fa-map-marker-alt text-[10px] text-gray"></i>
-                            <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-gray" data-lang="hero.location">Fortaleza, BR</span>
-                        </div>
-                    </div>
-
-                    <!-- Claim -->
-                    <div>
-                        <h1 class="hero-headline font-display text-5xl sm:text-6xl md:text-7xl lg:text-[5.2rem] font-medium leading-[1.04] tracking-tight text-text">
-                            <span class="hero-text-anim inline-block" data-lang="hero.headline1">I build interfaces</span><br>
-                            <span class="hero-text-anim inline-block text-accent italic" data-lang="hero.headline2">for messy work.</span>
-                        </h1>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="max-w-2xl">
-                        <p class="hero-text-anim font-body text-base md:text-lg text-gray leading-relaxed" data-lang="hero.description">
-                            Doctors making calls under pressure. QA teams chasing commits. Researchers buried in field data. I like taking messy workflows like these and turning them into <span class="text-accent font-medium">software people actually want to open</span>, from the database all the way to the screen, with AI helping along the way. <span class="text-text">I started as an intern in 2024, led projects in 2026, and today I'm a Developer III at Radix.</span>
-                        </p>
-                    </div>
-
-                    <!-- CTAs -->
-                    <div class="hero-text-anim flex flex-wrap items-center gap-4">
-                        <a href="#work" class="group flex items-center gap-3 bg-accent text-black px-6 py-3 font-mono text-[11px] tracking-[0.15em] uppercase hover:bg-accent/90 transition-all">
-                            <span data-lang="hero.viewProjects">VIEW SELECTED WORK</span>
-                            <i class="fas fa-arrow-down text-[10px] group-hover:translate-y-0.5 transition-transform"></i>
+            <div class="hero-grid">
+                <div class="hero-copy">
+                    <p class="hero-meta hero-text-anim">
+                        <span class="theme-flip-side">SIDE A</span>
+                        <span data-lang="hero.years">2024 to 2026</span>
+                        <span class="hero-meta-now"><span class="hero-meta-dot" aria-hidden="true"></span><span data-lang="hero.available">Dev III at Radix</span></span>
+                    </p>
+                    <h1 class="hero-headline">
+                        <span class="hero-text-anim" data-lang="hero.headline1">I build interfaces</span>
+                        <em class="hero-text-anim" data-lang="hero.headline2">for messy work.</em>
+                    </h1>
+                    <p class="hero-lede hero-text-anim" data-lang="hero.lede">I take workflows nobody likes opening, from the clinic to QA, and turn them into software people actually want to use.</p>
+                    <div class="hero-actions hero-text-anim">
+                        <a href="#work" class="btn btn-solid">
+                            <span data-lang="hero.viewProjects">Play the tracklist</span>
+                            <i class="fas fa-arrow-down" aria-hidden="true"></i>
                         </a>
-                        <a href="assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf" download onclick="checkCV(event)" class="group flex items-center gap-3 border border-white/15 px-6 py-3 font-mono text-[11px] tracking-[0.15em] uppercase text-gray hover:text-text hover:border-white/30 transition-all">
-                            <span data-lang="hero.resume">DOWNLOAD CV</span>
-                            <i class="fas fa-download text-[10px] opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                        <a href="assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf" download onclick="checkCV(event)" class="btn btn-line">
+                            <span data-lang="hero.resume">Download CV</span>
+                            <i class="fas fa-download" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
 
-                <!-- Metadata Column -->
-                <div class="lg:col-span-4 gs-fade-in">
-                    <div class="space-y-6 lg:border-l lg:border-white/10 lg:pl-8">
-                        <!-- Photo -->
-                        <div class="flex items-center gap-4">
-                            <img src="assets/EnzoKorea.jpeg" alt="Enzo Esmeraldo smiling with arms crossed" width="96" height="96" class="duotone-portrait w-24 h-24 rounded-full object-cover border-2 border-accent/20 transition-all duration-500" />
-                            <div>
-                                <p class="font-heading text-base text-text font-medium" data-lang="about.title">Enzo Esmeraldo</p>
-                                <p class="font-mono text-[11px] text-gray tracking-wider uppercase" data-lang="hero.subrole">Developer III @ Radix</p>
-                            </div>
-                        </div>
-
-                        <!-- Promotion timeline (replaces vanity stats) -->
-                        <div class="hero-timeline font-mono text-[10px] tracking-wider uppercase">
-                            <span class="hero-timeline-step" data-lang="hero.tl1">2024 · Intern</span>
-                            <span class="hero-timeline-arrow">→</span>
-                            <span class="hero-timeline-step" data-lang="hero.tl2">2025 · Fullstack Dev</span>
-                            <span class="hero-timeline-arrow">→</span>
-                            <span class="hero-timeline-step" data-lang="hero.tl3">2026 · Project Lead</span>
-                            <span class="hero-timeline-arrow">→</span>
-                            <span class="hero-timeline-step is-current" data-lang="hero.tl4">Now · Dev III @ Radix</span>
-                        </div>
-
-                        <!-- Social Links -->
-                        <div class="flex items-center gap-3">
-                            <a href="https://github.com/ensinho" target="_blank" class="social-link w-10 h-10 flex items-center justify-center border border-white/10 hover:border-accent/40 rounded-full text-text transition-all"><i class="fab fa-github text-sm"></i></a>
-                            <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" class="social-link w-10 h-10 flex items-center justify-center border border-white/10 hover:border-accent/40 rounded-full text-text transition-all"><i class="fab fa-linkedin-in text-sm"></i></a>
-                            <a href="mailto:enzopo625@gmail.com" class="social-link w-10 h-10 flex items-center justify-center border border-white/10 hover:border-accent/40 rounded-full text-text transition-all"><i class="fas fa-envelope text-sm"></i></a>
-                        </div>
-
-                        <!-- GitHub Activity -->
-                        <div class="hero-activity-panel">
-                            <div class="flex items-center justify-between gap-4 mb-3">
-                                <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase" data-lang="contrib.label">Contribution Activity</p>
-                                <span id="contrib-total" class="font-mono text-[10px] text-gray/40">&nbsp;</span>
-                            </div>
-                            <div class="contrib" role="img" aria-label="GitHub contribution activity over the past year">
-                                <div class="contrib-months" id="contrib-months" aria-hidden="true"></div>
-                                <div class="contrib-grid" id="contrib-grid" aria-hidden="true"></div>
-                                <div class="contrib-footer">
-                                    <div class="contrib-legend" aria-hidden="true">
-                                        <span data-lang="contrib.less">Less</span>
-                                        <span class="contrib-swatch" style="background:var(--heat-0)"></span>
-                                        <span class="contrib-swatch" style="background:var(--heat-1)"></span>
-                                        <span class="contrib-swatch" style="background:var(--heat-2)"></span>
-                                        <span class="contrib-swatch" style="background:var(--heat-3)"></span>
-                                        <span class="contrib-swatch" style="background:var(--heat-4)"></span>
-                                        <span data-lang="contrib.more">More</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <p class="font-mono text-[10px] text-gray/60 tracking-wider uppercase mb-2" data-lang="tech.label">Core Stack</p>
-                                <div id="tech-icons" class="tech-icons" aria-label="Core technology stack"></div>
+                <div class="hero-sleeve">
+                    <div class="sleeve">
+                        <span class="sleeve-disc" aria-hidden="true"></span>
+                        <div class="sleeve-cover">
+                            <img src="assets/EnzoKorea.jpeg" alt="Enzo Esmeraldo smiling with arms crossed" width="420" height="420" fetchpriority="high" decoding="async">
+                            <div class="sleeve-label" aria-hidden="true">
+                                <b>Enzo<br>Esmeraldo</b>
+                                <span data-lang="hero.location">Fortaleza, BR</span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Scroll Indicator -->
-            <div class="gs-fade-in absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-                <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-gray/40" data-lang="hero.scroll">Scroll</span>
-                <div class="w-[1px] h-8 bg-gradient-to-b from-accent/40 to-transparent animate-pulse"></div>
             </div>
         </div>
     </section>
 
-    <!-- ═══ ABOUT ═══ -->
-    <section id="about" class="relative py-24 md:py-28">
+    <!-- ═══ WORK · the tracklist ═══ -->
+    <section id="work" class="lp-section">
         <div class="max-w-[1280px] mx-auto px-6 md:px-10">
-            <!-- Section Header -->
-            <div class="gs-reveal section-head">
-                <div>
-                    <p class="section-label font-mono text-[11px] tracking-[0.3em] uppercase text-accent mb-4" data-lang="about.label">About</p>
-                    <h2 class="font-display text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1]">
-                        <span data-lang="about.title1">The interface is</span><br>
-                        <span class="text-accent italic" data-lang="about.title2">the product.</span>
-                    </h2>
+            <div class="tracklist">
+                <div class="tracklist-head">
+                    <p class="section-kicker" data-lang="work.label">5 tracks · 2024 to 2026</p>
+                    <h2 class="section-title"><span data-lang="work.title1">Track</span><em data-lang="work.title2">list.</em></h2>
+                    <p class="section-lead" data-lang="work.subtitle">Every project here does the same thing: it takes work scattered across tabs, spreadsheets and stuff only one person knows, and gives it one clear interface.</p>
+                    <div class="tracklist-preview" id="tracklist-preview" aria-hidden="true"></div>
                 </div>
-                <p class="section-head-lead" data-lang="about.lead">Full stack by trade, interface first by habit. Here's the short version of who's behind the code.</p>
-            </div>
-
-            <!-- Bento Grid: 2+1 / 1+2, mirrored so the rows balance -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-
-                <!-- Card 1 — Main bio (spans 2 cols) -->
-                <div class="gs-reveal bento-card about-card about-card-main md:col-span-2 lg:col-span-2 group">
-                    <div class="bento-card-inner p-8 md:p-9 h-full flex flex-col md:flex-row gap-10 items-start">
-                        <!-- Desk objects: a printed photo with a sticker on it -->
-                        <div class="about-desk">
-                            <figure class="desk-polaroid">
-                                <img loading="lazy" decoding="async" src="assets/EnzoKorea-portrait.jpeg" alt="Enzo Esmeraldo smiling with arms crossed" width="400" height="483" />
-                                <span class="desk-polaroid-note">fortaleza, 2026</span>
-                            </figure>
-                            <div class="desk-sticker" aria-label="And by the way, that's me">
-                                <img loading="lazy" decoding="async" src="assets/icons/mudkipicon.png" alt="" />
-                                <span data-lang="about.avatarJoke">btw, that's me</span>
-                            </div>
-                        </div>
-                        <div class="flex-1 space-y-4">
-                            <span class="bento-tag">
-                                <i class="fas fa-user text-[10px]"></i>
-                                <span data-lang="about.offCode">About the Developer</span>
-                            </span>
-                            <p class="font-body text-sm md:text-base text-gray leading-relaxed" data-lang="about.description">I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.</p>
-                            <p class="font-body text-sm text-gray/80 leading-relaxed" data-lang="about.bio2">I've led teams, handling architecture, the design system, Git strategy and mentoring, and I never stopped <strong>shipping every week</strong>. Today I'm a <strong>Developer III at Radix</strong>, with an <strong>AI-native</strong> workflow: Claude Code, custom agents and skills that take me from spec to tests to pull request review.</p>
-                        </div>
-                    </div>
+                <div class="tracklist-body">
+                    <ol class="tracklist-rows" id="tracklist"></ol>
+                    <a href="https://github.com/ensinho" target="_blank" rel="noreferrer" class="text-link tracklist-more">
+                        <i class="fab fa-github" aria-hidden="true"></i>
+                        <span data-lang="projects.visitGithub">Explore more on GitHub</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </a>
                 </div>
-
-                <!-- Card 2 — Fav Pokemon / Fun fact -->
-                <div class="gs-reveal bento-card about-card about-card-funfact group">
-                    <div class="bento-card-inner p-8 md:p-9 h-full flex flex-col justify-between">
-                        <div>
-                            <span class="bento-tag">
-                                <i class="fas fa-star text-[10px]"></i>
-                                <span data-lang="about.funfact.label">Fun Fact</span>
-                            </span>
-                            <div class="fav-pokemon-heading">
-                                <h3 class="font-heading text-xl md:text-2xl text-text font-medium" data-lang="about.funfact.title">Fav. Pokémon is Lugia</h3>
-                                <img loading="lazy" decoding="async" src="assets/icons/LugiaLittleIcon.png" alt="" class="fav-pokemon-icon" />
-                            </div>
-                            <p class="font-body text-sm text-gray leading-relaxed" data-lang="about.funfact.desc">Psychic-type elegance and legendary rarity. Basically my design philosophy, but as a Pokémon.</p>
-                        </div>
-                        <div class="about-funfact-footer flex items-center gap-2 mt-6 transition-all duration-500">
-                            <span class="w-8 h-[1px] bg-accent/30"></span>
-                            <span class="font-mono text-[10px] tracking-widest uppercase">Pokémon 2000</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3 — Where I am now -->
-                <div class="gs-reveal bento-card about-card about-card-current group">
-                    <div class="bento-card-inner p-8 md:p-9 h-full flex flex-col justify-between">
-                        <div>
-                            <span class="bento-tag">
-                                <i class="fas fa-code-branch text-[10px]"></i>
-                                <span data-lang="about.current.label">Right Now</span>
-                            </span>
-                            <h3 class="font-heading text-xl md:text-2xl text-text font-medium mt-4 mb-3" data-lang="about.current.title">Developer III at Radix</h3>
-                            <p class="font-body text-sm text-gray leading-relaxed" data-lang="about.current.desc">Building <strong>full stack web apps, APIs and system integrations</strong>, with Clean Architecture, automated tests and CI/CD keeping it all scalable.</p>
-                        </div>
-                        <div class="flex items-center gap-3 mt-6">
-                            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                            <span class="font-mono text-[10px] tracking-wider text-green-400/80 uppercase" data-lang="about.current.status">Since Nov. 2026 · Fortaleza</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4 — Interests (spans 2 cols, mirrors card 1) -->
-                <div class="gs-reveal bento-card about-card md:col-span-2 lg:col-span-2 group">
-                    <div class="bento-card-inner about-interest-panel p-8 md:p-9 h-full">
-                        <div class="about-interest-copy">
-                            <span class="bento-tag max-w-fit">
-                                <i class="fas fa-compass text-[10px]"></i>
-                                <span data-lang="about.interests.label">Interests</span>
-                            </span>
-                            <p class="about-interest-title" data-lang="about.interests.title">Outside the editor</p>
-                            <p id="about-interest-text" class="about-interest-text"><strong>Pokemon and sharks</strong> are my main hype focus: <strong>Lugia</strong>, <strong>Gengar</strong>, and <strong>Arcanine</strong> for personality and style; <strong>whale sharks</strong> and <strong>hammerheads</strong> for calm scale, sharp silhouettes, and natural design energy.</p>
-                        </div>
-                        <div id="about-interest-buttons" class="about-interest-buttons" role="tablist" aria-label="Personal interests"></div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </section>
 
-    <!-- ═══ TRAJECTORY ═══ -->
-    <section id="trajectory" class="relative py-24 md:py-28">
+    <!-- ═══ TRAJECTORY · the discography ═══ -->
+    <section id="trajectory" class="lp-section">
         <div class="max-w-[1280px] mx-auto px-6 md:px-10">
-            <!-- Section Header -->
-            <div class="gs-reveal section-head">
+            <div class="disco-head">
                 <div>
-                    <p class="section-label font-mono text-[11px] tracking-[0.3em] uppercase text-accent mb-4" data-lang="journey.subtitle">Career Path</p>
-                    <h2 class="font-display text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1]">
-                        <span data-lang="journey.the">Professional</span><br>
-                        <span class="text-accent italic" data-lang="journey.title">Journey.</span>
-                    </h2>
+                    <p class="section-kicker" data-lang="journey.subtitle">2022 to now · 5 releases</p>
+                    <h2 class="section-title"><span data-lang="journey.the">Disco</span><em data-lang="journey.title">graphy.</em></h2>
                 </div>
-                <p class="section-head-lead" data-lang="journey.lead">From PET Computação in 2022 to project leader in 2026, and now <strong>Developer III at Radix</strong>.</p>
+                <p class="section-lead" data-lang="journey.lead">From PET Computação in 2022 to project leader in 2026, and now <strong>Developer III at Radix</strong>.</p>
             </div>
 
-            <!-- Now: Radix -->
-            <article class="gs-reveal bento-card journey-now">
-                <div class="bento-card-inner journey-now-inner">
-                    <div class="journey-now-main">
-                        <div class="journey-now-meta">
-                            <span class="journey-now-pill">
-                                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                                <span data-lang="journey.now">Now</span>
-                            </span>
-                            <span class="journey-date" data-lang="journey.date0">Nov. 2026 to Present</span>
-                        </div>
-                        <h3 class="journey-now-role" data-lang="journey.role0">Developer III</h3>
-                        <p class="journey-company"><i class="fas fa-building" aria-hidden="true"></i><span>Radix · Engenharia e Desenvolvimento de Software</span></p>
-                        <p class="journey-desc" data-lang="journey.desc0">Building and evolving software products at <strong>Radix</strong>, with a focus on <strong>software engineering, application development and systems integration</strong>.</p>
-                        <div class="journey-tags">
-                            <span class="project-tag">React</span>
-                            <span class="project-tag">TypeScript</span>
-                            <span class="project-tag">Node.js</span>
-                            <span class="project-tag">Python</span>
-                        </div>
-                    </div>
-                    <div class="journey-now-work">
-                        <p class="journey-label" data-lang="journey.focus">What I work on</p>
-                        <ul class="journey-now-list">
-                            <li><i class="fas fa-layer-group" aria-hidden="true"></i><span data-lang="journey.role0.item1"><strong>Full stack web applications</strong>, from the data layer to the screen</span></li>
-                            <li><i class="fas fa-shapes" aria-hidden="true"></i><span data-lang="journey.role0.item2"><strong>Modern, componentized interfaces</strong> built to be reused</span></li>
-                            <li><i class="fas fa-plug" aria-hidden="true"></i><span data-lang="journey.role0.item3"><strong>Services, APIs and integrations</strong> between systems</span></li>
-                            <li><i class="fas fa-database" aria-hidden="true"></i><span data-lang="journey.role0.item4"><strong>Relational and non-relational</strong> data modeling</span></li>
-                            <li><i class="fas fa-cubes" aria-hidden="true"></i><span data-lang="journey.role0.item5"><strong>Clean Code, SOLID and Clean Architecture</strong> for solutions that scale</span></li>
-                            <li><i class="fas fa-circle-check" aria-hidden="true"></i><span data-lang="journey.role0.item6"><strong>Quality, tests and CI/CD</strong> with multidisciplinary teams, driven by business needs</span></li>
+            <div class="shelf" role="tablist" aria-label="Career releases">
+                <button type="button" class="release-tab" role="tab" id="tab-pet" aria-controls="release-pet" aria-selected="false" tabindex="-1">
+                    <span class="art art-pet"><small>2022</small><b>PET<br>Computação</b></span>
+                    <span class="release-cap"><b data-lang="rel.pet">Demo</b><span data-lang="rel.pet.sub">outreach and olympiad</span></span>
+                </button>
+                <button type="button" class="release-tab" role="tab" id="tab-intern" aria-controls="release-intern" aria-selected="false" tabindex="-1">
+                    <span class="art art-intern"><small>2024</small><b data-lang="rel.intern.title">Intern</b></span>
+                    <span class="release-cap"><b>EP</b><span data-lang="rel.intern.sub">front and back</span></span>
+                </button>
+                <button type="button" class="release-tab" role="tab" id="tab-full" aria-controls="release-full" aria-selected="false" tabindex="-1">
+                    <span class="art art-full"><small>2025</small><b>Fullstack<br>Dev</b></span>
+                    <span class="release-cap"><b>LP</b><span data-lang="rel.full.sub">product end to end</span></span>
+                </button>
+                <button type="button" class="release-tab" role="tab" id="tab-lead" aria-controls="release-lead" aria-selected="false" tabindex="-1">
+                    <span class="art art-lead"><small>2026</small><b data-lang="rel.lead.title">Project<br>Lead</b></span>
+                    <span class="release-cap"><b data-lang="rel.lead">Double album</b><span data-lang="rel.lead.sub">medical AI and Exitus</span></span>
+                </button>
+                <button type="button" class="release-tab is-now" role="tab" id="tab-now" aria-controls="release-now" aria-selected="true">
+                    <span class="art-slot">
+                        <span class="art-vinyl" aria-hidden="true"></span>
+                        <span class="art art-now"><small data-lang="journey.now">Now</small><b>Dev III<br>@ Radix</b></span>
+                    </span>
+                    <span class="release-cap"><b data-lang="rel.now">Out now</b><span data-lang="rel.now.sub">since Nov. 2026</span></span>
+                </button>
+            </div>
+
+            <div class="releases">
+                <article class="release" id="release-now" role="tabpanel" aria-labelledby="tab-now">
+                    <header class="release-head">
+                        <p class="release-date" data-lang="journey.date0">Nov. 2026 to Present</p>
+                        <h3 class="release-role" data-lang="journey.role0">Developer III</h3>
+                        <p class="release-company">Radix · Engenharia e Desenvolvimento de Software</p>
+                        <p class="release-stack">React · TypeScript · Node.js · Python</p>
+                    </header>
+                    <div class="release-body">
+                        <p class="release-desc" data-lang="journey.desc0">Building and evolving software products at <strong>Radix</strong>, with a focus on <strong>software engineering, application development and systems integration</strong>.</p>
+                        <ul class="release-points">
+                            <li data-lang="journey.role0.item1"><strong>Full stack web applications</strong>, from the data layer to the screen</li>
+                            <li data-lang="journey.role0.item2"><strong>Modern, componentized interfaces</strong> built to be reused</li>
+                            <li data-lang="journey.role0.item3"><strong>Services, APIs and integrations</strong> between systems</li>
+                            <li data-lang="journey.role0.item4"><strong>Relational and non-relational</strong> data modeling</li>
+                            <li data-lang="journey.role0.item5"><strong>Clean Code, SOLID and Clean Architecture</strong> for solutions that scale</li>
+                            <li data-lang="journey.role0.item6"><strong>Quality, tests and CI/CD</strong> with multidisciplinary teams, driven by business needs</li>
                         </ul>
                     </div>
-                </div>
-            </article>
+                </article>
 
-            <!-- Before: résumé-style timeline, quieter than the current role -->
-            <div class="journey-rail-head gs-reveal">
-                <p class="journey-label" data-lang="journey.before">How I got here</p>
-                <span class="journey-rail-years">2022 → 2026</span>
+                <article class="release is-double" id="release-lead" role="tabpanel" aria-labelledby="tab-lead" hidden>
+                    <div class="release-disc">
+                        <header class="release-head">
+                            <p class="release-date"><span class="release-side" data-lang="rel.disc1">Disc 1</span> <span data-lang="journey.date2">Jan. 2026 to Aug. 2026</span></p>
+                            <h3 class="release-role" data-lang="journey.role2">Project Leader</h3>
+                            <p class="release-company">Colégio Christus</p>
+                            <p class="release-stack">React · Node.js · PostgreSQL · AI</p>
+                        </header>
+                        <div class="release-body">
+                            <p class="release-desc" data-lang="journey.desc2">Led the end-to-end technical development of an <strong>AI-powered medical platform</strong> for clinical decision support, owning <strong>team, architecture and delivery</strong>.</p>
+                            <ul class="release-points">
+                                <li data-lang="journey.role2.item1"><strong>Architected the full stack solution</strong> (React, Node.js, PostgreSQL) for scalability, performance and easy maintenance</li>
+                                <li data-lang="journey.role2.item2"><strong>Created the visual identity and component library</strong>, designing the UI/UX from scratch</li>
+                                <li data-lang="journey.role2.item3"><strong>Built AI automations</strong> for consultations and for the team's development routines</li>
+                                <li data-lang="journey.role2.item4"><strong>Ran the Git workflow and mentored the team</strong> on clean code, code review and design patterns</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="release-disc">
+                        <header class="release-head">
+                            <p class="release-date"><span class="release-side" data-lang="rel.disc2">Disc 2</span> <span data-lang="journey.date1">Aug. 2026 to Nov. 2026</span></p>
+                            <h3 class="release-role" data-lang="journey.role1">Project Leader</h3>
+                            <p class="release-company">Exitus · Exitus Gestor</p>
+                            <p class="release-stack">Angular · TypeScript · Spring Boot · PostgreSQL · Keycloak</p>
+                        </header>
+                        <div class="release-body">
+                            <p class="release-desc" data-lang="journey.desc1">Led the technical development of <strong>Exitus Gestor</strong>, an educational management platform that pulls the institution's administrative and academic workflows into one place.</p>
+                            <ul class="release-points">
+                                <li data-lang="journey.role1.item1"><strong>Owned the platform end to end</strong>, from architecture and technical decisions to implementation and delivery</li>
+                                <li data-lang="journey.role1.item2"><strong>Set the architecture, standards and reusable components</strong>, with Domain-Driven Design, TDD and Flyway migrations</li>
+                                <li data-lang="journey.role1.item3"><strong>Built authentication and authorization with Keycloak</strong>, plus integrations, data management and enterprise workflows</li>
+                                <li data-lang="journey.role1.item4"><strong>Coordinated tasks, technical decisions and priorities</strong> with stakeholders and the development team</li>
+                                <li data-lang="journey.role1.item5"><strong>Drove CI/CD, code quality, automated tests and security</strong>, with Claude Code agents helping from spec to pull request review</li>
+                                <li data-lang="journey.role1.item6"><strong>Turned institutional requirements into technical solutions</strong> built for usability, maintainability and scale</li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="release" id="release-full" role="tabpanel" aria-labelledby="tab-full" hidden>
+                    <header class="release-head">
+                        <p class="release-date" data-lang="journey.date3">Jan. 2025 to Mar. 2026</p>
+                        <h3 class="release-role" data-lang="journey.role3">FullStack Developer</h3>
+                        <p class="release-company">Exitus · Exitus Educacional</p>
+                        <p class="release-stack">Angular · TypeScript · Java · Spring Boot</p>
+                    </header>
+                    <div class="release-body">
+                        <p class="release-desc" data-lang="journey.desc3">Worked across the whole of <strong>Exitus Educacional</strong>, from interfaces to business logic, and was <strong>promoted to Full Stack Developer 2</strong> in Oct. 2025.</p>
+                        <ul class="release-points">
+                            <li data-lang="journey.role3.item1"><strong>Designed and built interfaces in Angular and TypeScript</strong> for an intuitive, responsive experience</li>
+                            <li data-lang="journey.role3.item2"><strong>Helped define the system's visual identity</strong>, keeping it consistent with the company's values</li>
+                            <li data-lang="journey.role3.item3"><strong>Wrote secure business logic in Java and Spring Boot</strong>, API integrations and faster relational database access</li>
+                            <li data-lang="journey.role3.item4"><strong>Integrated AI services</strong> for automated question validation, plus webhooks for cloud deployment management</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="release" id="release-intern" role="tabpanel" aria-labelledby="tab-intern" hidden>
+                    <header class="release-head">
+                        <p class="release-date" data-lang="journey.date4">Apr. 2024 to Dec. 2024</p>
+                        <h3 class="release-role" data-lang="journey.role4">FullStack Intern</h3>
+                        <p class="release-company">Exitus</p>
+                        <p class="release-stack">Angular · TypeScript · Spring Boot</p>
+                    </header>
+                    <div class="release-body">
+                        <p class="release-desc" data-lang="journey.desc4">Where it started: the base that turned into <strong>project leadership 21 months later</strong>.</p>
+                        <ul class="release-points">
+                            <li data-lang="journey.role4.item1"><strong>Built Exitus features</strong> with Angular and TypeScript on the front and Spring Boot on the back</li>
+                            <li data-lang="journey.role4.item2"><strong>Focused on usability and accessibility</strong> in the screens I shipped</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="release" id="release-pet" role="tabpanel" aria-labelledby="tab-pet" hidden>
+                    <header class="release-head">
+                        <p class="release-date" data-lang="journey.date5">Aug. 2022 to Oct. 2023</p>
+                        <h3 class="release-role" data-lang="journey.role5">Scholarship Holder</h3>
+                        <p class="release-company">PET Computação UFC</p>
+                        <p class="release-stack">Outreach · Olympiad</p>
+                    </header>
+                    <div class="release-body">
+                        <p class="release-desc" data-lang="journey.desc5">Part of <strong>PET Computação</strong>, the Computer Science tutorial education program at UFC, on the outreach team.</p>
+                        <ul class="release-points">
+                            <li data-lang="journey.role5.item1"><strong>Created educational posts</strong> about technology and the computer science world</li>
+                            <li data-lang="journey.role5.item2"><strong>Helped organize the Ceará Informatics Olympiad</strong>, writing and running exams across programming levels</li>
+                        </ul>
+                    </div>
+                </article>
             </div>
-            <ol class="cv-list" id="cv-list">
-                <li class="gs-reveal cv-item">
-                    <span class="cv-dot" aria-hidden="true"></span>
-                    <div class="cv-head">
-                        <div class="cv-title">
-                            <h3 class="cv-role" data-lang="journey.role1">Project Leader</h3>
-                            <span class="cv-pill">Angular · TypeScript · Spring Boot · PostgreSQL · Keycloak</span>
-                        </div>
-                        <span class="cv-date" data-lang="journey.date1">Aug. 2026 to Nov. 2026</span>
-                    </div>
-                    <p class="cv-company"><i class="fas fa-building" aria-hidden="true"></i><span>Exitus · Exitus Gestor</span></p>
-                    <p class="cv-desc" data-lang="journey.desc1">Led the technical development of <strong>Exitus Gestor</strong>, an educational management platform that pulls the institution's administrative and academic workflows into one place.</p>
-                    <ul class="cv-points">
-                        <li data-lang="journey.role1.item1"><strong>Owned the platform end to end</strong>, from architecture and technical decisions to implementation and delivery</li>
-                        <li data-lang="journey.role1.item2"><strong>Set the architecture, standards and reusable components</strong>, with Domain-Driven Design, TDD and Flyway migrations</li>
-                        <li data-lang="journey.role1.item3"><strong>Built authentication and authorization with Keycloak</strong>, plus integrations, data management and enterprise workflows</li>
-                        <li data-lang="journey.role1.item4"><strong>Coordinated tasks, technical decisions and priorities</strong> with stakeholders and the development team</li>
-                        <li data-lang="journey.role1.item5"><strong>Drove CI/CD, code quality, automated tests and security</strong>, with Claude Code agents helping from spec to pull request review</li>
-                        <li data-lang="journey.role1.item6"><strong>Turned institutional requirements into technical solutions</strong> built for usability, maintainability and scale</li>
-                    </ul>
-                </li>
-                <li class="gs-reveal cv-item">
-                    <span class="cv-dot" aria-hidden="true"></span>
-                    <div class="cv-head">
-                        <div class="cv-title">
-                            <h3 class="cv-role" data-lang="journey.role2">Project Leader</h3>
-                            <span class="cv-pill">React · Node.js · PostgreSQL · AI</span>
-                        </div>
-                        <span class="cv-date" data-lang="journey.date2">Jan. 2026 to Aug. 2026</span>
-                    </div>
-                    <p class="cv-company"><i class="fas fa-building" aria-hidden="true"></i><span>Colégio Christus</span></p>
-                    <p class="cv-desc" data-lang="journey.desc2">Led the end-to-end technical development of an <strong>AI-powered medical platform</strong> for clinical decision support, owning <strong>team, architecture and delivery</strong>.</p>
-                    <ul class="cv-points">
-                        <li data-lang="journey.role2.item1"><strong>Architected the full stack solution</strong> (React, Node.js, PostgreSQL) for scalability, performance and easy maintenance</li>
-                        <li data-lang="journey.role2.item2"><strong>Created the visual identity and component library</strong>, designing the UI/UX from scratch</li>
-                        <li data-lang="journey.role2.item3"><strong>Built AI automations</strong> for consultations and for the team's development routines</li>
-                        <li data-lang="journey.role2.item4"><strong>Ran the Git workflow and mentored the team</strong> on clean code, code review and design patterns</li>
-                    </ul>
-                </li>
-                <li class="gs-reveal cv-item is-extra">
-                    <span class="cv-dot" aria-hidden="true"></span>
-                    <div class="cv-head">
-                        <div class="cv-title">
-                            <h3 class="cv-role" data-lang="journey.role3">FullStack Developer</h3>
-                            <span class="cv-pill">Angular · TypeScript · Java · Spring Boot</span>
-                        </div>
-                        <span class="cv-date" data-lang="journey.date3">Jan. 2025 to Mar. 2026</span>
-                    </div>
-                    <p class="cv-company"><i class="fas fa-building" aria-hidden="true"></i><span>Exitus · Exitus Educacional</span></p>
-                    <p class="cv-desc" data-lang="journey.desc3">Worked across the whole of <strong>Exitus Educacional</strong>, from interfaces to business logic, and was <strong>promoted to Full Stack Developer 2</strong> in Oct. 2025.</p>
-                    <ul class="cv-points">
-                        <li data-lang="journey.role3.item1"><strong>Designed and built interfaces in Angular and TypeScript</strong> for an intuitive, responsive experience</li>
-                        <li data-lang="journey.role3.item2"><strong>Helped define the system's visual identity</strong>, keeping it consistent with the company's values</li>
-                        <li data-lang="journey.role3.item3"><strong>Wrote secure business logic in Java and Spring Boot</strong>, API integrations and faster relational database access</li>
-                        <li data-lang="journey.role3.item4"><strong>Integrated AI services</strong> for automated question validation, plus webhooks for cloud deployment management</li>
-                    </ul>
-                </li>
-                <li class="gs-reveal cv-item is-extra">
-                    <span class="cv-dot" aria-hidden="true"></span>
-                    <div class="cv-head">
-                        <div class="cv-title">
-                            <h3 class="cv-role" data-lang="journey.role4">FullStack Intern</h3>
-                            <span class="cv-pill">Angular · TypeScript · Spring Boot</span>
-                        </div>
-                        <span class="cv-date" data-lang="journey.date4">Apr. 2024 to Dec. 2024</span>
-                    </div>
-                    <p class="cv-company"><i class="fas fa-building" aria-hidden="true"></i><span>Exitus</span></p>
-                    <p class="cv-desc" data-lang="journey.desc4">Where it started: the base that turned into <strong>project leadership 21 months later</strong>.</p>
-                    <ul class="cv-points">
-                        <li data-lang="journey.role4.item1"><strong>Built Exitus features</strong> with Angular and TypeScript on the front and Spring Boot on the back</li>
-                        <li data-lang="journey.role4.item2"><strong>Focused on usability and accessibility</strong> in the screens I shipped</li>
-                    </ul>
-                </li>
-                <li class="gs-reveal cv-item is-extra">
-                    <span class="cv-dot" aria-hidden="true"></span>
-                    <div class="cv-head">
-                        <div class="cv-title">
-                            <h3 class="cv-role" data-lang="journey.role5">Scholarship Holder</h3>
-                            <span class="cv-pill">Outreach · Olympiad</span>
-                        </div>
-                        <span class="cv-date" data-lang="journey.date5">Aug. 2022 to Oct. 2023</span>
-                    </div>
-                    <p class="cv-company"><i class="fas fa-building" aria-hidden="true"></i><span>PET Computação UFC</span></p>
-                    <p class="cv-desc" data-lang="journey.desc5">Part of <strong>PET Computação</strong>, the Computer Science tutorial education program at UFC, on the outreach team.</p>
-                    <ul class="cv-points">
-                        <li data-lang="journey.role5.item1"><strong>Created educational posts</strong> about technology and the computer science world</li>
-                        <li data-lang="journey.role5.item2"><strong>Helped organize the Ceará Informatics Olympiad</strong>, writing and running exams across programming levels</li>
-                    </ul>
-                </li>
-            </ol>
-            <button type="button" class="cv-more" data-cv-more aria-controls="cv-list" aria-expanded="false">
-                <span class="cv-more-open" data-lang="journey.more">See 3 earlier roles</span>
-                <span class="cv-more-close" data-lang="journey.less">Show fewer roles</span>
-                <i class="fas fa-chevron-down" aria-hidden="true"></i>
-            </button>
         </div>
     </section>
 
-    <!-- ═══ SELECTED WORK ═══ -->
-    <section id="work" class="relative py-24 md:py-28">
+    <!-- ═══ ABOUT · about the artist ═══ -->
+    <section id="about" class="lp-section">
         <div class="max-w-[1280px] mx-auto px-6 md:px-10">
-            <!-- Section Header -->
-            <div class="gs-reveal featured-project-header mb-8 md:mb-10">
-                <div class="featured-project-header-copy">
-                    <p class="section-label font-mono text-[11px] tracking-[0.3em] uppercase text-accent mb-4" data-lang="work.label">Portfolio</p>
-                    <h2 class="font-display featured-project-header-title text-4xl sm:text-5xl md:text-6xl font-light leading-[1.1]">
-                        <span data-lang="work.title1">My</span>
-                        <span class="text-accent italic" data-lang="work.title2">Work.</span>
-                    </h2>
-                    <p class="mt-4 max-w-2xl font-body text-sm md:text-base text-gray leading-relaxed" data-lang="work.subtitle">Every project here does the same thing: it takes work scattered across tabs, spreadsheets and stuff only one person knows, and gives it one clear interface.</p>
+            <div class="about-head">
+                <div>
+                    <p class="section-kicker" data-lang="about.label">About the artist</p>
+                    <h2 class="section-title"><span data-lang="about.title1">The interface is</span> <em data-lang="about.title2">the product.</em></h2>
                 </div>
-                <div id="featured-project-switcher" class="featured-project-header-switcher" aria-label="Featured projects"></div>
+                <p class="section-lead" data-lang="about.lead">Full stack by trade, interface first by habit. Here's the short version of who's behind the code.</p>
             </div>
 
-            <!-- Featured Project Spotlight -->
-            <div class="gs-reveal">
-                <div class="bento-card-inner featured-project-spotlight rounded-[28px] p-4 sm:p-5 lg:p-6">
-                    <div id="featured-project-stage" class="featured-project-stage"></div>
+            <div class="about-main">
+                <div class="about-desk">
+                    <figure class="desk-polaroid">
+                        <img loading="lazy" decoding="async" src="assets/EnzoKorea-portrait.jpeg" alt="Enzo Esmeraldo smiling with arms crossed" width="400" height="483" />
+                        <span class="desk-polaroid-note">fortaleza, 2026</span>
+                    </figure>
+                    <div class="desk-sticker" aria-label="And by the way, that's me">
+                        <img loading="lazy" decoding="async" src="assets/icons/mudkipicon.png" alt="" />
+                        <span data-lang="about.avatarJoke">btw, that's me</span>
+                    </div>
+                </div>
+                <div class="about-bio">
+                    <p data-lang="about.description">I went from <strong>intern to project leader in 21 months</strong>, and honestly I think it's because I treat the interface as the product, not the paint job. Whether it's an AI platform helping doctors make clinical calls or a VS Code extension that packs commits into QA evidence, the job is the same: <strong>find the part of the workflow everyone quietly hates, and make it obvious</strong>.</p>
+                    <p data-lang="about.bio2">I've led teams, handling architecture, the design system, Git strategy and mentoring, and I never stopped <strong>shipping every week</strong>. Today I'm a <strong>Developer III at Radix</strong>, with an <strong>AI-native</strong> workflow: Claude Code, custom agents and skills that take me from spec to tests to pull request review.</p>
                 </div>
             </div>
 
-            <!-- GitHub CTA -->
-            <div class="gs-reveal mt-8 flex justify-center">
-                <a href="https://github.com/ensinho" target="_blank" class="group flex items-center gap-3 border border-white/10 hover:border-accent/30 px-8 py-4 transition-all">
-                    <i class="fab fa-github text-sm text-gray group-hover:text-accent transition-colors"></i>
-                    <span class="font-mono text-[11px] tracking-[0.15em] uppercase text-gray group-hover:text-text transition-colors" data-lang="projects.visitGithub">Explore more on GitHub</span>
-                    <i class="fas fa-arrow-right text-[10px] text-gray/40 group-hover:text-accent group-hover:translate-x-1 transition-all"></i>
-                </a>
+            <div class="about-notes">
+                <div class="about-note">
+                    <h3 data-lang="about.current.title">Developer III at Radix</h3>
+                    <p data-lang="about.current.desc">Building <strong>full stack web apps, APIs and system integrations</strong>, with Clean Architecture, automated tests and CI/CD keeping it all scalable.</p>
+                    <p class="about-note-meta" data-lang="about.current.status">Since Nov. 2026 · Fortaleza</p>
+                </div>
+                <div class="about-note">
+                    <h3 class="fav-pokemon-heading"><span data-lang="about.funfact.title">Fav. Pokémon is Lugia</span> <img loading="lazy" decoding="async" src="assets/icons/LugiaLittleIcon.png" alt="" class="fav-pokemon-icon" /></h3>
+                    <p data-lang="about.funfact.desc">Psychic-type elegance and legendary rarity. Basically my design philosophy, but as a Pokémon.</p>
+                    <p class="about-note-meta">Pokémon 2000</p>
+                </div>
+                <div class="about-note">
+                    <h3 data-lang="about.interests.title">Outside the editor</h3>
+                    <p id="about-interest-text" class="about-interest-text"><strong>Pokemon and sharks</strong> are my main hype focus: <strong>Lugia</strong>, <strong>Gengar</strong>, and <strong>Arcanine</strong> for personality and style; <strong>whale sharks</strong> and <strong>hammerheads</strong> for calm scale, sharp silhouettes, and natural design energy.</p>
+                    <div id="about-interest-buttons" class="about-interest-buttons" role="tablist" aria-label="Personal interests"></div>
+                </div>
+            </div>
+
+            <div class="about-stats">
+                <div class="about-activity">
+                    <div class="about-stat-head">
+                        <h3 data-lang="contrib.label">Contribution activity</h3>
+                        <span id="contrib-total" class="about-stat-total">&nbsp;</span>
+                    </div>
+                    <div class="contrib" role="img" aria-label="GitHub contribution activity over the past year">
+                        <div class="contrib-months" id="contrib-months" aria-hidden="true"></div>
+                        <div class="contrib-grid" id="contrib-grid" aria-hidden="true"></div>
+                        <div class="contrib-footer">
+                            <div class="contrib-legend" aria-hidden="true">
+                                <span data-lang="contrib.less">Less</span>
+                                <span class="contrib-swatch" style="background:var(--heat-0)"></span>
+                                <span class="contrib-swatch" style="background:var(--heat-1)"></span>
+                                <span class="contrib-swatch" style="background:var(--heat-2)"></span>
+                                <span class="contrib-swatch" style="background:var(--heat-3)"></span>
+                                <span class="contrib-swatch" style="background:var(--heat-4)"></span>
+                                <span data-lang="contrib.more">More</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stack">
+                    <div class="about-stat-head"><h3 data-lang="tech.label">Core stack</h3></div>
+                    <div id="tech-icons" class="tech-icons" aria-label="Core technology stack"></div>
+                </div>
             </div>
         </div>
     </section>
 
 
-    <div id="music-card" class="music-card paused fixed bottom-6 right-6 z-50">
+    <!-- ═══ PLAYER ═══
+         One element, two states: a full dock under the hero (Spotify-style), folding into a
+         compact, translucent wave pill (.is-mini) once the hero scrolls away. -->
+    <div id="music-card" class="player" role="region" aria-label="Music player">
+        <div class="player-track">
+            <div id="album-art" class="player-cover" role="img" aria-label="Album cover"></div>
+            <div class="player-meta">
+                <p id="song-title" class="player-title">Oxygen</p>
+                <p id="artist-name" class="player-artist">Porch Light</p>
+            </div>
+        </div>
 
-        <!-- Always-visible row: album art + info + controls + collapse btn -->
-        <div class="flex items-center gap-3">
-            <div id="album-art" class="w-10 h-10 rounded-sm bg-cover bg-center shrink-0 shadow-lg"></div>
-            <div id="music-meta" class="flex-1 min-w-0">
-                <p id="song-title" class="font-heading text-xs text-text font-medium truncate">Oxygen</p>
-                <p id="artist-name" class="font-mono text-[10px] text-gray truncate">Porch Light</p>
-            </div>
-            <div id="music-nav" class="flex items-center gap-1">
-                <button id="prev-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-backward-step text-[10px]"></i>
-                </button>
-                <button id="play-btn" class="w-8 h-8 flex items-center justify-center text-text hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-play text-xs"></i>
-                </button>
-                <button id="next-btn" class="music-nav-btn w-7 h-7 flex items-center justify-center text-gray hover:text-accent transition-colors cursor-pointer">
-                    <i class="fas fa-forward-step text-[10px]"></i>
-                </button>
-            </div>
-            <div id="equalizer" class="flex items-end gap-[2px] h-4 ml-1">
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-                <span class="eq-bar w-[3px] bg-accent rounded-full"></span>
-            </div>
-            <!-- Collapse toggle -->
-            <button id="collapse-btn" onclick="toggleMusicCollapse()" class="w-6 h-6 flex items-center justify-center text-gray/40 hover:text-accent transition-colors cursor-pointer ml-1 shrink-0" title="Minimize">
-                <i id="collapse-icon" class="fas fa-chevron-down text-[8px] transition-transform duration-300"></i>
+        <div class="player-controls">
+            <button id="prev-btn" type="button" class="player-btn player-btn--prev" aria-label="Previous track">
+                <i class="fas fa-backward-step" aria-hidden="true"></i>
+            </button>
+            <button id="play-btn" type="button" class="player-btn player-btn--play" aria-label="Play">
+                <i class="fas fa-play" aria-hidden="true"></i>
+            </button>
+            <button id="next-btn" type="button" class="player-btn player-btn--next" aria-label="Next track">
+                <i class="fas fa-forward-step" aria-hidden="true"></i>
             </button>
         </div>
 
-        <!-- Collapsible section -->
-        <div id="music-collapsible" class="overflow-hidden transition-all duration-400 ease-in-out" style="max-height: 80px; opacity: 1;">
-            <div class="pt-2 flex flex-col gap-1.5">
-                <div id="progress-container" class="w-full h-1 bg-white/5 cursor-pointer rounded-full overflow-hidden">
-                    <div id="progress-bar" class="h-full bg-accent/60 rounded-full transition-all duration-100" style="width: 0%"></div>
-                </div>
-                <!-- Easter egg line — hidden by default, shown on song change -->
-                <p id="music-easter-egg" class="font-mono text-[8px] text-accent/0 text-center tracking-wider italic transition-all duration-700 ease-in-out leading-relaxed" style="max-height:0; overflow:hidden;"></p>
-                <p class="font-mono text-[8px] text-gray/30 text-center tracking-wider" data-lang="music.hint">Flip the record and the theme follows</p>
-            </div>
+        <div class="player-scrub">
+            <span id="time-current" class="player-time">0:00</span>
+            <div id="player-wave" class="player-wave" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+            <span id="time-total" class="player-time player-time--total">0:00</span>
         </div>
 
+        <div class="player-side">
+            <button id="mute-btn" type="button" class="player-btn player-btn--vol" aria-label="Mute">
+                <i class="fas fa-volume-low" aria-hidden="true"></i>
+            </button>
+            <input id="volume" class="player-volume" type="range" min="0" max="1" step="0.01" value="0.4" aria-label="Volume">
+        </div>
     </div>
 
-    <!-- ═══ FOOTER / CONTACT ═══ -->
-    <footer id="contact" class="relative py-24 md:py-28 border-t border-white/5">
-        <div class="max-w-[1280px] mx-auto px-6 md:px-10">
-            <div class="gs-reveal text-center space-y-8">
-                <p class="section-label font-mono text-[11px] tracking-[0.3em] uppercase text-accent" data-lang="footer.label">Get In Touch</p>
-                <h2 class="font-display text-4xl sm:text-5xl md:text-7xl font-light leading-[1.1]">
-                    <span data-lang="footer.title1">Let's build something</span><br>
-                    <span class="text-accent italic" data-lang="footer.title2">people actually use.</span>
+    <!-- ═══ CONTACT · the bonus track ═══ -->
+    <footer id="contact" class="bonus">
+        <div class="bonus-grooves" aria-hidden="true"></div>
+        <div class="max-w-[1280px] mx-auto px-6 md:px-10 bonus-inner">
+            <div class="bonus-main">
+                <p class="section-kicker" data-lang="footer.label">Bonus track</p>
+                <h2 class="bonus-title">
+                    <span data-lang="footer.title1">Let's build something</span>
+                    <em data-lang="footer.title2">people actually use.</em>
                 </h2>
-
-                <!-- Contact Links -->
-                <div class="flex flex-wrap justify-center gap-4 pt-6">
-                    <a href="mailto:enzopo625@gmail.com" class="group flex items-center gap-3 border border-white/10 hover:border-accent/30 px-6 py-3 transition-all">
-                        <i class="fas fa-envelope text-sm text-gray group-hover:text-accent transition-colors"></i>
-                        <span class="font-mono text-[11px] tracking-wider text-gray group-hover:text-text transition-colors">enzopo625@gmail.com</span>
-                    </a>
-                    <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" class="group flex items-center gap-3 border border-white/10 hover:border-accent/30 px-6 py-3 transition-all">
-                        <i class="fab fa-linkedin-in text-sm text-gray group-hover:text-accent transition-colors"></i>
-                        <span class="font-mono text-[11px] tracking-wider text-gray group-hover:text-text transition-colors">LinkedIn</span>
-                    </a>
-                    <a href="https://github.com/ensinho" target="_blank" class="group flex items-center gap-3 border border-white/10 hover:border-accent/30 px-6 py-3 transition-all">
-                        <i class="fab fa-github text-sm text-gray group-hover:text-accent transition-colors"></i>
-                        <span class="font-mono text-[11px] tracking-wider text-gray group-hover:text-text transition-colors">GitHub</span>
-                    </a>
-                </div>
-
-                <!-- CV Download -->
-                <div class="pt-4">
-                    <a href="assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf" download onclick="checkCV(event)" class="inline-flex items-center gap-3 bg-accent text-black px-8 py-3 font-mono text-[11px] tracking-[0.15em] uppercase hover:bg-accent/90 transition-all">
-                        <span data-lang="about.downloadCV">DOWNLOAD CV</span>
-                        <i class="fas fa-download text-[10px]"></i>
-                    </a>
-                </div>
+                <a href="mailto:enzopo625@gmail.com" class="btn btn-line bonus-mail">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                    <span>enzopo625@gmail.com</span>
+                </a>
+                <nav class="bonus-links" aria-label="Elsewhere">
+                    <a href="https://github.com/ensinho" target="_blank" rel="noreferrer" class="text-link">GitHub</a>
+                    <a href="https://linkedin.com/in/enzoesmeraldo" target="_blank" rel="noreferrer" class="text-link">LinkedIn</a>
+                    <a href="assets/cv/CV_ENZO_ESMERALDO_FULLSTACK_EN.pdf" download onclick="checkCV(event)" class="text-link" data-lang="about.downloadCV">Download CV</a>
+                </nav>
             </div>
 
-            <!-- Bottom Bar -->
-            <div class="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="font-mono text-[10px] text-gray/30 tracking-wider" data-lang="footer.copyright">&copy; 2026 Enzo Esmeraldo</p>
-                <p class="font-mono text-[10px] text-gray/30 tracking-wider" data-lang="footer.credits">Crafted with <i class="fas fa-heart text-accent/40 animate-pulse text-[8px]"></i> in Brazil</p>
+            <div class="bonus-bar">
+                <p data-lang="footer.copyright">&copy; 2026 Enzo Esmeraldo</p>
+                <p data-lang="footer.credits">Crafted in Fortaleza, Brazil</p>
             </div>
         </div>
     </footer>
