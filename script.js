@@ -1272,6 +1272,16 @@ const featuredProjects = [
         },
         images: [
             {
+                src: 'assets/projectCovers/devquest/07-devquest-onboarding-dark.webp',
+                alt: 'DevQuest animated 3-step interactive onboarding flow',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Interactive onboarding: a 3-step guided introduction straight into the local Sandbox with zero login barrier.',
+                    pt: 'Onboarding interativo: introdução guiada em 3 passos direto para o modo Sandbox local, sem trava de login.'
+                }
+            },
+            {
                 src: 'assets/projectCovers/devquest/01-devquest-cover-16x9.webp',
                 alt: 'DevQuest cover showing the Constellation Skill Map and evolving 2.5D mascot',
                 fit: 'cover',
@@ -1329,16 +1339,6 @@ const featuredProjects = [
                 caption: {
                     en: 'Dedicated Arena in Warm Vellum: syntax tokens and live checklist adapt seamlessly to the light palette.',
                     pt: 'Arena Dedicada no Warm Vellum: tokens de sintaxe e checklist ao vivo se adaptam sem esforço ao tema claro.'
-                }
-            },
-            {
-                src: 'assets/projectCovers/devquest/07-devquest-onboarding-dark.webp',
-                alt: 'DevQuest animated 3-step interactive onboarding flow',
-                fit: 'cover',
-                position: 'center top',
-                caption: {
-                    en: 'Interactive onboarding: a 3-step guided introduction straight into the local Sandbox with zero login barrier.',
-                    pt: 'Onboarding interativo: introdução guiada em 3 passos direto para o modo Sandbox local, sem trava de login.'
                 }
             }
         ],
