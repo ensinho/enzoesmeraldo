@@ -843,8 +843,8 @@ const featuredProjects = [
             stack: 'React · Firebase'
         },
         logo: {
-            src: 'assets/icons/teamBuilderLogo.png',
-            alt: 'Pokémon Team Builder logo'
+            src: 'assets/icons/teamBuilderFavicon.png',
+            alt: 'Pokémon Team Builder favicon'
         },
         description: {
             en: 'Competitive team building usually lives across five tabs: Pikalytics, a damage calc, Showdown, a spreadsheet and Discord. <strong>pokemonbuilder.app puts all of it in one place</strong>. You get a builder with live analysis, <strong>real ladder usage from 1M+ games</strong> (Smogon, VGCPastes, Pikalytics), tournament-winning teams, a full <strong>damage calculator</strong>, speed tiers, a <em>forum where shared teams import in one click</em>, and a daily <strong>battle against Cynthia driven by a battle AI I built</strong> on top of the Showdown engine.',
@@ -1181,49 +1181,170 @@ const featuredProjects = [
         }
     },
     {
-        id: 'aqua-census',
-        title: 'AquaCensus',
+        id: 'devquest',
+        title: 'DevQuest',
         track: {
-            sub: { en: 'marine field research, one ledger', pt: 'pesquisa marinha de campo num registro só' },
+            sub: {
+                en: 'full-stack RPG with a constellation skill map, lexical editor & 2.5D mascot',
+                pt: 'RPG full-stack com mapa de constelações, editor léxico e mascote 2.5D'
+            },
+            feature: {
+                kicker: { en: 'Featured track', pt: 'Faixa em destaque' },
+                text: {
+                    en: 'Learning full-stack usually lives scattered across silent tutorials and disconnected tabs. <strong>DevQuest</strong> turns that journey into an interactive constellation of <strong>9 tracks and 22 real coding quests</strong> — complete with a live lexical analyzer, safe preview, and an <strong>evolving 2.5D companion</strong> that teaches, reacts to your code, and shifts the entire app\'s theme as it evolves.',
+                    pt: 'Aprender full-stack costuma ficar espalhado entre tutoriais soltos e editores sem feedback. O <strong>DevQuest</strong> transforma essa jornada numa constelação interativa de <strong>9 trilhas e 22 desafios reais</strong> — com analisador léxico ao vivo, prévia segura e um <strong>mascote 2.5D evolutivo</strong> que ensina, reage ao seu código e muda o tema inteiro do app conforme evolui.'
+                },
+                facts: {
+                    en: ['9 tracks · 22 quests', 'Evolving 2.5D mascot', 'Live lexical editor', 'Dark + Light · 3 themes'],
+                    pt: ['9 trilhas · 22 quests', 'Mascote 2.5D evolutivo', 'Editor léxico ao vivo', 'Dark + Light · 3 temas']
+                }
+            },
             tag: { en: 'live', pt: 'no ar' },
-            stack: 'Node.js · Supabase'
+            stack: 'React · Open Bot Avatar'
         },
         logo: {
-            src: 'assets/icons/fish.svg',
-            alt: 'AquaCensus logo'
+            src: 'assets/icons/devquest-favicon.svg',
+            alt: 'DevQuest favicon'
         },
         description: {
-            en: 'Marine field research runs on paper forms and personal spreadsheets, so specimen metadata gets orphaned from the people, vessels, and labs that produced it. <strong>AquaCensus connects all of it</strong>: collections, researchers, permissions and <em>operational dashboards</em>.',
-            pt: 'Pesquisa marinha de campo roda em formulário de papel e planilha pessoal, e os metadados dos espécimes ficam órfãos das pessoas, embarcações e laboratórios que os produziram. O <strong>AquaCensus conecta tudo</strong>: coletas, pesquisadores, permissões e <em>dashboards operacionais</em>.'
+            en: 'Learning full-stack usually lives scattered across silent tutorials and disconnected tabs. <strong>DevQuest turns that journey into an interactive constellation</strong> of 9 tracks and 22 real coding quests — pairing a <strong>dedicated arena with a live lexical analyzer</strong>, safe HTML preview, and an <em>evolving 2.5D companion</em> (Kitsuby → Pyrokit → Archkits) that teaches, reacts to your code, and shifts the entire app\'s palette as it evolves.',
+            pt: 'Aprender full-stack costuma ficar espalhado entre tutoriais soltos e editores sem feedback. O <strong>DevQuest transforma essa jornada numa constelação interativa</strong> de 9 trilhas e 22 desafios reais — unindo uma <strong>arena dedicada com analisador léxico ao vivo</strong>, prévia HTML segura e um <em>mascote 2.5D evolutivo</em> (Kitsuby → Pyrokit → Archkits) que ensina, reage ao seu código e sincroniza o tema inteiro do app conforme evolui.'
         },
         narrative: {
             en: {
-                problem: 'Research records lose trust when metadata, people, and collection context are disconnected.',
-                decision: 'Treat provenance as first-class data: who collected what, from which vessel, for which lab.',
-                outcome: 'Field records a lab can actually audit, favorite, and report on.'
+                problem: 'People learning full-stack hit endless link lists with no clear order and exercises that only return "wrong" without pointing out the real syntax issue.',
+                decision: 'Structure the curriculum as a symmetric 1 → 2 → 3 → 2 → 1 dependency constellation, pair it with a custom lexical highlighter/diagnostics engine, and tie visual progression to an evolving 2.5D mascot.',
+                outcome: 'A zero-friction learning RPG with local Sandbox mode, 3-step animated onboarding, Dark (Obsidian) + Light (Warm Vellum) modes, 3 evolution-synced themes, 21 Vitest unit tests, and automated Playwright visual checks.'
             },
             pt: {
-                problem: 'Registros de pesquisa perdem confiança quando metadados, pessoas e contexto da coleta estão desconectados.',
-                decision: 'Tratar a proveniência como dado de primeira classe: quem coletou o quê, de qual embarcação, pra qual laboratório.',
-                outcome: 'Registros de campo que um laboratório consegue auditar, favoritar e reportar de verdade.'
+                problem: 'Quem estuda full-stack esbarra em listas infinitas de links sem ordem clara e exercícios que só devolvem "errado" sem apontar o erro real no código.',
+                decision: 'Estruturar o currículo como um grafo simétrico de dependências (1 → 2 → 3 → 2 → 1), criar um editor com analisador léxico e diagnóstico real e amarrar a progressão visual a um mascote 2.5D evolutivo.',
+                outcome: 'Um RPG de aprendizado sem atrito com modo Sandbox local, onboarding animado em 3 passos, temas Dark (Obsidian) e Light (Warm Vellum), 3 paletas sincronizadas à evolução, 21 testes unitários no Vitest e verificação visual via Playwright.'
             }
         },
-        technologies: ['React', 'TypeScript', 'Node.js', 'Express', 'Supabase', 'Tailwind'],
+        technologies: ['React 19', 'Vite', 'Open Bot Avatar', 'CSS Tokens', 'Vitest', 'Playwright', 'GitHub Pages'],
+        deepDive: {
+            kicker: { en: 'Deep dive · Architecture & Companion', pt: 'Deep dive · Arquitetura & Mascote' },
+            title: { en: 'Constellation graph, lexical arena & an evolving 2.5D mascot', pt: 'Mapa de constelações, arena léxica e mascote 2.5D evolutivo' },
+            teaser: {
+                en: 'How the 1 → 2 → 3 → 2 → 1 skill map, custom lexical analyzer, 3-layer CSS tokens and evolving companion work together.',
+                pt: 'Como o mapa 1 → 2 → 3 → 2 → 1, o analisador léxico próprio, os tokens CSS em 3 camadas e o mascote evolutivo trabalham juntos.'
+            },
+            cta: { en: 'Read the architecture notes', pt: 'Ler as notas de arquitetura' },
+            intro: {
+                en: 'DevQuest is built as a cohesive front-end system: <strong>zero loose hex values</strong> across screens, a custom lexical tokenizer powering real-time diagnostics, and an interactive <strong>open-bot-avatar</strong> companion whose evolution drives the app\'s entire visual theme.',
+                pt: 'O DevQuest foi construído como um sistema front-end coeso: <strong>zero hex solto nas telas</strong>, um tokenizador léxico próprio guiando diagnósticos em tempo real e um mascote interativo em <strong>open-bot-avatar</strong> cuja evolução transforma toda a paleta da interface.'
+            },
+            pipeline: [
+                {
+                    en: ['Constellation Skill Map (1 → 2 → 3 → 2 → 1)', 'Symmetric dependency graph with 9 tracks (HTML5, CSS3, JS ES6+, Tokens & UI, React, Node.js, A11y & Tests, SQL Database, and Full-Stack Mastery), adapting to a vertical path on mobile.'],
+                    pt: ['Constellation Skill Map (1 → 2 → 3 → 2 → 1)', 'Grafo simétrico de dependências com 9 trilhas (HTML5, CSS3, JS ES6+, Tokens & UI, React, Node.js, A11y & Testes, Banco SQL e Maestria Full-Stack), adaptado para trilha vertical no mobile.']
+                },
+                {
+                    en: ['Dedicated Arena & Real Lexical Analyzer', 'Fixed quest sidebar + custom lexical highlighter for HTML, CSS, JS, JSX, and SQL, catching unclosed tags, braces, and strings in real time alongside a live checklist and safe HTML preview.'],
+                    pt: ['Arena Dedicada com Identificador Léxico Real', 'Sidebar fixa de quests + editor com destaque léxico próprio (HTML, CSS, JS, JSX e SQL), diagnóstico em tempo real de tags, chaves e strings abertas, checklist ao vivo e prévia HTML segura.']
+                },
+                {
+                    en: ['Evolving 2.5D Mascot (open-bot-avatar)', 'Original Kitsuby → Pyrokit → Archkits line that tracks the cursor, triggers Lightning Challenges (+15 XP), levels up Bond, unlocks 6 accessories, and syncs the full UI theme (Teal → Amber → Arcane Violet) across Dark (Obsidian) and Light (Warm Vellum).'],
+                    pt: ['Mascote 2.5D Evolutivo (open-bot-avatar)', 'Linha autoral Kitsuby → Pyrokit → Archkits que segue o cursor, aplica Desafios Relâmpago (+15 XP), sobe de Vínculo, desbloqueia 6 acessórios e sincroniza o tema inteiro da interface (Teal → Âmbar → Violeta Arcano) em Dark (Obsidian) e Light (Warm Vellum).']
+                },
+                {
+                    en: ['Engineering & Automated Verification', '3-layer CSS token architecture, 3-step interactive onboarding, local Sandbox mode without login friction, 21 Vitest unit tests, 0 ESLint warnings, and automated Playwright visual verification.'],
+                    pt: ['Engenharia & Verificação Automatizada', 'CSS Tokens em 3 camadas (zero hex solto em telas), onboarding interativo em 3 passos, modo Sandbox local sem trava de login, 21 testes unitários (Vitest), ESLint com 0 warnings e verificação visual automatizada via Playwright.']
+                }
+            ],
+            metrics: [
+                { value: '9', en: 'interactive tracks in the constellation', pt: 'trilhas interativas na constelação' },
+                { value: '22', en: 'hands-on full-stack coding quests', pt: 'desafios práticos full-stack' },
+                { value: '3', en: 'mascot evolutions & synced themes', pt: 'evoluções do mascote e temas sincronizados' },
+                { value: '6', en: 'unlockable companion accessories', pt: 'acessórios desbloqueáveis do mascote' },
+                { value: '21', en: 'Vitest unit tests passing', pt: 'testes unitários passando no Vitest' },
+                { value: '0', en: 'ESLint warnings & loose hex values', pt: 'warnings no ESLint e zero hex solto' }
+            ],
+            skills: {
+                en: ['Design tokens (3-layer CSS)', 'Custom lexical highlighting', 'Interactive SVG / graph layout', '2.5D mascot state machines', 'Safe HTML preview sandboxing', 'Vitest unit testing', 'Playwright visual checks', 'Dark + Light theming'],
+                pt: ['Design tokens (CSS em 3 camadas)', 'Destaque léxico próprio', 'Grafo interativo de dependências', 'Máquina de estados para mascote 2.5D', 'Prévia HTML segura em sandbox', 'Testes unitários com Vitest', 'Verificação visual com Playwright', 'Temas Dark + Light sincronizados']
+            },
+            footnote: {
+                en: 'Live on GitHub Pages · local Sandbox mode requires zero sign-up to explore the full constellation and arena.',
+                pt: 'No ar via GitHub Pages · modo Sandbox local permite explorar toda a constelação e a arena sem precisar criar conta.'
+            }
+        },
         images: [
             {
-                src: 'assets/projectCovers/aqua/defaultCoverAqua.jpeg',
-                alt: 'AquaCensus login screen introducing the marine species catalog',
-                fit: 'contain',
-                position: 'center',
+                src: 'assets/projectCovers/devquest/01-devquest-cover-16x9.webp',
+                alt: 'DevQuest cover showing the Constellation Skill Map and evolving 2.5D mascot',
+                fit: 'cover',
+                position: 'center top',
                 caption: {
-                    en: 'The front door: a clean login for a platform where collections, people and vessels share one ledger.',
-                    pt: 'A porta de entrada: um login limpo pra uma plataforma onde coletas, pessoas e embarcações dividem um registro só.'
+                    en: 'Overview: the 1 → 2 → 3 → 2 → 1 Constellation Skill Map paired with the interactive 2.5D companion.',
+                    pt: 'Visão geral: o Constellation Skill Map (1 → 2 → 3 → 2 → 1) ao lado do mascote 2.5D interativo.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/02-devquest-arena-dark.webp',
+                alt: 'DevQuest Dedicated Arena in Dark Obsidian mode with quest sidebar, lexical editor, and live preview',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Dedicated Arena (Obsidian): fixed quest sidebar, custom lexical editor with real-time diagnostics, and safe live preview.',
+                    pt: 'Arena Dedicada (Obsidian): sidebar fixa de quests, editor léxico próprio com diagnóstico ao vivo e prévia segura.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/03-devquest-skillmap-dark.webp',
+                alt: 'DevQuest widescreen Constellation Skill Map and Companion Camp in Dark mode',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Constellation Skill Map + Companion Camp: 9 tracks connected by prerequisite edges and live XP progress.',
+                    pt: 'Constellation Skill Map + Companion Camp: 9 trilhas conectadas por pré-requisitos e progresso de XP ao vivo.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/04-devquest-skillmap-light.webp',
+                alt: 'DevQuest Skill Map and Companion in Light Warm Vellum theme',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Warm Vellum (Light mode): 3-layer CSS tokens keep every surface, edge, and badge crisp in light mode.',
+                    pt: 'Warm Vellum (modo claro): tokens CSS em 3 camadas mantêm superfícies, conexões e badges nítidos no tema claro.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/05-devquest-archkits-violet.webp',
+                alt: 'DevQuest Stage 3 Archkits evolution with Arcane Violet synchronized theme',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Stage 3 — Archkits: evolving the companion shifts the entire interface from Teal to Amber to Arcane Violet.',
+                    pt: 'Estágio 3 — Archkits: evoluir o mascote muda toda a interface de Teal para Âmbar até o Violeta Arcano.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/06-devquest-arena-light.webp',
+                alt: 'DevQuest Dedicated Arena in Light Warm Vellum theme',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Dedicated Arena in Warm Vellum: syntax tokens and live checklist adapt seamlessly to the light palette.',
+                    pt: 'Arena Dedicada no Warm Vellum: tokens de sintaxe e checklist ao vivo se adaptam sem esforço ao tema claro.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/07-devquest-onboarding-dark.webp',
+                alt: 'DevQuest animated 3-step interactive onboarding flow',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Interactive onboarding: a 3-step guided introduction straight into the local Sandbox with zero login barrier.',
+                    pt: 'Onboarding interativo: introdução guiada em 3 passos direto para o modo Sandbox local, sem trava de login.'
                 }
             }
         ],
         links: {
-            demo: 'https://pesquisa-maritima.vercel.app/',
-            github: 'https://github.com/ensinho/pesquisaMaritima'
+            demo: 'https://ensinho.github.io/devquest',
+            github: 'https://github.com/ensinho/devquest'
         }
     }
 ];
@@ -1627,13 +1748,14 @@ function renderTrackPreview() {
     if (!preview) return;
     const project = featuredProjects[featuredProjectState.cuedIndex];
     const t = translations[currentLang] || translations.en;
-    const reel = project.track.feature && project.images.find(image => image.type === 'video');
+    const hasFeature = !!project.track.feature;
+    const reel = hasFeature && project.images.find(image => image.type === 'video');
 
     if (previewVideoObserver) {
         previewVideoObserver.disconnect();
         previewVideoObserver = null;
     }
-    preview.classList.toggle('is-feature', !!reel);
+    preview.classList.toggle('is-feature', !!(reel || hasFeature));
 
     if (reel) {
         preview.innerHTML = `
@@ -1670,27 +1792,30 @@ function renderTrackPreview() {
             }, { threshold: 0.4 });
             previewVideoObserver.observe(video);
         }
+    } else {
+        const cover = getTrackCover(project);
+        preview.innerHTML = cover
+            ? `<img src="${cover}" alt="" decoding="async">`
+            : `<div class="tracklist-preview-locked"><i class="fas fa-lock" aria-hidden="true"></i><span>${t['featuredWork.lockedTitle']}</span></div>`;
+    }
 
-        if (feature) {
+    if (feature) {
+        if (hasFeature) {
+            const kicker = project.track.feature.kicker
+                ? pickLang(project.track.feature.kicker)
+                : t['feature.kicker'];
             const facts = (project.track.feature.facts[currentLang] || project.track.feature.facts.en)
                 .map(fact => `<li>${fact}</li>`).join('');
             feature.innerHTML = `
-                <p class="feature-kicker">${t['feature.kicker']}</p>
+                <p class="feature-kicker">${kicker}</p>
                 <p class="feature-text">${pickLang(project.track.feature.text)}</p>
                 <ul class="feature-facts">${facts}</ul>
             `;
             feature.hidden = false;
+        } else {
+            feature.hidden = true;
+            feature.innerHTML = '';
         }
-        return;
-    }
-
-    const cover = getTrackCover(project);
-    preview.innerHTML = cover
-        ? `<img src="${cover}" alt="" decoding="async">`
-        : `<div class="tracklist-preview-locked"><i class="fas fa-lock" aria-hidden="true"></i><span>${t['featuredWork.lockedTitle']}</span></div>`;
-    if (feature) {
-        feature.hidden = true;
-        feature.innerHTML = '';
     }
 }
 
@@ -1700,6 +1825,16 @@ function cueTrack(index) {
     renderTracklist();
     const selected = document.querySelector(`#tracklist .track[data-track="${index}"]`);
     if (selected) selected.focus({ preventScroll: true });
+}
+
+function renderTrackIcon(project) {
+    if (project.logo && project.logo.src) {
+        return `<span class="track-icon" aria-hidden="true"><img src="${project.logo.src}" alt="" loading="lazy" decoding="async"></span>`;
+    }
+    if (project.locked) {
+        return `<span class="track-icon is-locked" aria-hidden="true"><i class="fas fa-lock"></i></span>`;
+    }
+    return `<span class="track-icon" aria-hidden="true"><i class="fas fa-compact-disc"></i></span>`;
 }
 
 function renderTracklist() {
@@ -1715,6 +1850,7 @@ function renderTracklist() {
                     <span class="track-num">${trackNumber(index)}</span>
                     <span class="track-eq"><i></i><i></i><i></i></span>
                 </span>
+                ${renderTrackIcon(project)}
                 <span class="track-main">
                     <span class="track-title">${project.title}</span>
                     <span class="track-sub">${pickLang(project.track.sub)}</span>
