@@ -1185,165 +1185,205 @@ const featuredProjects = [
         title: 'DevQuest',
         track: {
             sub: {
-                en: 'full-stack RPG with a constellation skill map, lexical editor & 2.5D mascot',
-                pt: 'RPG full-stack com mapa de constelações, editor léxico e mascote 2.5D'
+                en: 'full-stack RPG with a pixel-art fox, 22-quest trail and its own API',
+                pt: 'RPG full-stack com fox em pixel-art, trilha de 22 quests e API própria'
             },
             feature: {
                 kicker: { en: 'Featured track', pt: 'Faixa em destaque' },
                 text: {
-                    en: 'Learning full-stack usually lives scattered across silent tutorials and disconnected tabs. <strong>DevQuest</strong> turns that journey into an interactive constellation of <strong>9 tracks and 22 real coding quests</strong> — complete with a live lexical analyzer, safe preview, and an <strong>evolving 2.5D companion</strong> that teaches, reacts to your code, and shifts the entire app\'s theme as it evolves.',
-                    pt: 'Aprender full-stack costuma ficar espalhado entre tutoriais soltos e editores sem feedback. O <strong>DevQuest</strong> transforma essa jornada numa constelação interativa de <strong>9 trilhas e 22 desafios reais</strong> — com analisador léxico ao vivo, prévia segura e um <strong>mascote 2.5D evolutivo</strong> que ensina, reage ao seu código e muda o tema inteiro do app conforme evolui.'
+                    en: 'Learning full-stack is usually scattered across loose tutorials and exercises with no real feedback. <strong>DevQuest</strong> brings <strong>9 skills, 22 live-validated quests and 17 grimoires</strong> into a free PT-BR RPG with a trading-card feel — alongside a <strong>pixel-art fox</strong> that evolves with you and a <strong>custom backend that re-validates every solution on the server</strong>.',
+                    pt: 'Aprender full-stack costuma ser espalhado entre tutoriais soltos e exercícios sem feedback. O <strong>DevQuest</strong> reúne <strong>9 skills, 22 quests validadas ao vivo e 17 grimórios</strong> num RPG gratuito em PT-BR com clima de jogo de cartas — acompanhado por um <strong>fox em pixel-art</strong> que evolui com você e um <strong>backend próprio que revalida cada código no servidor</strong>.'
                 },
                 facts: {
-                    en: ['9 tracks · 22 quests', 'Evolving 2.5D mascot', 'Live lexical editor', 'Dark + Light · 3 themes'],
-                    pt: ['9 trilhas · 22 quests', 'Mascote 2.5D evolutivo', 'Editor léxico ao vivo', 'Dark + Light · 3 temas']
+                    en: ['9 skills · 22 quests', '17 grimoires', 'Evolving pixel-art fox', 'Custom API + sandbox'],
+                    pt: ['9 skills · 22 quests', '17 grimórios', 'Fox pixel-art evolutivo', 'API própria + sandbox']
                 }
             },
             tag: { en: 'live', pt: 'no ar' },
-            stack: 'React · Open Bot Avatar'
+            stack: 'React · Vercel · Firebase'
         },
         logo: {
             src: 'assets/icons/devquest-favicon.svg',
             alt: 'DevQuest favicon'
         },
         description: {
-            en: 'Learning full-stack usually lives scattered across silent tutorials and disconnected tabs. <strong>DevQuest turns that journey into an interactive constellation</strong> of 9 tracks and 22 real coding quests — pairing a <strong>dedicated arena with a live lexical analyzer</strong>, safe HTML preview, and an <em>evolving 2.5D companion</em> (Kitsuby → Pyrokit → Archkits) that teaches, reacts to your code, and shifts the entire app\'s palette as it evolves.',
-            pt: 'Aprender full-stack costuma ficar espalhado entre tutoriais soltos e editores sem feedback. O <strong>DevQuest transforma essa jornada numa constelação interativa</strong> de 9 trilhas e 22 desafios reais — unindo uma <strong>arena dedicada com analisador léxico ao vivo</strong>, prévia HTML segura e um <em>mascote 2.5D evolutivo</em> (Kitsuby → Pyrokit → Archkits) que ensina, reage ao seu código e sincroniza o tema inteiro do app conforme evolui.'
+            en: 'Learning full-stack web development usually lives scattered across loose tutorials and exercises with no real feedback. <strong>DevQuest</strong> pulls it together into a free PT-BR RPG with a cozy trading-card feel: <strong>9 skills, 22 live-validated quests, 17 short grimoires</strong> and Boss Fights. You start by tearing open a holographic booster pack, meet your <em>hand-drawn pixel-art fox</em> (Kitsuby → Pyrokit → Archkits) in the Den — shifting the entire app\'s accent as it evolves — and play with no sign-up, backed by a <strong>custom API that re-validates code, quizzes and XP on the server</strong> inside a QuickJS sandbox.',
+            pt: 'Aprender desenvolvimento web full-stack costuma ficar espalhado entre tutoriais soltos e exercícios sem feedback de verdade. O <strong>DevQuest</strong> junta tudo num RPG gratuito em PT-BR com cara de jogo de cartas: <strong>9 skills, 22 quests validadas ao vivo, 17 grimórios</strong> de leitura curta e Boss Fights. Você começa abrindo um pacote holográfico, conhece seu <em>fox em pixel-art feito à mão</em> (Kitsuby → Pyrokit → Archkits) na Toca — cuja evolução muda a cor do app inteiro — e joga sem cadastro, com uma <strong>API própria que revalida código, quizzes e XP no servidor</strong> dentro de um sandbox QuickJS.'
         },
         narrative: {
             en: {
-                problem: 'People learning full-stack hit endless link lists with no clear order and exercises that only return "wrong" without pointing out the real syntax issue.',
-                decision: 'Structure the curriculum as a symmetric 1 → 2 → 3 → 2 → 1 dependency constellation, pair it with a custom lexical highlighter/diagnostics engine, and tie visual progression to an evolving 2.5D mascot.',
-                outcome: 'A zero-friction learning RPG with local Sandbox mode, 3-step animated onboarding, Dark (Obsidian) + Light (Warm Vellum) modes, 3 evolution-synced themes, 21 Vitest unit tests, and automated Playwright visual checks.'
+                problem: 'People learning full-stack hit endless link lists with no clear order and exercises that just say "wrong", without pointing out the issue or keeping trustworthy progress.',
+                decision: 'Pair the mascot\'s Den with a 9-station serpentine trail on a single desktop screen, open with a playable booster pack, and make progression server-authoritative — re-running student JS inside a QuickJS WebAssembly sandbox.',
+                outcome: 'A full PT-BR learning RPG: 9 skills, 22 quests, 17 grimoires, 6 quizzes, 3 fox evolutions with 5 accessories, Night and Day Den themes, guest mode with optional Firebase cloud sync, 72 Vitest tests, 0 ESLint warnings and 25 live e2e checks against the production API.'
             },
             pt: {
-                problem: 'Quem estuda full-stack esbarra em listas infinitas de links sem ordem clara e exercícios que só devolvem "errado" sem apontar o erro real no código.',
-                decision: 'Estruturar o currículo como um grafo simétrico de dependências (1 → 2 → 3 → 2 → 1), criar um editor com analisador léxico e diagnóstico real e amarrar a progressão visual a um mascote 2.5D evolutivo.',
-                outcome: 'Um RPG de aprendizado sem atrito com modo Sandbox local, onboarding animado em 3 passos, temas Dark (Obsidian) e Light (Warm Vellum), 3 paletas sincronizadas à evolução, 21 testes unitários no Vitest e verificação visual via Playwright.'
+                problem: 'Quem estuda full-stack esbarra em listas infinitas de links sem ordem clara e exercícios que só devolvem "errado", sem apontar o erro real nem guardar progresso confiável.',
+                decision: 'Juntar a Toca do mascote e a trilha serpentina de 9 estações numa única tela de desktop, abrir a jornada com um pacote de cartas jogável e tornar o progresso server-authoritative — revalidando o JS do aluno num sandbox QuickJS em WebAssembly.',
+                outcome: 'Um RPG completo em PT-BR: 9 skills, 22 quests, 17 grimórios, 6 quizzes, 3 evoluções do fox com 5 acessórios, temas Noite e Dia na Toca, modo visitante com migração opcional para conta Firebase, 72 testes Vitest, 0 warnings no ESLint e 25 checagens e2e ao vivo na API de produção.'
             }
         },
-        technologies: ['React 19', 'Vite', 'Open Bot Avatar', 'CSS Tokens', 'Vitest', 'Playwright', 'GitHub Pages'],
+        technologies: ['React 19', 'Vite 7', 'Vercel Functions', 'Firebase Auth', 'Firestore', 'QuickJS (WASM)', 'CSS Tokens', 'Vitest', 'Playwright'],
         deepDive: {
-            kicker: { en: 'Deep dive · Architecture & Companion', pt: 'Deep dive · Arquitetura & Mascote' },
-            title: { en: 'Constellation graph, lexical arena & an evolving 2.5D mascot', pt: 'Mapa de constelações, arena léxica e mascote 2.5D evolutivo' },
+            kicker: { en: 'Deep dive · Product & Backend', pt: 'Deep dive · Produto & Backend' },
+            title: { en: 'Pixel-art Den, booster-pack onboarding & server-authoritative progress', pt: 'Toca em pixel-art, pacote inicial e progresso validado no servidor' },
             teaser: {
-                en: 'How the 1 → 2 → 3 → 2 → 1 skill map, custom lexical analyzer, 3-layer CSS tokens and evolving companion work together.',
-                pt: 'Como o mapa 1 → 2 → 3 → 2 → 1, o analisador léxico próprio, os tokens CSS em 3 camadas e o mascote evolutivo trabalham juntos.'
+                en: 'How the serpentine trail, booster-pack choreography, arena with grimoires and the QuickJS-sandboxed API work together.',
+                pt: 'Como a trilha serpentina, a coreografia do pacote inicial, a arena com grimórios e a API com sandbox QuickJS trabalham juntos.'
             },
             cta: { en: 'Read the architecture notes', pt: 'Ler as notas de arquitetura' },
             intro: {
-                en: 'DevQuest is built as a cohesive front-end system: <strong>zero loose hex values</strong> across screens, a custom lexical tokenizer powering real-time diagnostics, and an interactive <strong>open-bot-avatar</strong> companion whose evolution drives the app\'s entire visual theme.',
-                pt: 'O DevQuest foi construído como um sistema front-end coeso: <strong>zero hex solto nas telas</strong>, um tokenizador léxico próprio guiando diagnósticos em tempo real e um mascote interativo em <strong>open-bot-avatar</strong> cuja evolução transforma toda a paleta da interface.'
+                en: 'DevQuest is built with a cozy pixel-art and trading-card feel — <strong>3-layer CSS tokens with zero loose hex values</strong>, full parity between <strong>Night in the Den</strong> and <strong>Day in the Den</strong>, and a <strong>server-authoritative</strong> backend on Vercel that never trusts client-reported XP.',
+                pt: 'O DevQuest foi desenhado com clima aconchegante de pixel-art e cartas colecionáveis — <strong>tokens CSS em 3 camadas com zero hex solto nas telas</strong>, paridade total entre <strong>Noite na Toca</strong> e <strong>Dia na Toca</strong> e um backend <strong>server-authoritative</strong> na Vercel que não confia em XP vindo do navegador.'
             },
             pipeline: [
                 {
-                    en: ['Constellation Skill Map (1 → 2 → 3 → 2 → 1)', 'Symmetric dependency graph with 9 tracks (HTML5, CSS3, JS ES6+, Tokens & UI, React, Node.js, A11y & Tests, SQL Database, and Full-Stack Mastery), adapting to a vertical path on mobile.'],
-                    pt: ['Constellation Skill Map (1 → 2 → 3 → 2 → 1)', 'Grafo simétrico de dependências com 9 trilhas (HTML5, CSS3, JS ES6+, Tokens & UI, React, Node.js, A11y & Testes, Banco SQL e Maestria Full-Stack), adaptado para trilha vertical no mobile.']
+                    en: ['The Den & serpentine trail', 'A 9-station serpentine trail with progress rings that fits on a single desktop screen with no scrolling. In the Den, a hand-drawn 32×32 pixel-art fox wanders, naps, eats, gets pets, runs 6 quizzes and evolves across 3 forms (cobalt Kitsuby → ember Pyrokit → magenta Archkits) with 5 unlockable accessories, driving the app\'s accent color.'],
+                    pt: ['Toca e trilha', 'Trilha serpentina com 9 estações e anéis de progresso que cabe numa única tela no desktop, sem scroll. Na Toca, o fox em pixel-art 32×32 feito à mão passeia, cochila, come, recebe carinho, faz 6 quizzes e evolui em 3 formas (Kitsuby em cobalto → Pyrokit em brasa → Archkits em magenta) com 5 acessórios, guiando a cor de destaque do app inteiro.']
                 },
                 {
-                    en: ['Dedicated Arena & Real Lexical Analyzer', 'Fixed quest sidebar + custom lexical highlighter for HTML, CSS, JS, JSX, and SQL, catching unclosed tags, braces, and strings in real time alongside a live checklist and safe HTML preview.'],
-                    pt: ['Arena Dedicada com Identificador Léxico Real', 'Sidebar fixa de quests + editor com destaque léxico próprio (HTML, CSS, JS, JSX e SQL), diagnóstico em tempo real de tags, chaves e strings abertas, checklist ao vivo e prévia HTML segura.']
+                    en: ['Booster-pack onboarding', 'A holographic starter pack tilts in 3D with the cursor, tears open in a burst of light and spins out your partner card with pixel sparks (interruptible anytime and respectful of prefers-reduced-motion). Next you play your first card — a live-validated &lt;h1&gt; worth +25 XP — and sign your hero card.'],
+                    pt: ['Onboarding do pacote', 'Um pacote holográfico inclina em 3D seguindo o mouse, rasga soltando luz e revela a carta do parceiro girando com faíscas de pixel (toda a sequência pode ser interrompida e respeita prefers-reduced-motion). Em seguida você joga sua primeira carta — um &lt;h1&gt; validado ao vivo que rende +25 XP — e assina sua carta de herói.']
                 },
                 {
-                    en: ['Evolving 2.5D Mascot (open-bot-avatar)', 'Original Kitsuby → Pyrokit → Archkits line that tracks the cursor, triggers Lightning Challenges (+15 XP), levels up Bond, unlocks 6 accessories, and syncs the full UI theme (Teal → Amber → Arcane Violet) across Dark (Obsidian) and Light (Warm Vellum).'],
-                    pt: ['Mascote 2.5D Evolutivo (open-bot-avatar)', 'Linha autoral Kitsuby → Pyrokit → Archkits que segue o cursor, aplica Desafios Relâmpago (+15 XP), sobe de Vínculo, desbloqueia 6 acessórios e sincroniza o tema inteiro da interface (Teal → Âmbar → Violeta Arcano) em Dark (Obsidian) e Light (Warm Vellum).']
+                    en: ['Arena & grimoires', 'An arena with a custom lexical analyzer (HTML, CSS, JS, JSX and SQL), live diagnostics and checklist, safe HTML preview, 2-level hints and Boss Fights. Alongside it, 17 two-to-three-minute grimoires with search, filters, reading progress, "Common mistake", "Avoid / Prefer" code diffs, pre-quest checklists, "Practice" jumps and MDN/docs links.'],
+                    pt: ['Arena e grimórios', 'Arena com análise léxica própria (HTML, CSS, JS, JSX e SQL), diagnóstico e checklist ao vivo, prévia HTML segura, dicas em 2 níveis e Boss Fights. Ao lado, 17 grimórios de 2 a 3 min com busca, filtros, barra de leitura, "Erro comum", "Evite / Prefira" com código, checklist antes da quest, botão "Praticar" e links para MDN e docs.']
                 },
                 {
-                    en: ['Engineering & Automated Verification', '3-layer CSS token architecture, 3-step interactive onboarding, local Sandbox mode without login friction, 21 Vitest unit tests, 0 ESLint warnings, and automated Playwright visual verification.'],
-                    pt: ['Engenharia & Verificação Automatizada', 'CSS Tokens em 3 camadas (zero hex solto em telas), onboarding interativo em 3 passos, modo Sandbox local sem trava de login, 21 testes unitários (Vitest), ESLint com 0 warnings e verificação visual automatizada via Playwright.']
+                    en: ['Server-authoritative backend & sandbox', 'Guest mode saves locally with no sign-up; creating an account (Firebase Auth + Firestore + Vercel Functions on Node 24 in São Paulo) imports progress by re-running every quest, quiz and XP rule on the server, discarding forged XP. Student JS executes inside a QuickJS WebAssembly sandbox with memory and time limits, per-user rate limits, CSP/HSTS and LGPD controls (hashed IPs, city-level location, UI export and account deletion).'],
+                    pt: ['Backend server-authoritative e sandbox', 'Modo visitante sem cadastro salvo no navegador; ao criar conta (Firebase Auth + Firestore + Vercel Functions em Node 24, região São Paulo), o servidor revalida o código das quests, respostas dos quizzes e XP — descartando XP forjado. O JS do aluno roda em sandbox QuickJS (WebAssembly) com limites de memória e tempo, rate limit por usuário, CSP/HSTS e controles LGPD (IP em hash, localização até cidade, exportação e exclusão pela UI).']
                 }
             ],
             metrics: [
-                { value: '9', en: 'interactive tracks in the constellation', pt: 'trilhas interativas na constelação' },
-                { value: '22', en: 'hands-on full-stack coding quests', pt: 'desafios práticos full-stack' },
-                { value: '3', en: 'mascot evolutions & synced themes', pt: 'evoluções do mascote e temas sincronizados' },
-                { value: '6', en: 'unlockable companion accessories', pt: 'acessórios desbloqueáveis do mascote' },
-                { value: '21', en: 'Vitest unit tests passing', pt: 'testes unitários passando no Vitest' },
-                { value: '0', en: 'ESLint warnings & loose hex values', pt: 'warnings no ESLint e zero hex solto' }
+                { value: '9', en: 'skills on the serpentine trail', pt: 'skills na trilha serpentina' },
+                { value: '22', en: 'live-validated coding quests', pt: 'quests de código validadas ao vivo' },
+                { value: '17', en: 'short study grimoires (2–3 min)', pt: 'grimórios curtos de estudo (2–3 min)' },
+                { value: '3', en: 'fox evolutions syncing app palette', pt: 'evoluções do fox sincronizando a paleta' },
+                { value: '72', en: 'Vitest tests across 12 files (0 ESLint warnings)', pt: 'testes Vitest em 12 arquivos (0 warnings ESLint)' },
+                { value: '25', en: 'live e2e checks on the production API', pt: 'checagens e2e ao vivo na API de produção' }
             ],
             skills: {
-                en: ['Design tokens (3-layer CSS)', 'Custom lexical highlighting', 'Interactive SVG / graph layout', '2.5D mascot state machines', 'Safe HTML preview sandboxing', 'Vitest unit testing', 'Playwright visual checks', 'Dark + Light theming'],
-                pt: ['Design tokens (CSS em 3 camadas)', 'Destaque léxico próprio', 'Grafo interativo de dependências', 'Máquina de estados para mascote 2.5D', 'Prévia HTML segura em sandbox', 'Testes unitários com Vitest', 'Verificação visual com Playwright', 'Temas Dark + Light sincronizados']
+                en: ['Design tokens (3-layer CSS)', 'Pixel-art sprite system', 'Motion choreography', 'Custom lexical highlighting', 'Server-authoritative API', 'WASM sandboxing', 'Vitest & live e2e testing', 'Playwright visual checks'],
+                pt: ['Design tokens (CSS em 3 camadas)', 'Sistema de sprites pixel-art', 'Coreografia de movimento', 'Análise léxica própria', 'API server-authoritative', 'Sandboxing em WASM', 'Testes Vitest e e2e ao vivo', 'Verificação visual com Playwright']
             },
             footnote: {
-                en: 'Live on GitHub Pages · local Sandbox mode requires zero sign-up to explore the full constellation and arena.',
-                pt: 'No ar via GitHub Pages · modo Sandbox local permite explorar toda a constelação e a arena sem precisar criar conta.'
+                en: 'Live on Vercel · play as a guest with no sign-up; create an account to save to the cloud.',
+                pt: 'No ar na Vercel · jogue como visitante sem cadastro; crie conta para salvar na nuvem.'
             }
         },
         images: [
             {
-                src: 'assets/projectCovers/devquest/07-devquest-onboarding-dark.webp',
-                alt: 'DevQuest animated 3-step interactive onboarding flow',
-                fit: 'cover',
-                position: 'center top',
+                type: 'video',
+                src: 'assets/projectCovers/devquest/devquest-demo.mp4',
+                poster: 'assets/projectCovers/devquest/devquest-demo-poster.jpg',
+                alt: 'DevQuest demo video: tearing open the starter pack, cycling fox evolutions, playing the first live-validated HTML card, signing the hero card, and entering the serpentine trail',
                 caption: {
-                    en: 'Interactive onboarding: a 3-step guided introduction straight into the local Sandbox with zero login barrier.',
-                    pt: 'Onboarding interativo: introdução guiada em 3 passos direto para o modo Sandbox local, sem trava de login.'
+                    en: 'Demo: tear open the starter pack, cycle all three fox forms, play your first live-validated card, sign your hero card and enter the map.',
+                    pt: 'Demo: abre o pacote inicial, troca entre as três formas do fox, joga a primeira carta validada ao vivo, assina a carta de herói e entra no mapa.'
                 }
             },
             {
-                src: 'assets/projectCovers/devquest/01-devquest-cover-16x9.webp',
-                alt: 'DevQuest cover showing the Constellation Skill Map and evolving 2.5D mascot',
+                src: 'assets/projectCovers/devquest/00-devquest-cover-16x9.webp',
+                alt: 'DevQuest home screen showing the Den with Archkits, the 9-station serpentine trail, and the current SQL station',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Overview: the 1 → 2 → 3 → 2 → 1 Constellation Skill Map paired with the interactive 2.5D companion.',
-                    pt: 'Visão geral: o Constellation Skill Map (1 → 2 → 3 → 2 → 1) ao lado do mascote 2.5D interativo.'
+                    en: 'Home: the Den with Archkits, the 9-station serpentine trail and the current station — all on one desktop screen.',
+                    pt: 'Capa: a Toca com Archkits, a trilha serpentina de 9 estações e a estação atual — tudo numa tela no desktop.'
                 }
             },
             {
-                src: 'assets/projectCovers/devquest/02-devquest-arena-dark.webp',
-                alt: 'DevQuest Dedicated Arena in Dark Obsidian mode with quest sidebar, lexical editor, and live preview',
+                src: 'assets/projectCovers/devquest/03-devquest-onboarding-pack.webp',
+                alt: 'DevQuest starter booster pack tilting in 3D with holographic sheen following the cursor',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Dedicated Arena (Obsidian): fixed quest sidebar, custom lexical editor with real-time diagnostics, and safe live preview.',
-                    pt: 'Arena Dedicada (Obsidian): sidebar fixa de quests, editor léxico próprio com diagnóstico ao vivo e prévia segura.'
+                    en: 'Starter pack: tilts in 3D and catches light following the cursor before you tear it open.',
+                    pt: 'O pacote inicial inclina em 3D e reflete a luz seguindo o mouse antes de abrir.'
                 }
             },
             {
-                src: 'assets/projectCovers/devquest/03-devquest-skillmap-dark.webp',
-                alt: 'DevQuest widescreen Constellation Skill Map and Companion Camp in Dark mode',
+                src: 'assets/projectCovers/devquest/05-devquest-onboarding-reveal.webp',
+                alt: 'DevQuest onboarding reveal with the Kitsuby partner card spinning up with pixel sparks',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Constellation Skill Map + Companion Camp: 9 tracks connected by prerequisite edges and live XP progress.',
-                    pt: 'Constellation Skill Map + Companion Camp: 9 trilhas conectadas por pré-requisitos e progresso de XP ao vivo.'
+                    en: 'Partner reveal: the pack tears open in a burst of light and Kitsuby\'s card spins up with pixel sparks.',
+                    pt: 'A carta do parceiro sobe girando com faíscas de pixel logo após o rasgo do pacote.'
                 }
             },
             {
-                src: 'assets/projectCovers/devquest/04-devquest-skillmap-light.webp',
-                alt: 'DevQuest Skill Map and Companion in Light Warm Vellum theme',
+                src: 'assets/projectCovers/devquest/06-devquest-onboarding-first-card.webp',
+                alt: 'DevQuest first playable card showing an h1 tag validated on every keystroke turning holographic for +25 XP',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Warm Vellum (Light mode): 3-layer CSS tokens keep every surface, edge, and badge crisp in light mode.',
-                    pt: 'Warm Vellum (modo claro): tokens CSS em 3 camadas mantêm superfícies, conexões e badges nítidos no tema claro.'
+                    en: 'First card: an &lt;h1&gt; validated on every keystroke turns holographic and awards +25 XP.',
+                    pt: 'A primeira carta: um &lt;h1&gt; validado a cada tecla vira holográfico (+25 XP).'
                 }
             },
             {
-                src: 'assets/projectCovers/devquest/05-devquest-archkits-violet.webp',
-                alt: 'DevQuest Stage 3 Archkits evolution with Arcane Violet synchronized theme',
+                src: 'assets/projectCovers/devquest/07-devquest-arena-dark.webp',
+                alt: 'DevQuest coding arena in dark theme with custom lexical editor, live diagnostics checklist, safe preview, and Archkits as tutor',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Stage 3 — Archkits: evolving the companion shifts the entire interface from Teal to Amber to Arcane Violet.',
-                    pt: 'Estágio 3 — Archkits: evoluir o mascote muda toda a interface de Teal para Âmbar até o Violeta Arcano.'
+                    en: 'Arena: custom lexical analysis, live checklist and safe HTML preview, with the fox as tutor.',
+                    pt: 'Arena: análise léxica própria, checklist e prévia segura ao vivo, com o mascote como tutor.'
                 }
             },
             {
-                src: 'assets/projectCovers/devquest/06-devquest-arena-light.webp',
-                alt: 'DevQuest Dedicated Arena in Light Warm Vellum theme',
+                src: 'assets/projectCovers/devquest/08-devquest-grimorios-dark.webp',
+                alt: 'DevQuest Grimoires library showing 17 short study guides with search, skill filters, and highlighted next reading',
                 fit: 'cover',
                 position: 'center top',
                 caption: {
-                    en: 'Dedicated Arena in Warm Vellum: syntax tokens and live checklist adapt seamlessly to the light palette.',
-                    pt: 'Arena Dedicada no Warm Vellum: tokens de sintaxe e checklist ao vivo se adaptam sem esforço ao tema claro.'
+                    en: '17 grimoires with search, skill filters, reading progress and the next recommended study highlighted.',
+                    pt: '17 grimórios com busca, filtros, barra de progresso e o próximo recomendado em destaque.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/09-devquest-grimorio-reading-dark.webp',
+                alt: 'DevQuest grimoire reading modal with Avoid and Prefer code comparison, tip box, pre-quest checklist, and linked practice quests',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Reading view: "Avoid / Prefer" code diffs, common mistakes, tips, pre-quest checklist and linked quests to practice.',
+                    pt: 'Leitura: "Evite / Prefira" com código, erro comum, dica, checklist antes da quest e quests para praticar.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/02-devquest-home-light.webp',
+                alt: 'DevQuest Day in the Den light theme with Pyrokit in the habitat and the serpentine trail',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Day in the Den: the same world in the light theme, here with Pyrokit and its ember palette.',
+                    pt: 'Dia na Toca: o mesmo mundo no tema claro, aqui com Pyrokit e sua paleta em brasa.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/12-devquest-mobile-triptych.webp',
+                alt: 'DevQuest mobile layout at 390px showing onboarding partner card, the Den, and the Grimoires screen side by side',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Mobile at 390 px: onboarding, the Den and the 17 grimoires adapted for small screens.',
+                    pt: 'Mobile em 390 px: onboarding, Toca e grimórios adaptados para tela pequena.'
+                }
+            },
+            {
+                src: 'assets/projectCovers/devquest/11-devquest-archkits-character.webp',
+                alt: 'DevQuest Hero and Mascot screen featuring Archkits final evolution with magenta accent palette and unlockable accessories',
+                fit: 'cover',
+                position: 'center top',
+                caption: {
+                    en: 'Archkits, the final evolution: the entire app\'s accent shifts from cobalt to ember to magenta as the fox grows.',
+                    pt: 'Archkits, a forma final: a cor de destaque do app inteiro acompanha a evolução — cobalto, brasa e magenta.'
                 }
             }
         ],
         links: {
-            demo: 'https://ensinho.github.io/devquest',
+            demo: 'https://devquest-rpg.vercel.app',
             github: 'https://github.com/ensinho/devquest'
         }
     }
